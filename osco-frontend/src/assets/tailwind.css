@@ -1,0 +1,12 @@
+/* Test CSS to see if PostCSS is working */
+.test-tailwind {
+  color: red;
+  background-color: blue;
+  padding: 1rem;
+  margin: 1rem;
+}
+
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
