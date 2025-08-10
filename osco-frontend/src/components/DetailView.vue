@@ -18,7 +18,7 @@
             <img
               :src="pizzaImage" 
               :alt="menuItem.name" 
-              class="w-full h-full object-cover absolute top-0 "
+              class="w-full h-full object-cover absolute top-0"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
 
@@ -32,129 +32,21 @@
           </div>
           
           <!-- Content Area -->
-          <div class="flex-1 overflow-y-auto p-6 space-y-6 max-h-[236px]">
+          <div 
+            ref="contentArea"
+            class="flex-1 overflow-y-auto p-6 space-y-6 max-h-[236px]"
+            @scroll="handleScroll"
+          >
             <!-- Title and Description -->
             <div>
               <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ menuItem.name }}</h2>
               <p class="text-gray-600 leading-relaxed text-sm sm:text-base">{{ menuItem.description }}</p>
             </div>
             
-            <!-- Extras Section -->
-            <div class="space-y-4">
-              <h3 class="text-lg sm:text-xl font-bold text-gray-900">Would you like extras?</h3>
-              <p class="text-gray-500 text-sm sm:text-base">Choose a maximum of 3 products</p>
-              <div class="space-y-3">
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <span class="text-base sm:text-lg font-medium text-gray-800">Extra Cheese</span>
-                  <input
-                    type="checkbox"
-                    class="styled-checkbox"
-                    v-model="extras.extraCheese"
-                  />            
-                </div>
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <span class="text-base sm:text-lg font-medium text-gray-800">Pepperoni</span>
-                  <input
-                    type="checkbox"
-                    class="styled-checkbox"
-                    v-model="extras.pepperoni"
-                  />            
-                </div>
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <span class="text-base sm:text-lg font-medium text-gray-800">Mushrooms</span>
-                  <input
-                    type="checkbox"
-                    class="styled-checkbox"
-                    v-model="extras.mushrooms"
-                  />            
-                </div>
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <span class="text-base sm:text-lg font-medium text-gray-800">Olives</span>
-                  <input
-                    type="checkbox"
-                    class="styled-checkbox"
-                    v-model="extras.olives"
-                  />            
-                </div>
-              </div>
-            </div>
-
-            <!-- Remove Ingredients Section -->
-            <div class="space-y-4">
-              <h3 class="text-lg sm:text-xl font-bold text-gray-900">Would you like to remove any ingredients?</h3>
-              <p class="text-gray-500 text-sm sm:text-base">Select ingredients to remove from your order</p>
-              <div class="space-y-3">
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <span class="text-base sm:text-lg font-medium text-gray-800">Cheese</span>
-                  <input
-                    type="checkbox"
-                    class="styled-checkbox"
-                    v-model="removedIngredients.cheese"
-                  />
-                </div>
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <span class="text-base sm:text-lg font-medium text-gray-800">Onions</span>
-                  <input
-                    type="checkbox"
-                    class="styled-checkbox"
-                    v-model="removedIngredients.onions"
-                  />
-                </div>
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <span class="text-base sm:text-lg font-medium text-gray-800">Tomato Sauce</span>
-                  <input
-                    type="checkbox"
-                    class="styled-checkbox"
-                    v-model="removedIngredients.tomatoSauce"
-                  />
-                </div>
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <span class="text-base sm:text-lg font-medium text-gray-800">Peppers</span>
-                  <input
-                    type="checkbox"
-                    class="styled-checkbox"
-                    v-model="removedIngredients.peppers"
-                  />
-                </div>
-              </div>
-            </div>
-            
             <div class="flex-grow"></div>
-
-            <!-- Quantity Selector -->
-            <div class="flex items-center justify-center space-x-4 py-4">
-              <button 
-                @click="decreaseQuantity"
-                :disabled="quantity <= 1"
-                class="w-14 h-14 rounded-xl border-2 border-gray-200 flex items-center justify-center text-gray-600 hover:border-orange-500 hover:text-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              >
-                <Minus class="w-6 h-6" />
-              </button>
-              
-              <div class="w-20 h-14 bg-gray-50 rounded-xl flex items-center justify-center">
-                <span class="text-2xl font-bold text-gray-900">{{ quantity }}</span>
-              </div>
-              
-              <button 
-                @click="increaseQuantity"
-                class="w-14 h-14 rounded-xl border-2 border-gray-200 flex items-center justify-center text-gray-600 hover:border-orange-500 hover:text-orange-500 transition-all duration-200"
-              >
-                <Plus class="w-6 h-6" />
-              </button>
-            </div>
           </div>
 
-          <!-- Action Button -->
-          <div class="p-4 sm:p-6 bg-white border-t border-gray-100">
-            <div class="flex space-x-3 pt-4">
-              <button
-                @click="addToCart"
-                class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-orange-500/20 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
-              >
-                <span>Add {{ quantity }} for ${{ totalPrice.toFixed(2) }}</span>
-              </button>
-            </div>
-          </div>
+
         </div>
       </transition>
     </div>
@@ -162,10 +54,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue';
-import { X, Plus, Minus } from 'lucide-vue-next';
+import { ref } from 'vue';
+import { X } from 'lucide-vue-next';
 import pizzaImage from '@/assets/pizza.png';
 
+// eslint-disable-next-line no-unused-vars
 const props = defineProps({
   menuItem: Object,
   visible: Boolean,
@@ -173,45 +66,14 @@ const props = defineProps({
 
 const emit = defineEmits(['close']);
 
-const quantity = ref(1);
-const specialInstructions = ref('');
-const extras = reactive({
-  extraCheese: false,
-  pepperoni: false,
-  mushrooms: false,
-  olives: false,
-});
-const removedIngredients = reactive({
-  cheese: false,
-  onions: false,
-  tomatoSauce: false,
-  peppers: false,
-});
+const scrollY = ref(0);
+const contentArea = ref(null);
 
-const totalPrice = computed(() => {
-  return props.menuItem.price * quantity.value;
-});
-
-const increaseQuantity = () => {
-  quantity.value++;
-};
-
-const decreaseQuantity = () => {
-  if (quantity.value > 1) {
-    quantity.value--;
+// Handle scroll events for image animation
+const handleScroll = (event) => {
+  if (event.target) {
+    scrollY.value = event.target.scrollTop;
   }
-};
-
-const addToCart = () => {
-  console.log('Adding to cart:', {
-    item: props.menuItem,
-    quantity: quantity.value,
-    extras: extras,
-    removedIngredients: removedIngredients,
-    specialInstructions: specialInstructions.value,
-    totalPrice: totalPrice.value
-  });
-  emit('close');
 };
 
 const handleBackdropClick = () => {

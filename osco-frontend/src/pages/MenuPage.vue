@@ -4,7 +4,7 @@ import { menuItems, getMenuItems, filterMenuItemsByCategory, searchItems } from 
 import pizzaImage from '../assets/pizza.png';
 import { computed, onMounted, ref } from 'vue';
 import Detail from '@/components/DetailView.vue';
-import { Search, Star } from 'lucide-vue-next';
+import { Search, X } from 'lucide-vue-next';
 
 // Define searchTerm for the search bar
 const searchTerm = ref('');
@@ -68,14 +68,16 @@ onMounted(async () => {
         </div>
 
         <!-- Title -->
-        <div class="mb-6 lg:mb-8">
+        <div class="mb-6 lg:mb-8 flex items-center justify-between">
           <h1 class="text-3xl lg:text-5xl font-bold text-black mb-1 lg:mb-2">Food</h1>
           <button 
             v-if="selectedCategory"
             @click="showAllItems"
-            class="text-orange-500 hover:text-orange-600 text-sm lg:text-base font-medium"
+            class="inline-flex items-center text-orange-500 border border-orange-500 rounded-xl lg:rounded-2xl px-4 py-2 hover:text-orange-600 text-sm lg:text-base font-medium transition-colors duration-200"
+            title="Show All Items"
           >
-            Show All Items
+            <X class="h-4 w-4 lg:h-5 lg:w-5 mr-1" />
+            Clear Filter
           </button>
         </div>
 
@@ -172,45 +174,36 @@ onMounted(async () => {
         <!-- Menu Items -->
         <div v-else>
           <!-- Mobile: Single column -->
-          <div class="space-y-4 lg:hidden">
+          <div class="space-y-4 lg:hidden" data-aos="fade-down">
             <div
               v-for="item in filteredMenuItems"
               :key="item.id"
-              class="bg-white rounded-2xl overflow-hidden shadow-sm"
+              class="bg-white rounded-2xl overflow-hidden shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200"
+              @click="handleItemSelect(item)"
             >
               <!-- Placeholder Image Area -->
-              <div class="h-40 bg-gray-100 rounded-2xl mb-4 flex items-center justify-center">
-                <div class="w-16 h-16 bg-gray-200 rounded-xl flex items-center justify-center">
-                  <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                  </svg>
-                </div>
-              </div>
+            <div class="h-40 bg-gray-100 rounded-2xl mb-4 overflow-hidden">
+              <img 
+                :src="pizzaImage"
+                alt="Pizza" 
+                class="w-full h-full object-cover"
+              >
+            </div>
+
               
               <!-- Restaurant Info -->
               <div class="px-4 pb-4">
                 <div class="flex items-start justify-between mb-2">
                   <h3 class="text-xl font-bold text-black">{{ item.name }}</h3>
-                  <div class="flex items-center space-x-1">
-                    <Star class="w-4 h-4 text-orange-400 fill-current" />
-                    <span class="text-orange-500 font-medium text-sm">New</span>
-                  </div>
                 </div>
                 
                 <p class="text-gray-500 text-sm mb-2 line-clamp-1">
                   {{ item.description }}
                 </p>
                 
-                <div class="flex items-center text-gray-400 text-xs mb-4 text-orange-600">
+                <div class="flex items-center text-gray-400 text-xl text-bold mb-4 text-orange-600">
                   <span>${{ item.price }}</span>
                 </div>
-
-                <button
-                  class="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-4 rounded-xl text-sm transition-colors duration-200"
-                  @click="handleItemSelect(item)"
-                >
-                  Add to Order
-                </button>
               </div>
             </div>
           </div>
@@ -220,7 +213,8 @@ onMounted(async () => {
             <div
               v-for="item in filteredMenuItems"
               :key="item.id"
-              class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group"
+              class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
+              @click="handleItemSelect(item)"
             >
               <!-- Placeholder Image Area -->
               <div class="h-48 xl:h-56 bg-gray-100 rounded-3xl mb-6 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
@@ -235,10 +229,10 @@ onMounted(async () => {
               <div class="px-6 pb-6">
                 <div class="flex items-start justify-between mb-3">
                   <h3 class="text-xl xl:text-2xl font-bold text-black group-hover:text-orange-600 transition-colors">{{ item.name }}</h3>
-                  <div class="flex items-center space-x-1">
+                  <!-- <div class="flex items-center space-x-1">
                     <Star class="w-4 h-4 xl:w-5 xl:h-5 text-orange-400 fill-current" />
                     <span class="text-orange-500 font-medium text-sm xl:text-base">New</span>
-                  </div>
+                  </div> -->
                 </div>
                 
                 <p class="text-gray-500 text-sm xl:text-base mb-4 line-clamp-2">
