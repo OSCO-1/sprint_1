@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\pkg_Core;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateBasicInfoRequest;
-use App\Http\Requests\UpdateContactInfoRequest;
-use App\Http\Requests\UpdateOpeningHoursRequest;
-use App\Http\Requests\UpdateSocialLinksRequest;
+use App\Http\Requests\pkg_Core\UpdateBasicInfoRequest;
+use App\Http\Requests\pkg_Core\UpdateContactInfoRequest;
+use App\Http\Requests\pkg_Core\UpdateOpeningHoursRequest;
+use App\Http\Requests\pkg_Core\UpdateSocialLinksRequest;
 use App\Repositories\pkg_Core\RestaurantRepository;
 use Illuminate\Http\JsonResponse;
 
