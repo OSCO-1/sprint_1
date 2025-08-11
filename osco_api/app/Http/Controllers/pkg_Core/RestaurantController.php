@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\pkg_Core;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\pkg_Core\UpdateBasicInfoRequest;
-use App\Http\Requests\pkg_Core\UpdateContactInfoRequest;
-use App\Http\Requests\pkg_Core\UpdateSocialLinksRequest;
+use App\Http\Requests\pkg_Core\UpdateRestaurantRequest; // New unified request
 use App\Repositories\pkg_Core\RestaurantRepository;
 use Illuminate\Http\JsonResponse;
 
@@ -33,32 +31,13 @@ class RestaurantController extends Controller
     }
 
     /**
-     * Update basic info: name, headline, description, logo_light_theme_url, cover_image_url, currency
+     * Update all restaurant info at once (basic, contact, social)
      */
-    public function updateBasicInfo(UpdateBasicInfoRequest $request): JsonResponse
+    public function update(UpdateRestaurantRequest $request): JsonResponse
     {
-        $restaurant = $this->restaurantRepo->updateBasicInfo($request->validated());
+        $data = $request->validated();
 
-        return response()->json($restaurant);
-    }
-
-    /**
-     * Update contact info: phone_number, phone_fix, gmail, address, google_maps_link
-     */
-    public function updateContactInfo(UpdateContactInfoRequest $request): JsonResponse
-    {
-        $restaurant = $this->restaurantRepo->updateContactInfo($request->validated());
-
-        return response()->json($restaurant);
-    }
-
-
-    /**
-     * Update social links (expects JSON or array)
-     */
-    public function updateSocialLinks(UpdateSocialLinksRequest $request): JsonResponse
-    {
-        $restaurant = $this->restaurantRepo->updateSocialLinks($request->validated());
+        $restaurant = $this->restaurantRepo->updateRestaurant($data);
 
         return response()->json($restaurant);
     }

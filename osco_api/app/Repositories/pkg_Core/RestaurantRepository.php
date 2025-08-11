@@ -20,54 +20,39 @@ class RestaurantRepository extends BaseRepository
         return $this->model->first(); // Assumes only one restaurant record exists
     }
 
-    /**
-     * Update basic info: name, headline, description, logo_light_theme_url, cover_image_url, currency
-     *
-     * @param array $data
-     * @return Restaurant
-     */
-    public function updateBasicInfo(array $data)
+    public function updateRestaurant(array $data)
     {
-        $allowed = ['name', 'headline', 'description', 'logo_light_theme_url', 'cover_image_url', 'currency'];
+        // Define all allowed fields in one array
+        $allowed = [
+            'name',
+            'headline',
+            'description',
+            'logo_light_theme_url',
+            'cover_image_url',
+            'currency',
 
-        $restaurant = $this->getRestaurant();
+            'phone_number',
+            'phone_fix',
+            'gmail',
+            'address',
+            'google_maps_link',
 
-        $restaurant->update(array_intersect_key($data, array_flip($allowed)));
+            'facebook',
+            'instagram',
+            'youtube',
+            'snapchat',
+            'tiktok',
+        ];
 
-        return $restaurant;
-    }
+        // Get the restaurant or create it if missing
+        $restaurant = $this->getRestaurant() ?? $this->model->create([]);
 
-    /**
-     * Update contact info: phone_number, phone_fix, gmail, address, google_maps_link
-     *
-     * @param array $data
-     * @return Restaurant
-     */
-    public function updateContactInfo(array $data)
-    {
-        $allowed = ['phone_number', 'phone_fix', 'gmail', 'address', 'google_maps_link'];
+        // Filter the input data to allowed keys only
+        $filteredData = array_intersect_key($data, array_flip($allowed));
 
-        $restaurant = $this->getRestaurant();
+        // Update the restaurant
+        $restaurant->update($filteredData);
 
-        $restaurant->update(array_intersect_key($data, array_flip($allowed)));
-
-        return $restaurant;
-    }
-
-    /**
-     * Update social links: facebook, instagram, youtube, snapchat, tiktok
-     *
-     * @param array $data
-     * @return Restaurant
-     */
-    public function updateSocialLinks(array $data)
-    {
-        $allowed = ['facebook', 'instagram', 'youtube', 'snapchat', 'tiktok'];
-
-        $restaurant = $this->getRestaurant();
-
-        $restaurant->update(array_intersect_key($data, array_flip($allowed)));
-
-        return $restaurant;
+        return $restaurant->refresh();
     }
 }
