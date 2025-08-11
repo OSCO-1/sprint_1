@@ -13,11 +13,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Seed the main restaurant first
+        $this->call(RestaurantSeeder::class);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Seed the user(s) related to the restaurant
+        $this->call(UserSeeder::class);
+
+        // Seed the menu categories
+        $this->call(MenuCategorySeeder::class);
+
+        // Seed the menu items
+        $this->call(MenuItemSeeder::class);
+
+        // Optional: You can uncomment below to create additional test users via factory
+        // \App\Models\User::factory(10)->create();
     }
 }
