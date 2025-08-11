@@ -113,7 +113,7 @@
             <div class="row">
               <div class="col-md-12">
                 <label class="form-control-label">Menu Item Image *</label>
-                <div 
+                <div
                   class="image-upload-container"
                   :class="{ 'has-image': menuItem.imagePreview, 'has-error': errors.image }"
                   @dragover.prevent
@@ -121,21 +121,21 @@
                   @drop.prevent="handleImageDrop"
                   @click="triggerFileInput"
                 >
-                  <input 
+                  <input
                     ref="fileInput"
-                    type="file" 
-                    accept="image/*" 
-                    @change="handleImageUpload" 
+                    type="file"
+                    accept="image/*"
+                    @change="handleImageUpload"
                     style="display: none;"
                   />
-                  
+
                   <div v-if="!menuItem.imagePreview" class="upload-placeholder">
                     <i class="tim-icons icon-cloud-upload-94 upload-icon"></i>
                     <h4>Upload Menu Item Image</h4>
                     <p>Drag and drop an image here, or click to browse</p>
                     <small class="text-muted">Supported formats: JPG, PNG, GIF (Max 5MB)</small>
                   </div>
-                  
+
                   <div v-else class="image-preview-container">
                     <img :src="menuItem.imagePreview" alt="Menu Item Image Preview" class="preview-image" />
                     <div class="image-overlay">
@@ -171,7 +171,7 @@
                     <i class="fa fa-spinner fa-spin" v-if="isSubmitting"></i>
                     {{ isSubmitting ? 'Creating...' : 'Create Menu Item' }}
                   </base-button>
-                  
+
                   <base-button
                     type="secondary"
                     size="lg"
@@ -182,7 +182,7 @@
                     <i class="tim-icons icon-refresh-01"></i>
                     Reset
                   </base-button>
-                  
+
                   <router-link to="/menus/list" class="btn btn-link btn-lg ml-2">
                     <i class="tim-icons icon-minimal-left"></i>
                     Back to List
@@ -283,10 +283,10 @@ export default {
 
     processImageFile(file) {
       if (!file) return;
-      
+
       // Clear previous errors
       delete this.errors.image;
-      
+
       // Validate file type
       if (!file.type.startsWith('image/')) {
         this.errors.image = 'Please upload a valid image file';
@@ -338,17 +338,17 @@ export default {
         formData.append('image', this.menuItem.image);
 
         await this.createMenuItem(formData);
-        
+
         this.showSuccessNotification('Menu item created successfully!');
-        
+
         // Reset form after successful submission
         this.resetForm();
-        
+
         // Redirect to menu items list
         setTimeout(() => {
           this.$router.push('/menus/list');
         }, 1500);
-        
+
       } catch (error) {
         console.error('Error creating menu item:', error);
         this.showErrorNotification('Failed to create menu item. Please try again.');

@@ -37,6 +37,11 @@
           :name="$t('sidebar.userProfile')"
           icon="tim-icons icon-single-02"
         />
+        <sidebar-link
+          to="/infos/edit"
+          :name="$t('sidebar.infos')"
+          icon="tim-icons icon-settings-gear-63"
+        />
         <!-- <sidebar-link
           to="/table-list"
           :name="$t('sidebar.tableList')"

@@ -25,18 +25,28 @@
         </div>
       </div>
     </div>
-
+    
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex justify-center items-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+    </div>
+    
+    <!-- Error State -->
+    <div v-if="error && !isLoading" class="text-red-500 text-center py-4">
+      <p>Erreur lors du chargement des informations du restaurant.</p>
+    </div>
+    
     <!-- Main Content -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-      
+    <div v-for="restaurant in restaurantInfos" :key="restaurant.id" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+
       <!-- Hero Section -->
       <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-        <div class="h-64 lg:h-80 bg-cover bg-center" 
-             style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')">
+        <div class="h-64 lg:h-80 bg-cover bg-center"
+             :style="{ backgroundImage: `url(${restaurant.image})` }">
           <div class="h-full bg-black bg-opacity-30 flex items-end">
             <div class="p-6 lg:p-8 text-white">
-              <h2 class="text-3xl lg:text-4xl font-bold mb-2">Bienvenue chez Comparto</h2>
-              <p class="text-lg lg:text-xl opacity-90">Une expérience culinaire authentique</p>
+              <h2 class="text-3xl lg:text-4xl font-bold mb-2">Bienvenue chez {{ restaurant.name }}</h2>
+              <p class="text-lg lg:text-xl opacity-90">{{ restaurant.headline }}</p>
             </div>
           </div>
         </div>
@@ -47,19 +57,7 @@
         <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">À Propos de Nous</h3>
         <div class="prose lg:prose-lg max-w-none text-gray-600 text-justify">
           <p class="mb-4">
-            Depuis plus de 20 ans, Cafe Restaurant Comparto vous accueille dans un cadre chaleureux et convivial. 
-            Notre passion pour la cuisine authentique et les produits frais nous guide dans la création de plats 
-            savoureux qui raviront vos papilles.
-          </p>
-          <p class="mb-4">
-            Notre équipe de chefs expérimentés prépare chaque plat avec soin, en utilisant des ingrédients de qualité 
-            et des recettes traditionnelles transmises de génération en génération. Que ce soit pour un déjeuner 
-            d'affaires, un dîner en famille ou une soirée entre amis, nous vous offrons une expérience culinaire 
-            mémorable.
-          </p>
-          <p>
-            Venez découvrir notre atmosphère unique où se mélangent tradition et modernité, dans un décor soigneusement 
-            pensé pour votre confort et votre plaisir.
+            {{ restaurant.description }}
           </p>
         </div>
       </div>
@@ -84,7 +82,9 @@
               </svg>
               <div>
                 <p class="font-medium text-gray-900">Adresse</p>
-                <p class="text-gray-600">123 Rue de la Gastronomie<br>1000 Bruxelles, Belgique</p>
+                <p class="text-gray-600">
+                  {{ restaurant.address }}
+                </p>
               </div>
             </div>
             
@@ -94,7 +94,8 @@
               </svg>
               <div>
                 <p class="font-medium text-gray-900">Téléphone</p>
-                <p class="text-gray-600">+32 2 123 45 67</p>
+                <p class="text-gray-600">{{ restaurant.phone_number }}</p>
+                <p class="text-gray-600">{{ restaurant.phone_fix }}</p>                
               </div>
             </div>
             
@@ -104,7 +105,7 @@
               </svg>
               <div>
                 <p class="font-medium text-gray-900">Email</p>
-                <p class="text-gray-600">contact@comparto.be</p>
+                <p class="text-gray-600">{{ restaurant.gmail }}</p>
               </div>
             </div>
           </div>
@@ -135,43 +136,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Specialties Section -->
-      <div class="bg-white rounded-2xl shadow-lg p-6 lg:p-8 mb-8">
-        <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">Nos Spécialités</h3>
-        <div class="grid md:grid-cols-3 gap-6">
-          <div class="text-center">
-            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-              </svg>
-            </div>
-            <h4 class="text-lg font-semibold text-gray-900 mb-2">Cuisine Traditionnelle</h4>
-            <p class="text-gray-600 text-sm">Plats authentiques préparés selon les recettes familiales</p>
-          </div>
-          
-          <div class="text-center">
-            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-              </svg>
-            </div>
-            <h4 class="text-lg font-semibold text-gray-900 mb-2">Produits Frais</h4>
-            <p class="text-gray-600 text-sm">Ingrédients sélectionnés quotidiennement chez nos producteurs locaux</p>
-          </div>
-          
-          <div class="text-center">
-            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-              </svg>
-            </div>
-            <h4 class="text-lg font-semibold text-gray-900 mb-2">Service Personnalisé</h4>
-            <p class="text-gray-600 text-sm">Une équipe attentionnée pour une expérience sur mesure</p>
-          </div>
-        </div>
-      </div>
-
       <!-- Call to Action -->
       <div class="text-center">
         <button 
@@ -187,6 +151,13 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { getRestaurantInfo, restaurantInfos, error, isLoading } from '../stores/restaurant';
+import { onMounted } from 'vue';
+
+
+onMounted(() => {
+  getRestaurantInfo();
+});
 
 const router = useRouter()
 
