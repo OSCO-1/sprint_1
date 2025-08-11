@@ -8,5 +8,11 @@ Route::get('/test', function () {
 });
 
 
-Route::get('/restaurant', [RestaurantController::class, 'show']);
-Route::put('/restaurant', [RestaurantController::class, 'update']);
+Route::prefix('restaurant')->group(function () {
+    Route::get('/', [RestaurantController::class, 'show']);
+
+    Route::put('/basic-info', [RestaurantController::class, 'updateBasicInfo']);
+    Route::put('/contact-info', [RestaurantController::class, 'updateContactInfo']);
+    Route::put('/opening-hours', [RestaurantController::class, 'updateOpeningHours']);
+    Route::put('/social-links', [RestaurantController::class, 'updateSocialLinks']);
+});
