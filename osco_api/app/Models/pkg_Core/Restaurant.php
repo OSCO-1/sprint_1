@@ -22,14 +22,12 @@ class Restaurant extends Model
         'gmail',
         'address',
         'google_maps_link',
-        'opening_hours',
         'social_links',
         'currency',
     ];
 
 
     protected $casts = [
-        'opening_hours' => 'array',
         'social_links'  => 'array',
     ];
 

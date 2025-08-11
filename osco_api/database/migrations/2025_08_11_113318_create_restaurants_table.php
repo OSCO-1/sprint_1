@@ -33,7 +33,6 @@ return new class extends Migration
             $table->string('google_maps_link', 1000)->nullable();
 
             // JSON fields
-            $table->json('opening_hours')->nullable();
             $table->json('social_links')->nullable();
 
             $table->string('currency', 10)->default('DH');

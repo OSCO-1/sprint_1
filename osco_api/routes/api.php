@@ -13,6 +13,5 @@ Route::prefix('restaurant')->group(function () {
 
     Route::put('/basic-info', [RestaurantController::class, 'updateBasicInfo']);
     Route::put('/contact-info', [RestaurantController::class, 'updateContactInfo']);
-    Route::put('/opening-hours', [RestaurantController::class, 'updateOpeningHours']);
     Route::put('/social-links', [RestaurantController::class, 'updateSocialLinks']);
 });

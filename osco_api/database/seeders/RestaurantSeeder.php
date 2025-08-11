@@ -21,10 +21,6 @@ class RestaurantSeeder extends Seeder
             'gmail' => 'contact@pizzapalace.ma',    // Added gmail
             'address' => '123 Pizza Street, Casablanca',
             'google_maps_link' => 'https://maps.google.com/?q=Pizza+Palace',
-            'opening_hours' => json_encode([
-                'mon-fri' => '11:00-23:00',
-                'sat-sun' => '12:00-24:00',
-            ]),
             'social_links' => json_encode([
                 'facebook' => 'https://facebook.com/pizzapalace',
                 'instagram' => 'https://instagram.com/pizzapalace',

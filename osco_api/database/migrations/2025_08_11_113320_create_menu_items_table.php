@@ -18,7 +18,7 @@ return new class extends Migration
             $table->json('name');
             $table->json('description')->nullable();
             $table->string('image_url')->nullable();
-            $table->decimal('base_price', 10, 2);
+            $table->decimal('base_price', 10, 2)->nullable();
             $table->boolean('is_available')->default(true);
             $table->timestamps();
         });

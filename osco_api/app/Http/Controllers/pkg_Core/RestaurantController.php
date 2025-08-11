@@ -5,7 +5,6 @@ namespace App\Http\Controllers\pkg_Core;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\pkg_Core\UpdateBasicInfoRequest;
 use App\Http\Requests\pkg_Core\UpdateContactInfoRequest;
-use App\Http\Requests\pkg_Core\UpdateOpeningHoursRequest;
 use App\Http\Requests\pkg_Core\UpdateSocialLinksRequest;
 use App\Repositories\pkg_Core\RestaurantRepository;
 use Illuminate\Http\JsonResponse;
@@ -53,15 +52,6 @@ class RestaurantController extends Controller
         return response()->json($restaurant);
     }
 
-    /**
-     * Update opening hours (expects JSON or array)
-     */
-    public function updateOpeningHours(UpdateOpeningHoursRequest $request): JsonResponse
-    {
-        $restaurant = $this->restaurantRepo->updateOpeningHours($request->validated()['opening_hours']);
-
-        return response()->json($restaurant);
-    }
 
     /**
      * Update social links (expects JSON or array)
