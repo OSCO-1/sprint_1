@@ -13,21 +13,31 @@ return new class extends Migration
     {
         Schema::create('restaurants', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('headline')->nullable();
+
+            $table->string('name', 255);
+            $table->string('headline', 255)->nullable();
             $table->text('description')->nullable();
-            $table->string('logo_light_theme_url')->nullable();
-            $table->string('logo_dark_theme_url')->nullable();
-            $table->string('cover_image_url')->nullable();
-            $table->string('phone_number')->nullable();
-            $table->string('address')->nullable();
-            $table->string('google_maps_link')->nullable();
+
+            // Logos
+            $table->string('logo_light_theme_url', 255)->nullable();
+            // Removed logo_dark_theme_url
+
+            $table->string('cover_image_url', 255)->nullable();
+
+            // Contact info
+            $table->string('phone_number', 50)->nullable();
+            $table->string('phone_fix', 50)->nullable();
+            $table->string('gmail', 255)->nullable();
+
+            $table->string('address', 500)->nullable();
+            $table->string('google_maps_link', 1000)->nullable();
+
+            // JSON fields
             $table->json('opening_hours')->nullable();
             $table->json('social_links')->nullable();
-            $table->string('currency')->default('DH');
-            $table->string('primary_color')->nullable();
-            $table->string('secondary_color')->nullable();
-            $table->json('settings')->nullable();
+
+            $table->string('currency', 10)->default('DH');
+
             $table->timestamps();
         });
     }

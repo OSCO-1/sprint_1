@@ -16,23 +16,21 @@ class Restaurant extends Model
         'headline',
         'description',
         'logo_light_theme_url',
-        'logo_dark_theme_url',
         'cover_image_url',
         'phone_number',
+        'phone_fix',
+        'gmail',
         'address',
         'google_maps_link',
         'opening_hours',
         'social_links',
         'currency',
-        'primary_color',
-        'secondary_color',
-        'settings',
     ];
+
 
     protected $casts = [
         'opening_hours' => 'array',
         'social_links'  => 'array',
-        'settings'      => 'array',
     ];
 
     public function menuCategories()

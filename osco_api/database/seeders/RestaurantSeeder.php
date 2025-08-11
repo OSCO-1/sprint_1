@@ -14,9 +14,11 @@ class RestaurantSeeder extends Seeder
             'headline' => 'Authentic Wood-Fired Pizza...',
             'description' => 'Welcome to Pizza Palace! The best pizzas in town.',
             'logo_light_theme_url' => 'https://example.com/logo_light.png',
-            'logo_dark_theme_url' => 'https://example.com/logo_dark.png',
+            // Removed 'logo_dark_theme_url'
             'cover_image_url' => 'https://example.com/cover.jpg',
             'phone_number' => '+212600000000',
+            'phone_fix' => '+212522222222',          // Added fixed phone number
+            'gmail' => 'contact@pizzapalace.ma',    // Added gmail
             'address' => '123 Pizza Street, Casablanca',
             'google_maps_link' => 'https://maps.google.com/?q=Pizza+Palace',
             'opening_hours' => json_encode([
@@ -28,12 +30,7 @@ class RestaurantSeeder extends Seeder
                 'instagram' => 'https://instagram.com/pizzapalace',
             ]),
             'currency' => 'MAD',
-            'primary_color' => '#d9252c',
-            'secondary_color' => '#f5f5f5',
-            'settings' => json_encode([
-                'default_lang' => 'fr',
-                'enabled_langs' => ['fr', 'en', 'ar'],
-            ]),
+            // Removed 'primary_color', 'secondary_color', 'settings'
         ]);
     }
 }
