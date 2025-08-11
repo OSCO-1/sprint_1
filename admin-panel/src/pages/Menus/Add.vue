@@ -361,9 +361,6 @@ export default {
       // Simulate API call with delay
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          // Here you would make your actual API call
-          console.log('Creating menu item with data:', formData);
-          
           // Simulate random success/failure for demo
           if (Math.random() > 0.1) { // 90% success rate
             resolve({ id: Date.now(), ...formData });
