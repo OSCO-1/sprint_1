@@ -35,6 +35,7 @@
 
       <!-- Language Selection -->
       <div class="bg-white rounded-2xl shadow-2xl p-8">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Sélectionnez votre langue</h1>
         <div class="space-y-4">
           <!-- French -->
           <button 
@@ -43,6 +44,7 @@
           >
             <div class="flex items-center">
               <img src="https://flagcdn.com/w40/fr.png" alt="French" class="w-8 h-6 mr-4 rounded">
+              <h2 class="text-gray-800 font-semibold">Français</h2>
             </div>
             <svg class="w-5 h-5 text-gray-400 group-hover:text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -56,6 +58,7 @@
           >
             <div class="flex items-center">
               <img src="https://flagcdn.com/w40/nl.png" alt="Dutch" class="w-8 h-6 mr-4 rounded">
+              <h2 class="text-gray-800 font-semibold">Nederlands</h2>
             </div>
             <svg class="w-5 h-5 text-gray-400 group-hover:text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -69,6 +72,7 @@
           >
             <div class="flex items-center">
               <img src="https://flagcdn.com/w40/gb.png" alt="English" class="w-8 h-6 mr-4 rounded">
+              <h2 class="text-gray-800 font-semibold">English</h2>
             </div>
             <svg class="w-5 h-5 text-gray-400 group-hover:text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -82,6 +86,7 @@
           >
             <div class="flex items-center">
               <img src="https://flagcdn.com/w40/de.png" alt="German" class="w-8 h-6 mr-4 rounded">
+              <h2 class="text-gray-800 font-semibold">Deutsch</h2>
             </div>
             <svg class="w-5 h-5 text-gray-400 group-hover:text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>

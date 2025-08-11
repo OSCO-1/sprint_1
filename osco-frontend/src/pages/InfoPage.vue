@@ -45,7 +45,7 @@
       <!-- About Section -->
       <div class="bg-white rounded-2xl shadow-lg p-6 lg:p-8 mb-8">
         <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">À Propos de Nous</h3>
-        <div class="prose lg:prose-lg max-w-none text-gray-600">
+        <div class="prose lg:prose-lg max-w-none text-gray-600 text-justify">
           <p class="mb-4">
             Depuis plus de 20 ans, Cafe Restaurant Comparto vous accueille dans un cadre chaleureux et convivial. 
             Notre passion pour la cuisine authentique et les produits frais nous guide dans la création de plats 
@@ -131,14 +131,6 @@
             <div class="flex justify-between items-center py-2 border-b border-gray-100">
               <span class="font-medium text-gray-900">Dimanche</span>
               <span class="text-gray-600">12:00 - 21:00</span>
-            </div>
-            <div class="mt-4 p-3 bg-orange-50 rounded-lg">
-              <p class="text-sm text-orange-800">
-                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                Réservation recommandée pour les groupes de 6 personnes ou plus
-              </p>
             </div>
           </div>
         </div>

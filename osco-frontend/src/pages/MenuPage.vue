@@ -2,9 +2,11 @@
 import { categoryItems, isLoading, error, getCategoryItems } from '@/stores/categoryItem';
 import { menuItems, getMenuItems, filterMenuItemsByCategory, searchItems } from '@/stores/menuItem';
 import pizzaImage from '../assets/pizza.png';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, nextTick, watch } from 'vue';
 import Detail from '@/components/DetailView.vue';
 import { Search, X } from 'lucide-vue-next';
+import AOS from 'aos';
+import router from '@/router';
 
 // Define searchTerm for the search bar
 const searchTerm = ref('');
@@ -13,6 +15,37 @@ const selectedCategory = ref(null);
 // Define a method to get menu items by ID
 const shadowDetail = ref(false);
 const selectedItem = ref(null);
+
+// Language selector state
+const isLanguageDropdownOpen = ref(false);
+const selectedLanguage = ref({
+  code: 'fr',
+  name: 'Français',
+  flag: 'https://flagcdn.com/w20/fr.png'
+});
+
+const languages = [
+  {
+    code: 'fr',
+    name: 'Français',
+    flag: 'https://flagcdn.com/w20/fr.png'
+  },
+  {
+    code: 'nl',
+    name: 'Nederlands',
+    flag: 'https://flagcdn.com/w20/nl.png'
+  },
+  {
+    code: 'en',
+    name: 'English',
+    flag: 'https://flagcdn.com/w20/gb.png'
+  },
+  {
+    code: 'de',
+    name: 'Deutsch',
+    flag: 'https://flagcdn.com/w20/de.png'
+  }
+];
 
 //handle item selection
 const handleItemSelect = (item) => {
@@ -27,12 +60,29 @@ const filteredMenuItems = computed(() => {
   }
   return menuItems.value;
 });
+// Language selector methods
+const toggleLanguageDropdown = () => {
+  isLanguageDropdownOpen.value = !isLanguageDropdownOpen.value;
+};
+
+const selectLanguage = (language) => {
+  selectedLanguage.value = language;
+  isLanguageDropdownOpen.value = false;
+};
+
+// Navigation methods
+const goBack = () => {
+  router.go(-1);
+};
 
 // Handle category filtering
 const handleCategoryFilter = async (categoryId) => {
   selectedCategory.value = categoryId;
   searchTerm.value = ''; // Clear search when filtering by category
   await filterMenuItemsByCategory(categoryId);
+  // Refresh AOS after content changes
+  await nextTick();
+  AOS.refresh();
 };
 
 // Handle showing all items
@@ -40,12 +90,24 @@ const showAllItems = async () => {
   selectedCategory.value = null;
   searchTerm.value = '';
   await getMenuItems();
+  // Refresh AOS after content changes
+  await nextTick();
+  AOS.refresh();
 };
+
+// Watch for changes in filteredMenuItems and refresh AOS
+watch(filteredMenuItems, async () => {
+  await nextTick();
+  AOS.refresh();
+});
 
 // Fetch categories and menu items on mount
 onMounted(async () => {
   await getCategoryItems();
   await getMenuItems();
+  // Initialize AOS after content is loaded
+  await nextTick();
+  AOS.refresh();
 });
 </script>
 
@@ -56,20 +118,63 @@ onMounted(async () => {
       <div class="max-w-7xl mx-auto">
         <div class="flex items-center justify-between mb-6 lg:mb-8">
           <!-- Restaurant Logo and Name -->
-          <div class="flex items-center space-x-3">
+          <div class="flex items-center space-x-1">
+              <button 
+                @click="goBack"
+                class="flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200"
+              >
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              </button>
             <div class="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center shadow-md">
               <span class="text-white font-bold text-lg lg:text-xl">BV</span>
             </div>
             <div>
               <h1 class="text-xl lg:text-2xl font-bold text-gray-900">Bella Vista</h1>
-              <p class="text-xs lg:text-sm text-gray-500">Authentic Italian Cuisine</p>
+            </div>
+          </div>
+
+          <!-- Language Selector -->
+          <div class="relative">
+            <button 
+              @click="toggleLanguageDropdown"
+              class="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-lg px-3 py-2 text-gray-700 transition-all duration-200"
+            >
+              <img :src="selectedLanguage.flag" :alt="selectedLanguage.code" class="w-5 h-3 rounded-sm">
+              <span class="text-sm font-medium">{{ selectedLanguage.name }}</span>
+              <svg 
+                class="w-4 h-4 transition-transform duration-200" 
+                :class="{ 'rotate-180': isLanguageDropdownOpen }"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+
+            <!-- Language Dropdown -->
+            <div 
+              v-if="isLanguageDropdownOpen"
+              class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50"
+            >
+              <button
+                v-for="language in languages"
+                :key="language.code"
+                @click="selectLanguage(language)"
+                class="w-full flex items-center space-x-3 px-4 py-3 text-gray-800 hover:bg-orange-50 transition-colors duration-200"
+                :class="{ 'bg-orange-100': selectedLanguage.code === language.code }"
+              >
+                <img :src="language.flag" :alt="language.code" class="w-5 h-3 rounded-sm">
+                <span class="text-sm font-medium">{{ language.name }}</span>
+              </button>
             </div>
           </div>
         </div>
 
         <!-- Title -->
         <div class="mb-6 lg:mb-8 flex items-center justify-between">
-          <h1 class="text-3xl lg:text-5xl font-bold text-black mb-1 lg:mb-2">Food</h1>
           <button 
             v-if="selectedCategory"
             @click="showAllItems"
@@ -110,7 +215,7 @@ onMounted(async () => {
         </div>
 
         <!-- Category List -->
-        <div v-else-if="categoryItems.length > 0" class="mb-6 lg:mb-8">
+        <div v-else-if="categoryItems.length > 0" class="mb-6 lg:mb-8" data-aos="fade-up" data-aos-delay="200">
           <!-- Mobile: Horizontal scrollable categories -->
           <div class="lg:hidden overflow-x-auto scroll-smooth flex space-x-4 px-4">
             <div v-for="category in categoryItems" :key="category.id" class="flex flex-col items-center flex-shrink-0">
@@ -172,9 +277,9 @@ onMounted(async () => {
         </div>
 
         <!-- Menu Items -->
-        <div v-else>
+        <div v-else data-aos="fade-down">
           <!-- Mobile: Single column -->
-          <div class="space-y-4 lg:hidden" data-aos="fade-down">
+          <div class="space-y-4 lg:hidden">
             <div
               v-for="item in filteredMenuItems"
               :key="item.id"
@@ -202,7 +307,7 @@ onMounted(async () => {
                 </p>
                 
                 <div class="flex items-center text-gray-400 text-xl text-bold mb-4 text-orange-600">
-                  <span>${{ item.price }}</span>
+                  <span>{{ item.price }} MAD</span>
                 </div>
               </div>
             </div>
@@ -211,10 +316,12 @@ onMounted(async () => {
           <!-- Desktop: Grid layout -->
           <div class="hidden lg:grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 xl:gap-8">
             <div
-              v-for="item in filteredMenuItems"
+              v-for="(item, index) in filteredMenuItems"
               :key="item.id"
               class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
               @click="handleItemSelect(item)"
+              data-aos="fade-up"
+              :data-aos-delay="index * 100"
             >
               <!-- Placeholder Image Area -->
               <div class="h-48 xl:h-56 bg-gray-100 rounded-3xl mb-6 flex items-center justify-center group-hover:bg-gray-200 transition-colors">

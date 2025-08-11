@@ -2,10 +2,22 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import './assets/tailwind.css'
-import 'aos/dist/aos.css?inline'
+import 'aos/dist/aos.css'
 import AOS from 'aos'
 
-createApp(App).use(router).mount('#app')
+const app = createApp(App)
+app.use(router)
 
-// Initialize AOS (Animate On Scroll) library
-AOS.init();
+// Mount the app first
+app.mount('#app')
+
+// Initialize AOS after the app is mounted
+setTimeout(() => {
+    AOS.init({
+        duration: 1000,
+        easing: 'ease-in-out',
+        once: true,
+        offset: 100,
+        delay: 0
+    });
+}, 100);

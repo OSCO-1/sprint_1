@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-cover bg-center bg-no-repeat relative" 
+  <div class="h-screen overflow-hidden bg-cover bg-center bg-no-repeat relative" 
        style="background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')">
     
     <!-- Dark overlay for better text readability -->
@@ -8,12 +8,41 @@
     <!-- Header with language selector -->
     <div class="relative z-10 flex justify-between items-center p-4 lg:p-6">
       <div class="text-white font-bold text-lg">COMPARTO</div>
-      <div class="flex items-center space-x-2">
-        <img src="https://flagcdn.com/w20/nl.png" alt="NL" class="w-5 h-3">
-        <span class="text-white text-sm">NL</span>
-        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
+      <div class="relative">
+        <!-- Language Selector Button -->
+        <button 
+          @click="toggleLanguageDropdown"
+          class="flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-3 py-2 text-white hover:bg-white/20 transition-all duration-200"
+        >
+          <img :src="selectedLanguage.flag" :alt="selectedLanguage.code" class="w-5 h-3 rounded-sm">
+          <span class="text-sm font-medium">{{ selectedLanguage.name }}</span>
+          <svg 
+            class="w-4 h-4 transition-transform duration-200" 
+            :class="{ 'rotate-180': isLanguageDropdownOpen }"
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+
+        <!-- Language Dropdown -->
+        <div 
+          v-if="isLanguageDropdownOpen"
+          class="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg overflow-hidden"
+        >
+          <button
+            v-for="language in languages"
+            :key="language.code"
+            @click="selectLanguage(language)"
+            class="w-full flex items-center space-x-3 px-4 py-3 text-gray-800 hover:bg-orange-50 transition-colors duration-200"
+            :class="{ 'bg-orange-100': selectedLanguage.code === language.code }"
+          >
+            <img :src="language.flag" :alt="language.code" class="w-5 h-3 rounded-sm">
+            <span class="text-sm font-medium">{{ language.name }}</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -48,24 +77,21 @@
         <h1 class="text-4xl lg:text-6xl font-bold text-white mb-4 font-serif">
           Cafe Restaurant
         </h1>
-        <h2 class="text-3xl lg:text-5xl font-bold text-white mb-6 font-serif">
+        <h2 class="text-3xl lg:text-5xl font-bold text-white mb-2 font-serif">
           Comparto
         </h2>
-        <p class="text-white text-lg lg:text-xl opacity-90 max-w-md mx-auto">
-          Experience authentic flavors in a warm and welcoming atmosphere
-        </p>
       </div>
 
       <!-- Menu button -->
       <button 
         @click="goToMenu"
-        class="bg-black text-white px-12 lg:px-16 py-4 lg:py-5 text-lg lg:text-xl font-semibold rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+        class="bg-orange-500 text-white px-12 lg:px-16 py-4 lg:py-5 text-lg lg:text-xl font-semibold rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
       >
         Notre menu
       </button>
 
       <!-- Bottom navigation icons -->
-      <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-8">
+      <div class="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex space-x-8 mb-4 bg-white/10 backdrop-blur-sm p-4 rounded-full shadow-lg">
         <button class="text-white hover:text-yellow-500 transition-colors duration-200">
           <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
@@ -87,9 +113,52 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 
 const router = useRouter()
 
+// Language selector state
+const isLanguageDropdownOpen = ref(false)
+const selectedLanguage = ref({
+  code: 'fr',
+  name: 'Français',
+  flag: 'https://flagcdn.com/w20/fr.png'
+})
+
+const languages = [
+  {
+    code: 'fr',
+    name: 'Français',
+    flag: 'https://flagcdn.com/w20/fr.png'
+  },
+  {
+    code: 'nl',
+    name: 'Nederlands',
+    flag: 'https://flagcdn.com/w20/nl.png'
+  },
+  {
+    code: 'en',
+    name: 'English',
+    flag: 'https://flagcdn.com/w20/gb.png'
+  },
+  {
+    code: 'de',
+    name: 'Deutsch',
+    flag: 'https://flagcdn.com/w20/de.png'
+  }
+]
+
+// Language selector methods
+const toggleLanguageDropdown = () => {
+  isLanguageDropdownOpen.value = !isLanguageDropdownOpen.value
+}
+
+const selectLanguage = (language) => {
+  selectedLanguage.value = language
+  isLanguageDropdownOpen.value = false
+}
+
+// Navigation methods
 const goToMenu = () => {
   router.push('/menu')
 }
