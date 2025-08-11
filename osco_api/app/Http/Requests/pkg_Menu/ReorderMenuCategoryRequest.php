@@ -23,7 +23,7 @@ class ReorderMenuCategoryRequest extends FormRequest
     {
         return [
             'ordered_ids'   => ['required', 'array'],
-            // 'ordered_ids.*' => ['integer', 'exists:menu_categories,id'],
+            'ordered_ids.*' => ['integer', 'exists:menu_categories,id'],
         ];
     }
 }

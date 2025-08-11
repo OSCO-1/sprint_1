@@ -104,7 +104,7 @@ class MenuCategoryRepository extends BaseRepository
     {
         foreach ($orderedIds as $order => $id) {
             // Update each category's 'order' column (or your custom order column)
-            $this->model->where('id', $id)->update(['order' => $order + 1]);
+            $this->model->where('id', $id)->update(['display_order' => $order + 1]);
         }
     }
 }
