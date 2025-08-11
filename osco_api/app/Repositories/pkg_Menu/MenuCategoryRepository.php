@@ -1,0 +1,115 @@
+<?php
+
+namespace App\Repositories\pkg_Menu;
+
+use App\Models\pkg_Menu\MenuCategory;
+use App\Repositories\BaseRepository;
+use Illuminate\Support\Facades\DB;
+
+
+class MenuCategoryRepository extends BaseRepository
+{
+    public function __construct(MenuCategory $model)
+    {
+        parent::__construct($model);
+    }
+
+
+    public function createCategory(array $data)
+    {
+        // Get current max display_order for the restaurant, default 0 if none
+        $maxOrder = $this->model
+            ->where('restaurant_id', $data['restaurant_id'])
+            ->max('display_order') ?? 0;
+
+        // Assign next display_order
+        $data['display_order'] = $maxOrder + 1;
+
+        return $this->model->create($data);
+    }
+
+
+    /**
+     * Get all categories for a given restaurant, ordered by display_order.
+     *
+     * @param int $restaurantId
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    /**
+     * Get all categories ordered by display_order.
+     */
+    public function getAll()
+    {
+        return $this->model->orderBy('display_order')->get();
+    }
+
+
+    /**
+     * Update a menu category by ID.
+     *
+     * @param int $id
+     * @param array $data
+     * @return MenuCategory|null
+     */
+    public function updateCategory(int $id, array $data)
+    {
+        $category = $this->model->find($id);
+
+        if (!$category) {
+            return null;
+        }
+
+        $category->update($data);
+
+        return $category;
+    }
+
+    /**
+     * Get a category by its ID.
+     *
+     * @param int $id
+     * @return MenuCategory|null
+     */
+    public function getById(int $id)
+    {
+        return $this->model->find($id);
+    }
+
+
+    /**
+     * Delete a menu category by ID.
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function deleteCategory(int $id): bool
+    {
+        $category = $this->model->find($id);
+
+        if (!$category) {
+            return false;
+        }
+
+        return $category->delete();
+    }
+
+    /**
+     * Reorder categories for a restaurant.
+     * 
+     * @param int $restaurantId
+     * @param array $orderedIds Array of category IDs in new order.
+     * Example: [5, 2, 9] → category ID 5 will be display_order 1, ID 2 will be 2, etc.
+     */
+    public function reorder(int $restaurantId, array $orderedIds): bool
+    {
+        DB::transaction(function () use ($restaurantId, $orderedIds) {
+            foreach ($orderedIds as $index => $categoryId) {
+                MenuCategory::where('id', $categoryId)
+                    ->where('restaurant_id', $restaurantId)
+                    ->update(['display_order' => $index + 1]);
+            }
+        });
+
+        return true;
+    }
+}
