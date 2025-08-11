@@ -28,7 +28,7 @@ class MenuCategoryController extends Controller
         return response()->json($this->categoryRepo->getAll());
     }
 
-    
+
     public function show(int $id): JsonResponse
     {
         $category = $this->categoryRepo->getById($id);
@@ -43,11 +43,12 @@ class MenuCategoryController extends Controller
     /**
      * Create a new category.
      */
-    public function store(StoreMenuCategoryRequest $request)
+    public function store(StoreMenuCategoryRequest $request): JsonResponse
     {
         $validated = $request->validated();
 
-        $category = MenuCategory::create($validated);
+        // Use repository to create category (assuming you have createCategory method)
+        $category = $this->categoryRepo->createCategory($validated);
 
         return response()->json($category, 201);
     }
@@ -68,6 +69,7 @@ class MenuCategoryController extends Controller
         return response()->json($category);
     }
 
+
     /**
      * Delete a category.
      */
@@ -85,11 +87,12 @@ class MenuCategoryController extends Controller
     /**
      * Reorder categories.
      */
-    public function reorder(ReorderMenuCategoryRequest $request, int $restaurantId): JsonResponse
+    public function reorder(ReorderMenuCategoryRequest $request): \Illuminate\Http\JsonResponse
     {
+        // dd('$request->all()');
         $validated = $request->validated();
 
-        $this->categoryRepo->reorder($restaurantId, $validated['ordered_ids']);
+        $this->categoryRepo->reorder($validated['ordered_ids']);
 
         return response()->json(['message' => 'Categories reordered successfully']);
     }

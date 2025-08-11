@@ -100,13 +100,11 @@ class MenuCategoryRepository extends BaseRepository
      * @param array $orderedIds Array of category IDs in new order.
      * Example: [5, 2, 9] → category ID 5 will be display_order 1, ID 2 will be 2, etc.
      */
-    public function reorder(int $restaurantId, array $orderedIds): bool
+    public function reorder(array $orderedIds): bool
     {
-        DB::transaction(function () use ($restaurantId, $orderedIds) {
+        DB::transaction(function () use ($orderedIds) {
             foreach ($orderedIds as $index => $categoryId) {
-                MenuCategory::where('id', $categoryId)
-                    ->where('restaurant_id', $restaurantId)
-                    ->update(['display_order' => $index + 1]);
+                $this->model->where('id', $categoryId)->update(['display_order' => $index + 1]);
             }
         });
 
