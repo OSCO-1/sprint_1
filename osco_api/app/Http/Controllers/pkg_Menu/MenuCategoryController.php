@@ -87,9 +87,8 @@ class MenuCategoryController extends Controller
     /**
      * Reorder categories.
      */
-    public function reorder(ReorderMenuCategoryRequest $request): \Illuminate\Http\JsonResponse
+    public function reorder(ReorderMenuCategoryRequest $request): JsonResponse
     {
-        // dd('$request->all()');
         $validated = $request->validated();
 
         $this->categoryRepo->reorder($validated['ordered_ids']);

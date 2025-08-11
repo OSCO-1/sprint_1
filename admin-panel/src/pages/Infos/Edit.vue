@@ -27,16 +27,16 @@
       </div>
     </div>
 
-    <!-- Restaurant Info Form -->
+    <!-- Unified Restaurant Information Form -->
     <div class="row">
-      <div class="col-lg-8 col-md-10 col-sm-12 mx-auto">
+      <div class="col-lg-10 col-md-12 col-sm-12 mx-auto">
         <card>
           <template slot="header">
             <h4 class="card-title">
-              <i class="tim-icons icon-pencil text-success"></i>
-              Edit Restaurant Information
+              <i class="tim-icons icon-settings text-primary"></i>
+              Restaurant Information Management
             </h4>
-            <p class="card-category">Update your restaurant's name and description</p>
+            <p class="card-category">Complete restaurant profile - Basic info, contact details, and settings</p>
           </template>
 
           <!-- Loading State -->
@@ -65,20 +65,28 @@
             </div>
           </div>
 
-          <!-- Form -->
-          <form v-else @submit.prevent="submitRestaurantInfo">
+          <!-- Unified Form -->
+          <form v-else @submit.prevent="submitAllInfo">
             <!-- Success Message -->
             <div v-if="showSuccessMessage" class="alert alert-success alert-dismissible fade show">
               <span class="alert-inner--icon">
                 <i class="tim-icons icon-check-2"></i>
               </span>
               <span class="alert-inner--text">
-                <strong>Success!</strong> Restaurant information updated successfully!
+                <strong>Success!</strong> All restaurant information updated successfully!
               </span>
               <button type="button" class="close" @click="showSuccessMessage = false">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
+
+            <!-- Basic Information Section -->
+            <div class="form-section">
+              <h5 class="section-title">
+                <i class="tim-icons icon-shop text-primary"></i>
+                Basic Information
+              </h5>
+              <hr class="section-divider">
 
             <!-- Restaurant Name -->
             <div class="row">
@@ -103,7 +111,29 @@
                 </base-input>
               </div>
             </div>
-
+            <!-- Restaurant headline -->
+            <div class="row">
+              <div class="col-md-12">
+                <base-input
+                  label="Restaurant Headline *"
+                  placeholder="Enter a catchy headline for your restaurant"
+                  v-model="info.headline"
+                  :class="{ 'has-danger': errors.headline }"
+                  required
+                  @input="clearFieldError('headline')"
+                >
+                  <template slot="prepend">
+                    <span class="input-group-text">
+                      <i class="tim-icons icon-bullet-list-67 text-primary"></i>
+                    </span>
+                  </template>
+                  <small v-if="errors.headline" class="text-danger">
+                    <i class="tim-icons icon-alert-circle-exc"></i>
+                    {{ errors.headline }}
+                  </small>
+                </base-input>
+              </div>
+            </div>
             <!-- Restaurant Description -->
             <div class="row">
               <div class="col-md-12">
@@ -131,34 +161,137 @@
                 </base-input>
               </div>
             </div>
+            </div>
 
-            <!-- Form Actions -->
-            <div class="row">
+            <!-- Contact Information Section -->
+            <div class="form-section mt-4">
+              <h5 class="section-title">
+                <i class="tim-icons icon-square-pin text-info"></i>
+                Contact Information
+              </h5>
+              <hr class="section-divider">
+
+              <!-- Address -->
+              <div class="row">
+                <div class="col-md-12">
+                  <base-input
+                    label="Restaurant Address *"
+                    placeholder="Enter your complete restaurant address"
+                    v-model="contact.address"
+                    :class="{ 'has-danger': contactErrors.address }"
+                    required
+                    @input="clearContactFieldError('address')"
+                  >
+                    <template slot="prepend">
+                      <span class="input-group-text">
+                        <i class="tim-icons icon-square-pin text-info"></i>
+                      </span>
+                    </template>
+                    <small v-if="contactErrors.address" class="text-danger">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ contactErrors.address }}
+                    </small>
+                  </base-input>
+                </div>
+              </div>
+
+              <!-- Phone Numbers Row -->
+              <div class="row">
+                <div class="col-md-6">
+                  <base-input
+                    label="Mobile Phone *"
+                    placeholder="+32 2 123 45 67"
+                    v-model="contact.phone_number"
+                    :class="{ 'has-danger': contactErrors.phone_number }"
+                    required
+                    @input="clearContactFieldError('phone_number')"
+                  >
+                    <template slot="prepend">
+                      <span class="input-group-text">
+                        <i class="tim-icons icon-mobile text-info"></i>
+                      </span>
+                    </template>
+                    <small v-if="contactErrors.phone_number" class="text-danger">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ contactErrors.phone_number }}
+                    </small>
+                  </base-input>
+                </div>
+                <div class="col-md-6">
+                  <base-input
+                    label="Fixed Phone"
+                    placeholder="+32 2 987 65 43"
+                    v-model="contact.phone_fix"
+                    :class="{ 'has-danger': contactErrors.phone_fix }"
+                    @input="clearContactFieldError('phone_fix')"
+                  >
+                    <template slot="prepend">
+                      <span class="input-group-text">
+                        <i class="tim-icons icon-phone-2 text-info"></i>
+                      </span>
+                    </template>
+                    <small v-if="contactErrors.phone_fix" class="text-danger">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ contactErrors.phone_fix }}
+                    </small>
+                  </base-input>
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="row">
+                <div class="col-md-12">
+                  <base-input
+                    label="Email Address *"
+                    type="email"
+                    placeholder="contact@yourrestaurant.com"
+                    v-model="contact.gmail"
+                    :class="{ 'has-danger': contactErrors.gmail }"
+                    required
+                    @input="clearContactFieldError('gmail')"
+                  >
+                    <template slot="prepend">
+                      <span class="input-group-text">
+                        <i class="tim-icons icon-email-85 text-info"></i>
+                      </span>
+                    </template>
+                    <small v-if="contactErrors.gmail" class="text-danger">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ contactErrors.gmail }}
+                    </small>
+                  </base-input>
+                </div>
+              </div>
+            </div>
+
+            <!-- Unified Form Actions -->
+            <div class="row mt-5">
               <div class="col-md-12">
                 <div class="form-actions text-center">
                   <base-button
                     type="primary"
                     size="lg"
-                    :disabled="!isFormValid || !hasChanges || isSubmitting"
-                    @click="submitRestaurantInfo"
+                    :disabled="!isAllFormValid || !hasAnyChanges || isSubmitting"
+                    @click="submitAllInfo"
+                    class="btn-update-all"
                   >
                     <i class="tim-icons icon-check-2" v-if="!isSubmitting"></i>
                     <i class="fa fa-spinner fa-spin" v-if="isSubmitting"></i>
-                    {{ isSubmitting ? 'Updating...' : 'Update Information' }}
+                    {{ isSubmitting ? 'Updating All Information...' : 'Update All Information' }}
                   </base-button>
 
                   <base-button
                     type="secondary"
                     size="lg"
-                    @click="resetForm"
-                    :disabled="!hasChanges || isSubmitting"
-                    class="ml-2"
+                    @click="resetAllForms"
+                    :disabled="!hasAnyChanges || isSubmitting"
+                    class="ml-3"
                   >
                     <i class="tim-icons icon-refresh-01"></i>
-                    Reset Changes
+                    Reset All Changes
                   </base-button>
 
-                  <router-link to="/dashboard" class="btn btn-link btn-lg ml-2">
+                  <router-link to="/dashboard" class="btn btn-link btn-lg ml-3">
                     <i class="tim-icons icon-minimal-left"></i>
                     Cancel
                   </router-link>
@@ -166,12 +299,12 @@
               </div>
             </div>
 
-            <!-- Form Status Indicator -->
-            <div class="row mt-3" v-if="hasChanges">
+            <!-- Unified Form Status Indicator -->
+            <div class="row mt-3" v-if="hasAnyChanges">
               <div class="col-md-12">
                 <div class="alert alert-info alert-sm text-center">
                   <i class="tim-icons icon-bell-55"></i>
-                  You have unsaved changes
+                  You have unsaved changes in your restaurant information
                 </div>
               </div>
             </div>
@@ -197,15 +330,32 @@ export default {
     return {
       info: {
         name: '',
+        headline: '',
         description: ''
       },
       originalInfo: {
         name: '',
+        headline: '',
         description: ''
       },
+      contact: {
+        address: '',
+        phone_number: '',
+        phone_fix: '',
+        gmail: ''
+      },
+      originalContact: {
+        address: '',
+        phone_number: '',
+        phone_fix: '',
+        gmail: ''
+      },
       errors: {},
+      contactErrors: {},
       isSubmitting: false,
-      showSuccessMessage: false
+      isSubmittingContact: false,
+      showSuccessMessage: false,
+      showContactSuccessMessage: false
     }
   },
   computed: {
@@ -220,13 +370,33 @@ export default {
     },
     hasChanges() {
       return this.info.name !== this.originalInfo.name ||
+             this.info.headline !== this.originalInfo.headline ||
              this.info.description !== this.originalInfo.description;
+    },
+    hasContactChanges() {
+      return this.contact.address !== this.originalContact.address ||
+             this.contact.phone_number !== this.originalContact.phone_number ||
+             this.contact.phone_fix !== this.originalContact.phone_fix ||
+             this.contact.gmail !== this.originalContact.gmail;
+    },
+    hasAnyChanges() {
+      return this.hasChanges || this.hasContactChanges;
     },
     isFormValid() {
       return this.info.name.trim().length >= 2 &&
              this.info.name.trim().length <= 100 &&
+             this.info.headline.trim().length >= 5 &&
+             this.info.headline.trim().length <= 150 &&
              this.info.description.trim().length >= 20 &&
              this.info.description.trim().length <= 500;
+    },
+    isContactFormValid() {
+      return this.contact.address.trim().length >= 5 &&
+             this.contact.phone_number.trim().length >= 8 &&
+             this.isValidEmail(this.contact.gmail);
+    },
+    isAllFormValid() {
+      return this.isFormValid && this.isContactFormValid;
     }
   },
   methods: {
@@ -238,11 +408,26 @@ export default {
     loadRestaurantData() {
       this.info = {
         name: this.restaurantInfo.name || '',
+        headline: this.restaurantInfo.headline || '',
         description: this.restaurantInfo.description || ''
       };
       this.originalInfo = {
         name: this.restaurantInfo.name || '',
+        headline: this.restaurantInfo.headline || '',
         description: this.restaurantInfo.description || ''
+      };
+      
+      this.contact = {
+        address: this.restaurantInfo.address || '',
+        phone_number: this.restaurantInfo.phone_number || '',
+        phone_fix: this.restaurantInfo.phone_fix || '',
+        gmail: this.restaurantInfo.gmail || ''
+      };
+      this.originalContact = {
+        address: this.restaurantInfo.address || '',
+        phone_number: this.restaurantInfo.phone_number || '',
+        phone_fix: this.restaurantInfo.phone_fix || '',
+        gmail: this.restaurantInfo.gmail || ''
       };
     },
 

@@ -21,10 +21,10 @@ const getRestaurantInfo = async () => {
   }
 };
 
-const updateBasicInfo = async (updatedInfo) => {
+const updateInfo = async (updatedInfo) => {
   isLoading.value = true;
   try {
-    const response = await api.put(`restaurant/basic-info`, updatedInfo);
+    const response = await api.put(`restaurant`, updatedInfo);
     restaurantInfo.value = response.data;
     success.value = true;
   } catch (err) {
@@ -41,5 +41,5 @@ export {
   error,
   success,
   getRestaurantInfo,
-  updateBasicInfo
+  updateInfo
 };

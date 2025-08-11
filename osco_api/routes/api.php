@@ -24,5 +24,5 @@ Route::prefix('categories')->group(function () {
     Route::delete('/{id}', [MenuCategoryController::class, 'destroy']); // Delete category
 
     // Reorder categories
-    Route::post('/reorder', [MenuCategoryController::class, 'reorder']);
+    Route::post('reorder', [MenuCategoryController::class, 'reorder']);
 });
