@@ -11,7 +11,8 @@ class UpdateSocialLinksRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; // Adjust authorization logic as needed
+        // Adjust authorization logic as needed
+        return true;
     }
 
     /**
@@ -20,21 +21,25 @@ class UpdateSocialLinksRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'social_links' => ['required', 'array'],
-            // Optionally validate URL format for known social keys, e.g.:
-            // 'social_links.facebook' => 'nullable|url',
-            // 'social_links.instagram' => 'nullable|url',
+            'facebook'  => ['nullable', 'url'],
+            'instagram' => ['nullable', 'url'],
+            'youtube'   => ['nullable', 'url'],
+            'snapchat'  => ['nullable', 'url'],
+            'tiktok'    => ['nullable', 'url'],
         ];
     }
 
     /**
-     * Custom error messages (optional)
+     * Optional custom error messages.
      */
     public function messages(): array
     {
         return [
-            'social_links.required' => 'Social links data is required.',
-            'social_links.array' => 'Social links must be an array.',
+            'facebook.url'  => 'The Facebook link must be a valid URL.',
+            'instagram.url' => 'The Instagram link must be a valid URL.',
+            'youtube.url'   => 'The YouTube link must be a valid URL.',
+            'snapchat.url'  => 'The Snapchat link must be a valid URL.',
+            'tiktok.url'    => 'The TikTok link must be a valid URL.',
         ];
     }
 }

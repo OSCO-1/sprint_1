@@ -58,7 +58,7 @@ class RestaurantController extends Controller
      */
     public function updateSocialLinks(UpdateSocialLinksRequest $request): JsonResponse
     {
-        $restaurant = $this->restaurantRepo->updateSocialLinks($request->validated()['social_links']);
+        $restaurant = $this->restaurantRepo->updateSocialLinks($request->validated());
 
         return response()->json($restaurant);
     }

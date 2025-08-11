@@ -55,43 +55,18 @@ class RestaurantRepository extends BaseRepository
     }
 
     /**
-     * Update opening hours (expects JSON or array)
+     * Update social links: facebook, instagram, youtube, snapchat, tiktok
      *
-     * @param array|string $openingHours
+     * @param array $data
      * @return Restaurant
      */
-    public function updateOpeningHours($openingHours)
+    public function updateSocialLinks(array $data)
     {
+        $allowed = ['facebook', 'instagram', 'youtube', 'snapchat', 'tiktok'];
+
         $restaurant = $this->getRestaurant();
 
-        // If array given, convert to JSON
-        if (is_array($openingHours)) {
-            $openingHours = json_encode($openingHours);
-        }
-
-        $restaurant->opening_hours = $openingHours;
-        $restaurant->save();
-
-        return $restaurant;
-    }
-
-    /**
-     * Update social links (expects JSON or array)
-     *
-     * @param array|string $socialLinks
-     * @return Restaurant
-     */
-    public function updateSocialLinks($socialLinks)
-    {
-        $restaurant = $this->getRestaurant();
-
-        // If array given, convert to JSON
-        if (is_array($socialLinks)) {
-            $socialLinks = json_encode($socialLinks);
-        }
-
-        $restaurant->social_links = $socialLinks;
-        $restaurant->save();
+        $restaurant->update(array_intersect_key($data, array_flip($allowed)));
 
         return $restaurant;
     }

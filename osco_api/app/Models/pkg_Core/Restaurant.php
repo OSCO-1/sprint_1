@@ -22,14 +22,17 @@ class Restaurant extends Model
         'gmail',
         'address',
         'google_maps_link',
-        'social_links',
+
+        // Social media columns (remove social_links)
+        'facebook',
+        'instagram',
+        'youtube',
+        'snapchat',
+        'tiktok',
+
         'currency',
     ];
 
-
-    protected $casts = [
-        'social_links'  => 'array',
-    ];
 
     public function menuCategories()
     {

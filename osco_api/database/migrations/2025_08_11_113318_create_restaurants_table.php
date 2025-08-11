@@ -32,8 +32,12 @@ return new class extends Migration
             $table->string('address', 500)->nullable();
             $table->string('google_maps_link', 1000)->nullable();
 
-            // JSON fields
-            $table->json('social_links')->nullable();
+            // Social media columns instead of JSON
+            $table->string('facebook', 255)->nullable();
+            $table->string('instagram', 255)->nullable();
+            $table->string('youtube', 255)->nullable();
+            $table->string('snapchat', 255)->nullable();
+            $table->string('tiktok', 255)->nullable();
 
             $table->string('currency', 10)->default('DH');
 
