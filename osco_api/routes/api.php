@@ -12,9 +12,8 @@ Route::get('/test', function () {
 Route::prefix('restaurant')->group(function () {
     Route::get('/', [RestaurantController::class, 'show']);
 
-    Route::put('/basic-info', [RestaurantController::class, 'updateBasicInfo']);
-    Route::put('/contact-info', [RestaurantController::class, 'updateContactInfo']);
-    Route::put('/social-links', [RestaurantController::class, 'updateSocialLinks']);
+    // Single unified update endpoint
+    Route::put('/', [RestaurantController::class, 'update']);
 });
 
 Route::prefix('categories')->group(function () {
