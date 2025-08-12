@@ -47,11 +47,16 @@ class MenuCategoryController extends Controller
     {
         $validated = $request->validated();
 
-        // Use repository to create category (assuming you have createCategory method)
+        // Keep UploadedFile instance for repository
+        if ($request->hasFile('image_url')) {
+            $validated['image_url'] = $request->file('image_url');
+        }
+
         $category = $this->categoryRepo->createCategory($validated);
 
         return response()->json($category, 201);
     }
+
 
     /**
      * Update a category.

@@ -17,16 +17,23 @@ class MenuCategoryRepository extends BaseRepository
 
     public function createCategory(array $data)
     {
-        // Get current max display_order for the restaurant, default 0 if none
+        // Handle image upload
+        if (isset($data['image_url']) && $data['image_url'] instanceof \Illuminate\Http\UploadedFile) {
+            // Store the image in storage/app/public/menu_categories
+            $path = $data['image_url']->store('menu_categories', 'public');
+            $data['image_url'] = $path; // Save relative path
+        }
+
+        // Get current max display_order
         $maxOrder = $this->model
             ->where('restaurant_id', $data['restaurant_id'])
             ->max('display_order') ?? 0;
 
-        // Assign next display_order
         $data['display_order'] = $maxOrder + 1;
 
         return $this->model->create($data);
     }
+
 
 
     /**
