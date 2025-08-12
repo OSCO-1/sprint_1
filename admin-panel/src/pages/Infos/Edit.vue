@@ -1,3 +1,4 @@
+```vue
 <template>
   <div>
     <!-- Page Header -->
@@ -88,79 +89,105 @@
               </h5>
               <hr class="section-divider">
 
-            <!-- Restaurant Name -->
-            <div class="row">
-              <div class="col-md-12">
-                <base-input
-                  label="Restaurant Name *"
-                  placeholder="Enter your restaurant name (e.g., The Golden Spoon)"
-                  v-model="info.name"
-                  :class="{ 'has-danger': errors.name }"
-                  required
-                  @input="clearFieldError('name')"
-                >
-                  <template slot="prepend">
-                    <span class="input-group-text">
-                      <i class="tim-icons icon-shop text-primary"></i>
-                    </span>
-                  </template>
-                  <small v-if="errors.name" class="text-danger">
-                    <i class="tim-icons icon-alert-circle-exc"></i>
-                    {{ errors.name }}
-                  </small>
-                </base-input>
-              </div>
-            </div>
-            <!-- Restaurant headline -->
-            <div class="row">
-              <div class="col-md-12">
-                <base-input
-                  label="Restaurant Headline *"
-                  placeholder="Enter a catchy headline for your restaurant"
-                  v-model="info.headline"
-                  :class="{ 'has-danger': errors.headline }"
-                  required
-                  @input="clearFieldError('headline')"
-                >
-                  <template slot="prepend">
-                    <span class="input-group-text">
-                      <i class="tim-icons icon-bullet-list-67 text-primary"></i>
-                    </span>
-                  </template>
-                  <small v-if="errors.headline" class="text-danger">
-                    <i class="tim-icons icon-alert-circle-exc"></i>
-                    {{ errors.headline }}
-                  </small>
-                </base-input>
-              </div>
-            </div>
-            <!-- Restaurant Description -->
-            <div class="row">
-              <div class="col-md-12">
-                <base-input>
-                  <label>Restaurant Description *</label>
-                  <textarea
-                    rows="5"
-                    class="form-control"
-                    placeholder="Describe your restaurant, cuisine type, atmosphere, and what makes it special..."
-                    v-model="info.description"
-                    :class="{ 'has-danger': errors.description }"
+              <!-- Restaurant Name -->
+              <div class="row">
+                <div class="col-md-12">
+                  <base-input
+                    label="Restaurant Name *"
+                    placeholder="Enter your restaurant name (e.g., The Golden Spoon)"
+                    v-model="info.name"
+                    :class="{ 'has-danger': errors.name }"
                     required
-                    @input="clearFieldError('description')"
-                  ></textarea>
-                  <small v-if="errors.description" class="text-danger d-block mt-2">
-                    <i class="tim-icons icon-alert-circle-exc"></i>
-                    {{ errors.description }}
-                  </small>
-                  <small class="text-muted d-block mt-1">
-                    {{ info.description.length }} / 500 characters
-                    <span v-if="info.description.length < 20" class="text-warning">
-                      (Minimum 20 characters required)
-                    </span>
-                  </small>
-                </base-input>
+                    @input="clearFieldError('name')"
+                  >
+                    <template slot="prepend">
+                      <span class="input-group-text">
+                        <i class="tim-icons icon-shop text-primary"></i>
+                      </span>
+                    </template>
+                    <small v-if="errors.name" class="text-danger">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ errors.name }}
+                    </small>
+                  </base-input>
+                </div>
               </div>
-            </div>
+
+              <!-- Restaurant Headline -->
+              <div class="row">
+                <div class="col-md-12">
+                  <base-input
+                    label="Restaurant Headline *"
+                    placeholder="Enter a catchy headline for your restaurant"
+                    v-model="info.headline"
+                    :class="{ 'has-danger': errors.headline }"
+                    required
+                    @input="clearFieldError('headline')"
+                  >
+                    <template slot="prepend">
+                      <span class="input-group-text">
+                        <i class="tim-icons icon-bullet-list-67 text-primary"></i>
+                      </span>
+                    </template>
+                    <small v-if="errors.headline" class="text-danger">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ errors.headline }}
+                    </small>
+                  </base-input>
+                </div>
+              </div>
+
+              <!-- Restaurant Description -->
+              <div class="row">
+                <div class="col-md-12">
+                  <base-input>
+                    <label>Restaurant Description *</label>
+                    <textarea
+                      rows="5"
+                      class="form-control"
+                      placeholder="Describe your restaurant, cuisine type, atmosphere, and what makes it special..."
+                      v-model="info.description"
+                      :class="{ 'has-danger': errors.description }"
+                      required
+                      @input="clearFieldError('description')"
+                    ></textarea>
+                    <small v-if="errors.description" class="text-danger d-block mt-2">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ errors.description }}
+                    </small>
+                    <small class="text-muted d-block mt-1">
+                      {{ info.description.length }} / 500 characters
+                      <span v-if="info.description.length < 20" class="text-warning">
+                        (Minimum 20 characters required)
+                      </span>
+                    </small>
+                  </base-input>
+                </div>
+              </div>
+
+              <!-- Currency -->
+              <div class="row">
+                <div class="col-md-12">
+                  <base-input
+                    label="Currency *"
+                    placeholder="e.g., USD, EUR, GBP"
+                    v-model="info.currency"
+                    :class="{ 'has-danger': errors.currency }"
+                    required
+                    @input="clearFieldError('currency')"
+                  >
+                    <template slot="prepend">
+                      <span class="input-group-text">
+                        <i class="tim-icons icon-money-coins text-primary"></i>
+                      </span>
+                    </template>
+                    <small v-if="errors.currency" class="text-danger">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ errors.currency }}
+                    </small>
+                  </base-input>
+                </div>
+              </div>
             </div>
 
             <!-- Contact Information Section -->
@@ -264,6 +291,199 @@
               </div>
             </div>
 
+            <!-- Branding and Social Media Section -->
+            <div class="form-section mt-4">
+              <h5 class="section-title">
+                <i class="tim-icons icon-world text-success"></i>
+                Branding and Social Media
+              </h5>
+              <hr class="section-divider">
+
+              <!-- Logo Light Theme URL -->
+              <div class="row">
+                <div class="col-md-12">
+                  <base-input
+                    label="Logo Light Theme URL"
+                    placeholder="https://example.com/logo-light.png"
+                    v-model="branding.logo_light_theme_url"
+                    :class="{ 'has-danger': brandingErrors.logo_light_theme_url }"
+                    @input="clearBrandingFieldError('logo_light_theme_url')"
+                  >
+                    <template slot="prepend">
+                      <span class="input-group-text">
+                        <i class="tim-icons icon-image-02 text-success"></i>
+                      </span>
+                    </template>
+                    <small v-if="brandingErrors.logo_light_theme_url" class="text-danger">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ brandingErrors.logo_light_theme_url }}
+                    </small>
+                  </base-input>
+                </div>
+              </div>
+
+              <!-- Cover Image URL -->
+              <div class="row">
+                <div class="col-md-12">
+                  <base-input
+                    label="Cover Image URL"
+                    placeholder="https://example.com/cover-image.jpg"
+                    v-model="branding.cover_image_url"
+                    :class="{ 'has-danger': brandingErrors.cover_image_url }"
+                    @input="clearBrandingFieldError('cover_image_url')"
+                  >
+                    <template slot="prepend">
+                      <span class="input-group-text">
+                        <i class="tim-icons icon-image-02 text-success"></i>
+                      </span>
+                    </template>
+                    <small v-if="brandingErrors.cover_image_url" class="text-danger">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ brandingErrors.cover_image_url }}
+                    </small>
+                  </base-input>
+                </div>
+              </div>
+
+              <!-- Google Maps Link -->
+              <div class="row">
+                <div class="col-md-12">
+                  <base-input
+                    label="Google Maps Link"
+                    placeholder="https://maps.google.com/..."
+                    v-model="branding.google_maps_link"
+                    :class="{ 'has-danger': brandingErrors.google_maps_link }"
+                    @input="clearBrandingFieldError('google_maps_link')"
+                  >
+                    <template slot="prepend">
+                      <span class="input-group-text">
+                        <i class="tim-icons icon-map-big text-success"></i>
+                      </span>
+                    </template>
+                    <small v-if="brandingErrors.google_maps_link" class="text-danger">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ brandingErrors.google_maps_link }}
+                    </small>
+                  </base-input>
+                </div>
+              </div>
+
+              <!-- Facebook -->
+              <div class="row">
+                <div class="col-md-12">
+                  <base-input
+                    label="Facebook"
+                    placeholder="https://facebook.com/yourpage"
+                    v-model="branding.facebook"
+                    :class="{ 'has-danger': brandingErrors.facebook }"
+                    @input="clearBrandingFieldError('facebook')"
+                  >
+                    <template slot="prepend">
+                      <span class="input-group-text">
+                        <i class="tim-icons icon-single-02 text-success"></i>
+                      </span>
+                    </template>
+                    <small v-if="brandingErrors.facebook" class="text-danger">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ brandingErrors.facebook }}
+                    </small>
+                  </base-input>
+                </div>
+              </div>
+
+              <!-- Instagram -->
+              <div class="row">
+                <div class="col-md-12">
+                  <base-input
+                    label="Instagram"
+                    placeholder="https://instagram.com/yourpage"
+                    v-model="branding.instagram"
+                    :class="{ 'has-danger': brandingErrors.instagram }"
+                    @input="clearBrandingFieldError('instagram')"
+                  >
+                    <template slot="prepend">
+                      <span class="input-group-text">
+                        <i class="tim-icons icon-single-02 text-success"></i>
+                      </span>
+                    </template>
+                    <small v-if="brandingErrors.instagram" class="text-danger">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ brandingErrors.instagram }}
+                    </small>
+                  </base-input>
+                </div>
+              </div>
+
+              <!-- YouTube -->
+              <div class="row">
+                <div class="col-md-12">
+                  <base-input
+                    label="YouTube"
+                    placeholder="https://youtube.com/channel/yourchannel"
+                    v-model="branding.youtube"
+                    :class="{ 'has-danger': brandingErrors.youtube }"
+                    @input="clearBrandingFieldError('youtube')"
+                  >
+                    <template slot="prepend">
+                      <span class="input-group-text">
+                        <i class="tim-icons icon-single-02 text-success"></i>
+                      </span>
+                    </template>
+                    <small v-if="brandingErrors.youtube" class="text-danger">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ brandingErrors.youtube }}
+                    </small>
+                  </base-input>
+                </div>
+              </div>
+
+              <!-- Snapchat -->
+              <div class="row">
+                <div class="col-md-12">
+                  <base-input
+                    label="Snapchat"
+                    placeholder="https://snapchat.com/add/yourusername"
+                    v-model="branding.snapchat"
+                    :class="{ 'has-danger': brandingErrors.snapchat }"
+                    @input="clearBrandingFieldError('snapchat')"
+                  >
+                    <template slot="prepend">
+                      <span class="input-group-text">
+                        <i class="tim-icons icon-single-02 text-success"></i>
+                      </span>
+                    </template>
+                    <small v-if="brandingErrors.snapchat" class="text-danger">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ brandingErrors.snapchat }}
+                    </small>
+                  </base-input>
+                </div>
+              </div>
+
+              <!-- TikTok -->
+              <div class="row">
+                <div class="col-md-12">
+                  <base-input
+                    label="TikTok"
+                    placeholder="https://tiktok.com/@yourusername"
+                    v-model="branding.tiktok"
+                    :class="{ 'has-danger': brandingErrors.tiktok }"
+                    @input="clearBrandingFieldError('tiktok')"
+                  >
+                    <template slot="prepend">
+                      <span class="input-group-text">
+                        <i class="tim-icons icon-single-02 text-success"></i>
+                      </span>
+                    </template>
+                    <small v-if="brandingErrors.tiktok" class="text-danger">
+                      <i class="tim-icons icon-alert-circle-exc"></i>
+                      {{ brandingErrors.tiktok }}
+                    </small>
+                  </base-input>
+                </div>
+              </div>
+            </div>
+
             <!-- Unified Form Actions -->
             <div class="row mt-5">
               <div class="col-md-12">
@@ -317,7 +537,8 @@
 
 <script>
 import { BaseInput, BaseButton, Card } from '@/components';
-import { restaurantInfo, getRestaurantInfo, updateBasicInfo, isLoading, error } from '@/stores/restaurant';
+import { restaurantInfo, getRestaurantInfo, isLoading, error } from '@/stores/restaurant';
+import api from '@/axios';
 
 export default {
   name: 'EditRestaurantInfo',
@@ -331,12 +552,14 @@ export default {
       info: {
         name: '',
         headline: '',
-        description: ''
+        description: '',
+        currency: ''
       },
       originalInfo: {
         name: '',
         headline: '',
-        description: ''
+        description: '',
+        currency: ''
       },
       contact: {
         address: '',
@@ -350,12 +573,31 @@ export default {
         phone_fix: '',
         gmail: ''
       },
+      branding: {
+        logo_light_theme_url: '',
+        cover_image_url: '',
+        google_maps_link: '',
+        facebook: '',
+        instagram: '',
+        youtube: '',
+        snapchat: '',
+        tiktok: ''
+      },
+      originalBranding: {
+        logo_light_theme_url: '',
+        cover_image_url: '',
+        google_maps_link: '',
+        facebook: '',
+        instagram: '',
+        youtube: '',
+        snapchat: '',
+        tiktok: ''
+      },
       errors: {},
       contactErrors: {},
+      brandingErrors: {},
       isSubmitting: false,
-      isSubmittingContact: false,
-      showSuccessMessage: false,
-      showContactSuccessMessage: false
+      showSuccessMessage: false
     }
   },
   computed: {
@@ -365,13 +607,11 @@ export default {
     error() {
       return error.value;
     },
-    restaurantInfo() {
-      return restaurantInfo.value;
-    },
     hasChanges() {
       return this.info.name !== this.originalInfo.name ||
              this.info.headline !== this.originalInfo.headline ||
-             this.info.description !== this.originalInfo.description;
+             this.info.description !== this.originalInfo.description ||
+             this.info.currency !== this.originalInfo.currency;
     },
     hasContactChanges() {
       return this.contact.address !== this.originalContact.address ||
@@ -379,8 +619,18 @@ export default {
              this.contact.phone_fix !== this.originalContact.phone_fix ||
              this.contact.gmail !== this.originalContact.gmail;
     },
+    hasBrandingChanges() {
+      return this.branding.logo_light_theme_url !== this.originalBranding.logo_light_theme_url ||
+             this.branding.cover_image_url !== this.originalBranding.cover_image_url ||
+             this.branding.google_maps_link !== this.originalBranding.google_maps_link ||
+             this.branding.facebook !== this.originalBranding.facebook ||
+             this.branding.instagram !== this.originalBranding.instagram ||
+             this.branding.youtube !== this.originalBranding.youtube ||
+             this.branding.snapchat !== this.originalBranding.snapchat ||
+             this.branding.tiktok !== this.originalBranding.tiktok;
+    },
     hasAnyChanges() {
-      return this.hasChanges || this.hasContactChanges;
+      return this.hasChanges || this.hasContactChanges || this.hasBrandingChanges;
     },
     isFormValid() {
       return this.info.name.trim().length >= 2 &&
@@ -388,54 +638,92 @@ export default {
              this.info.headline.trim().length >= 5 &&
              this.info.headline.trim().length <= 150 &&
              this.info.description.trim().length >= 20 &&
-             this.info.description.trim().length <= 500;
+             this.info.description.trim().length <= 500 &&
+             this.info.currency.trim().length >= 3;
     },
     isContactFormValid() {
       return this.contact.address.trim().length >= 5 &&
              this.contact.phone_number.trim().length >= 8 &&
              this.isValidEmail(this.contact.gmail);
     },
+    isBrandingFormValid() {
+      // Validate URLs only if fields are non-empty - without side effects
+      const urlFields = [
+        'logo_light_theme_url',
+        'cover_image_url', 
+        'google_maps_link',
+        'facebook',
+        'instagram',
+        'youtube',
+        'snapchat',
+        'tiktok'
+      ];
+
+      return urlFields.every(field => {
+        const value = this.branding[field];
+        return !value || this.isValidUrl(value);
+      });
+    },
     isAllFormValid() {
-      return this.isFormValid && this.isContactFormValid;
+      return this.isFormValid && this.isContactFormValid && this.isBrandingFormValid;
+    }
+  },
+  watch: {
+    restaurantInfo: {
+      handler(newVal) {
+        if (newVal) {
+          this.loadRestaurantData();
+        }
+      },
+      deep: true,
+      immediate: true
     }
   },
   methods: {
     async getRestaurantInfo() {
-      await getRestaurantInfo();
-      this.loadRestaurantData();
+      try {
+        await getRestaurantInfo();
+        this.loadRestaurantData();
+      } catch (err) {
+        console.error('Error fetching restaurant info:', err);
+        this.showErrorNotification('Failed to load restaurant information');
+      }
     },
-
     loadRestaurantData() {
-      this.info = {
-        name: this.restaurantInfo.name || '',
-        headline: this.restaurantInfo.headline || '',
-        description: this.restaurantInfo.description || ''
-      };
-      this.originalInfo = {
-        name: this.restaurantInfo.name || '',
-        headline: this.restaurantInfo.headline || '',
-        description: this.restaurantInfo.description || ''
-      };
-      
-      this.contact = {
-        address: this.restaurantInfo.address || '',
-        phone_number: this.restaurantInfo.phone_number || '',
-        phone_fix: this.restaurantInfo.phone_fix || '',
-        gmail: this.restaurantInfo.gmail || ''
-      };
-      this.originalContact = {
-        address: this.restaurantInfo.address || '',
-        phone_number: this.restaurantInfo.phone_number || '',
-        phone_fix: this.restaurantInfo.phone_fix || '',
-        gmail: this.restaurantInfo.gmail || ''
-      };
-    },
+      if (!restaurantInfo.value) return;
 
+      this.info = {
+        name: restaurantInfo.value.name || '',
+        headline: restaurantInfo.value.headline || '',
+        description: restaurantInfo.value.description || '',
+        currency: restaurantInfo.value.currency || ''
+      };
+      this.originalInfo = { ...this.info };
+
+      this.contact = {
+        address: restaurantInfo.value.address || '',
+        phone_number: restaurantInfo.value.phone_number || '',
+        phone_fix: restaurantInfo.value.phone_fix || '',
+        gmail: restaurantInfo.value.gmail || ''
+      };
+      this.originalContact = { ...this.contact };
+
+      this.branding = {
+        logo_light_theme_url: restaurantInfo.value.logo_light_theme_url || '',
+        cover_image_url: restaurantInfo.value.cover_image_url || '',
+        google_maps_link: restaurantInfo.value.google_maps_link || '',
+        facebook: restaurantInfo.value.facebook || '',
+        instagram: restaurantInfo.value.instagram || '',
+        youtube: restaurantInfo.value.youtube || '',
+        snapchat: restaurantInfo.value.snapchat || '',
+        tiktok: restaurantInfo.value.tiktok || ''
+      };
+      this.originalBranding = { ...this.branding };
+    },
     validateForm() {
       this.errors = {};
       let isValid = true;
 
-      // Validate restaurant name
       if (!this.info.name || this.info.name.trim().length < 2) {
         this.errors.name = 'Restaurant name must be at least 2 characters long';
         isValid = false;
@@ -444,7 +732,14 @@ export default {
         isValid = false;
       }
 
-      // Validate description
+      if (!this.info.headline || this.info.headline.trim().length < 5) {
+        this.errors.headline = 'Headline must be at least 5 characters long';
+        isValid = false;
+      } else if (this.info.headline.length > 150) {
+        this.errors.headline = 'Headline must be less than 150 characters';
+        isValid = false;
+      }
+
       if (!this.info.description || this.info.description.trim().length < 20) {
         this.errors.description = 'Description must be at least 20 characters long';
         isValid = false;
@@ -453,17 +748,100 @@ export default {
         isValid = false;
       }
 
+      if (!this.info.currency || this.info.currency.trim().length < 3) {
+        this.errors.currency = 'Currency must be at least 3 characters long (e.g., USD)';
+        isValid = false;
+      }
+
       return isValid;
     },
+    validateContactForm() {
+      this.contactErrors = {};
+      let isValid = true;
 
-    clearFieldError(field) {
-      if (this.errors[field]) {
-        delete this.errors[field];
+      if (!this.contact.address || this.contact.address.trim().length < 5) {
+        this.contactErrors.address = 'Address must be at least 5 characters long';
+        isValid = false;
       }
-    },
 
-    async submitRestaurantInfo() {
-      if (!this.validateForm()) {
+      if (!this.contact.phone_number || this.contact.phone_number.trim().length < 8) {
+        this.contactErrors.phone_number = 'Mobile phone must be at least 8 characters long';
+        isValid = false;
+      }
+
+      if (this.contact.phone_fix && this.contact.phone_fix.trim().length < 8) {
+        this.contactErrors.phone_fix = 'Fixed phone must be at least 8 characters long';
+        isValid = false;
+      }
+
+      if (!this.contact.gmail || !this.isValidEmail(this.contact.gmail)) {
+        this.contactErrors.gmail = 'Please enter a valid email address';
+        isValid = false;
+      }
+
+      return isValid;
+    },
+    validateBrandingForm() {
+      this.brandingErrors = {};
+      let isValid = true;
+
+      // Validate URLs only if fields are non-empty
+      if (this.branding.logo_light_theme_url && !this.isValidUrl(this.branding.logo_light_theme_url)) {
+        this.brandingErrors.logo_light_theme_url = 'Please enter a valid URL';
+        isValid = false;
+      }
+      if (this.branding.cover_image_url && !this.isValidUrl(this.branding.cover_image_url)) {
+        this.brandingErrors.cover_image_url = 'Please enter a valid URL';
+        isValid = false;
+      }
+      if (this.branding.google_maps_link && !this.isValidUrl(this.branding.google_maps_link)) {
+        this.brandingErrors.google_maps_link = 'Please enter a valid Google Maps URL';
+        isValid = false;
+      }
+      if (this.branding.facebook && !this.isValidUrl(this.branding.facebook)) {
+        this.brandingErrors.facebook = 'Please enter a valid Facebook URL';
+        isValid = false;
+      }
+      if (this.branding.instagram && !this.isValidUrl(this.branding.instagram)) {
+        this.brandingErrors.instagram = 'Please enter a valid Instagram URL';
+        isValid = false;
+      }
+      if (this.branding.youtube && !this.isValidUrl(this.branding.youtube)) {
+        this.brandingErrors.youtube = 'Please enter a valid YouTube URL';
+        isValid = false;
+      }
+      if (this.branding.snapchat && !this.isValidUrl(this.branding.snapchat)) {
+        this.brandingErrors.snapchat = 'Please enter a valid Snapchat URL';
+        isValid = false;
+      }
+      if (this.branding.tiktok && !this.isValidUrl(this.branding.tiktok)) {
+        this.brandingErrors.tiktok = 'Please enter a valid TikTok URL';
+        isValid = false;
+      }
+
+      return isValid;
+    },
+    isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    },
+    isValidUrl(url) {
+      // Enhanced regex to handle complex URLs including TikTok and Google Maps
+      // Supports: protocols, subdomains, domains, ports, paths, query params, fragments
+      const urlRegex = /^(https?:\/\/)?([\w\-]+(\.[\w\-]+)*\.[\w\-]{2,}|localhost)(:\d+)?(\/[^\s]*)?$/i;
+      return url === '' || urlRegex.test(url);
+    },
+    clearFieldError(field) {
+      if (this.errors[field]) delete this.errors[field];
+    },
+    clearContactFieldError(field) {
+      if (this.contactErrors[field]) delete this.contactErrors[field];
+    },
+    clearBrandingFieldError(field) {
+      if (this.brandingErrors[field]) delete this.brandingErrors[field];
+    },
+    async submitAllInfo() {
+      if (!this.validateForm() || !this.validateContactForm() || !this.validateBrandingForm()) {
         this.showErrorNotification('Please fix the errors in the form');
         return;
       }
@@ -472,42 +850,67 @@ export default {
       this.showSuccessMessage = false;
 
       try {
-        await updateBasicInfo({
+        const payload = {
           name: this.info.name.trim(),
-          description: this.info.description.trim()
-        });
-
-        // Update original info to reflect saved state
-        this.originalInfo = {
-          name: this.info.name,
-          description: this.info.description
+          headline: this.info.headline.trim(),
+          description: this.info.description.trim(),
+          currency: this.info.currency.trim(),
+          address: this.contact.address.trim(),
+          phone_number: this.contact.phone_number.trim(),
+          phone_fix: this.contact.phone_fix.trim(),
+          gmail: this.contact.gmail.trim(),
+          logo_light_theme_url: this.branding.logo_light_theme_url.trim(),
+          cover_image_url: this.branding.cover_image_url.trim(),
+          google_maps_link: this.branding.google_maps_link.trim(),
+          facebook: this.branding.facebook.trim(),
+          instagram: this.branding.instagram.trim(),
+          youtube: this.branding.youtube.trim(),
+          snapchat: this.branding.snapchat.trim(),
+          tiktok: this.branding.tiktok.trim()
         };
 
-        this.showSuccessMessage = true;
-        this.showSuccessNotification('Restaurant information updated successfully!');
+        console.log('Submitting payload:', payload); // Debug payload
 
-        // Hide success message after 5 seconds
+        const response = await api.put('restaurant', payload);
+        restaurantInfo.value = response.data;
+
+        this.originalInfo = { ...this.info };
+        this.originalContact = { ...this.contact };
+        this.originalBranding = { ...this.branding };
+
+        this.showSuccessMessage = true;
+        this.showSuccessNotification('All restaurant information updated successfully!');
+
         setTimeout(() => {
           this.showSuccessMessage = false;
         }, 5000);
-
-      } catch (error) {
-        console.error('Error updating restaurant info:', error);
-        this.showErrorNotification('Failed to update restaurant information. Please try again.');
+      } catch (err) {
+        console.error('Error updating restaurant info:', err.response || err);
+        if (err.response && err.response.status === 422) {
+          const serverErrors = err.response.data.errors;
+          this.errors = { ...this.errors, ...serverErrors };
+          this.contactErrors = { ...this.contactErrors, ...serverErrors };
+          this.brandingErrors = { ...this.brandingErrors, ...serverErrors };
+          this.showErrorNotification('Please fix the form errors');
+        } else {
+          this.showErrorNotification('Failed to update restaurant information. Please try again.');
+        }
       } finally {
         this.isSubmitting = false;
       }
     },
-
-    resetForm() {
-      this.info = {
-        name: this.originalInfo.name,
-        description: this.originalInfo.description
-      };
+    resetAllForms() {
+      this.info = { ...this.originalInfo };
       this.errors = {};
+
+      this.contact = { ...this.originalContact };
+      this.contactErrors = {};
+
+      this.branding = { ...this.originalBranding };
+      this.brandingErrors = {};
+
       this.showSuccessMessage = false;
     },
-
     showSuccessNotification(message) {
       this.$notify({
         type: 'success',
@@ -515,7 +918,6 @@ export default {
         message: message
       });
     },
-
     showErrorNotification(message) {
       this.$notify({
         type: 'danger',
@@ -524,16 +926,12 @@ export default {
       });
     }
   },
-
   async mounted() {
     await this.getRestaurantInfo();
 
-    // Focus on the name input when component mounts
     this.$nextTick(() => {
       const nameInput = this.$el.querySelector('input[placeholder*="restaurant name"]');
-      if (nameInput) {
-        nameInput.focus();
-      }
+      if (nameInput) nameInput.focus();
     });
   }
 };
@@ -625,14 +1023,12 @@ export default {
   text-decoration: underline;
 }
 
-/* Character counter styling */
 textarea + small {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* Improved textarea styling */
 textarea.form-control {
   resize: vertical;
   min-height: 120px;
@@ -643,13 +1039,11 @@ textarea.form-control:focus {
   box-shadow: 0 0 0 0.2rem rgba(29, 140, 248, 0.25);
 }
 
-/* Button states */
 .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .form-actions .btn {
     display: block;
