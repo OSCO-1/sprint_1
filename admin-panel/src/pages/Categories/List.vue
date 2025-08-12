@@ -9,14 +9,14 @@
               <div class="col-sm-6 text-left">
                 <h2 class="card-title">Categories</h2>
                 <p class="card-category">
-                  <i class="tim-icons icon-puzzle-10 text-primary"></i>
+                  <i class="tim-icons icon-puzzle-10 text-primary" aria-hidden="true"></i>
                   Manage your item categories
                 </p>
               </div>
               <div class="col-sm-6">
                 <div class="btn-group-toggle float-right" data-toggle="buttons">
                   <router-link to="/categories/add" class="btn btn-sm btn-primary btn-simple">
-                    <i class="tim-icons icon-simple-add"></i>
+                    <i class="tim-icons icon-simple-add" aria-hidden="true"></i>
                     Add New Category
                   </router-link>
                 </div>
@@ -27,181 +27,93 @@
       </div>
     </div>
 
-    <!-- Search and Filter -->
+    <!-- Refresh Button -->
     <div class="row">
       <div class="col-12">
         <card>
-          <div class="row">
-            <div class="col-md-6">
-              <base-input
-                placeholder="Search categories..."
-                v-model="searchQuery"
-                @input="filterCategories"
-              >
-                <template slot="prepend">
-                  <span class="input-group-text">
-                    <i class="tim-icons icon-zoom-split"></i>
-                  </span>
-                </template>
-              </base-input>
-            </div>
-            <div class="col-md-6">
-              <div class="d-flex justify-content-end align-items-center">
-                <span class="text-muted mr-2">{{ filteredCategories.length }} categories found</span>
-                <base-button
-                  type="info"
-                  size="sm"
-                  @click="refreshCategories"
-                  :disabled="isLoading"
-                >
-                  <i class="tim-icons icon-refresh-01" :class="{ 'fa-spin': isLoading }"></i>
-                  Refresh
-                </base-button>
-              </div>
-            </div>
+          <div class="d-flex justify-content-end align-items-center">
+            <base-button
+              type="info"
+              size="sm"
+              @click="refreshCategories"
+              :disabled="isLoading"
+              aria-label="Refresh categories"
+            >
+              <i class="tim-icons icon-refresh-01" :class="{ 'fa-spin': isLoading }" aria-hidden="true"></i>
+              Refresh
+            </base-button>
           </div>
         </card>
       </div>
     </div>
 
     <!-- Categories Table -->
-    <div class="row" v-if="!isLoading">
+    <div class="row" v-if="!isLoading && categories.length > 0">
       <div class="col-12">
-        <card>
-          <!-- Desktop Table View -->
-          <div class="table-responsive d-none d-lg-block">
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th style="width: 80px;">Image</th>
-                  <th style="width: 150px;">Name</th>
-                  <th>Description</th>
-                  <th style="width: 120px;">Items Count</th>
-                  <th style="width: 130px;">Created Date</th>
-                  <th style="width: 180px;">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="category in paginatedCategories" :key="category.id">
-                  <td>
-                    <img 
-                      :src="category.image || '/img/placeholder-category.jpg'" 
-                      :alt="category.name"
-                      class="table-image"
-                      @error="handleImageError"
-                    />
-                  </td>
-                  <td>
-                    <strong>{{ category.name }}</strong>
-                  </td>
-                  <td>
-                    <span class="text-muted">{{ truncateText(category.description, 80) }}</span>
-                  </td>
-                  <td>
-                    <span class="badge badge-info">
-                      <i class="tim-icons icon-app"></i>
-                      {{ category.itemsCount || 0 }}
-                    </span>
-                  </td>
-                  <td>
-                    <small class="text-muted">
-                      {{ formatDate(category.createdAt) }}
-                    </small>
-                  </td>
-                  <td>
-                    <div class="btn-group-vertical btn-group-sm" role="group">
-                      <base-button
-                        type="info"
-                        size="sm"
-                        @click="viewDetails(category)"
-                        title="View Details"
-                        class="mb-1"
-                      >
-                        <i class="tim-icons icon-zoom-split"></i>
-                      </base-button>
-                      <base-button
-                        type="warning"
-                        size="sm"
-                        @click="editCategory(category)"
-                        title="Edit Category"
-                        class="mb-1"
-                      >
-                        <i class="tim-icons icon-pencil"></i>
-                      </base-button>
-                      <base-button
-                        type="danger"
-                        size="sm"
-                        @click="confirmDelete(category)"
-                        title="Delete Category"
-                      >
-                        <i class="tim-icons icon-simple-remove"></i>
-                      </base-button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Mobile Card View -->
-          <div class="d-lg-none">
-            <div class="mobile-card" v-for="category in paginatedCategories" :key="category.id">
-              <div class="row no-gutters">
-                <div class="col-4">
-                  <img 
-                    :src="category.image || '/img/placeholder-category.jpg'" 
-                    :alt="category.name"
-                    class="mobile-image"
-                    @error="handleImageError"
-                  />
-                </div>
-                <div class="col-8">
-                  <div class="mobile-card-body">
-                    <h6 class="mobile-card-title">{{ category.name }}</h6>
-                    <p class="mobile-card-text">{{ truncateText(category.description, 60) }}</p>
-                    <div class="mobile-card-meta">
-                      <span class="badge badge-info badge-sm">
-                        <i class="tim-icons icon-app"></i>
-                        {{ category.itemsCount || 0 }} items
-                      </span>
-                      <small class="text-muted ml-2">
-                        {{ formatDate(category.createdAt) }}
-                      </small>
-                    </div>
-                    <div class="mobile-actions mt-2">
-                      <base-button
-                        type="info"
-                        size="sm"
-                        @click="viewDetails(category)"
-                        title="View Details"
-                        class="mr-1"
-                      >
-                        <i class="tim-icons icon-zoom-split"></i>
-                      </base-button>
-                      <base-button
-                        type="warning"
-                        size="sm"
-                        @click="editCategory(category)"
-                        title="Edit Category"
-                        class="mr-1"
-                      >
-                        <i class="tim-icons icon-pencil"></i>
-                      </base-button>
-                      <base-button
-                        type="danger"
-                        size="sm"
-                        @click="confirmDelete(category)"
-                        title="Delete Category"
-                      >
-                        <i class="tim-icons icon-simple-remove"></i>
-                      </base-button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </card>
+        <table class="table table-responsive">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Display Order</th>
+              <th>Description</th>
+              <th>Created At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="category in categories" :key="category.id">
+              <td>
+                <img
+                  :src="category.image_url || '/img/placeholder-category.jpg'"
+                  :alt="category.name.en"
+                  class="table-image"
+                  @error="handleImageError"
+                />
+              </td>
+              <td>
+                <strong>{{ category.name.en }}</strong>
+              </td>
+              <td class="text-center">
+                <span class="text-muted">{{ category.display_order }}</span>
+              </td>
+              <td>
+                <span class="text-muted">{{ truncateText(category.description.en, 80) }}</span>
+              </td>
+              <td class="text-center">
+                <span class="text-muted">{{ formatDate(category.created_at) }}</span>
+              </td>
+              <td class="text-center">
+                <base-button
+                  type="info"
+                  size="sm"
+                  @click="viewDetails(category)"
+                  aria-label="Show details"
+                  class="mr-1"
+                >
+                  <i class="tim-icons icon-zoom-split" aria-hidden="true"></i>
+                </base-button>
+                <base-button
+                  type="warning"
+                  size="sm"
+                  @click="editCategory(category)"
+                  aria-label="Edit category"
+                  class="mr-1"
+                >
+                  <i class="tim-icons icon-pencil" aria-hidden="true"></i>
+                </base-button>
+                <base-button
+                  type="danger"
+                  size="sm"
+                  @click="confirmDelete(category)"
+                  aria-label="Delete category"
+                >
+                  <i class="tim-icons icon-trash-simple" aria-hidden="true"></i>
+                </base-button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -210,7 +122,7 @@
       <div class="col-12">
         <card>
           <div class="text-center py-5">
-            <i class="fa fa-spinner fa-spin fa-3x text-primary mb-3"></i>
+            <i class="fa fa-spinner fa-spin fa-3x text-primary mb-3" aria-hidden="true"></i>
             <h4>Loading categories...</h4>
           </div>
         </card>
@@ -218,15 +130,15 @@
     </div>
 
     <!-- Empty State -->
-    <div class="row" v-if="!isLoading && filteredCategories.length === 0">
+    <div class="row" v-if="!isLoading && categories.length === 0">
       <div class="col-12">
         <card>
           <div class="text-center py-5">
-            <i class="tim-icons icon-puzzle-10 fa-3x text-muted mb-3"></i>
+            <i class="tim-icons icon-puzzle-10 fa-3x text-muted mb-3" aria-hidden="true"></i>
             <h4>No categories found</h4>
-            <p class="text-muted">{{ searchQuery ? 'Try adjusting your search criteria' : 'Start by creating your first category' }}</p>
-            <router-link to="/categories/add" class="btn btn-primary" v-if="!searchQuery">
-              <i class="tim-icons icon-simple-add"></i>
+            <p class="text-muted">Start by creating your first category</p>
+            <router-link to="/categories/add" class="btn btn-primary">
+              <i class="tim-icons icon-simple-add" aria-hidden="true"></i>
               Add New Category
             </router-link>
           </div>
@@ -241,27 +153,27 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <small class="text-muted">
-                Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ Math.min(currentPage * itemsPerPage, filteredCategories.length) }} of {{ filteredCategories.length }} categories
+                Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ Math.min(currentPage * itemsPerPage, categories.length) }} of {{ categories.length }} categories
               </small>
             </div>
-            <nav>
+            <nav aria-label="Category pagination">
               <ul class="pagination pagination-sm mb-0">
                 <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                  <a class="page-link" @click="changePage(currentPage - 1)" href="#">
-                    <i class="tim-icons icon-double-left"></i>
+                  <a class="page-link" @click.prevent="changePage(currentPage - 1)" href="#" aria-label="Previous page">
+                    <i class="tim-icons icon-double-left" aria-hidden="true"></i>
                   </a>
                 </li>
-                <li 
-                  class="page-item" 
-                  v-for="page in visiblePages" 
+                <li
+                  class="page-item"
+                  v-for="page in visiblePages"
                   :key="page"
                   :class="{ active: page === currentPage }"
                 >
-                  <a class="page-link" @click="changePage(page)" href="#">{{ page }}</a>
+                  <a class="page-link" @click.prevent="changePage(page)" href="#">{{ page }}</a>
                 </li>
                 <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                  <a class="page-link" @click="changePage(currentPage + 1)" href="#">
-                    <i class="tim-icons icon-double-right"></i>
+                  <a class="page-link" @click.prevent="changePage(currentPage + 1)" href="#" aria-label="Next page">
+                    <i class="tim-icons icon-double-right" aria-hidden="true"></i>
                   </a>
                 </li>
               </ul>
@@ -275,23 +187,24 @@
     <modal :show="showDeleteModal" @close="showDeleteModal = false">
       <template slot="header">
         <h4 class="modal-title text-danger">
-          <i class="tim-icons icon-alert-circle-exc"></i>
+          <i class="tim-icons icon-alert-circle-exc" aria-hidden="true"></i>
           Confirm Delete
         </h4>
       </template>
       <div v-if="categoryToDelete">
-        <p>Are you sure you want to delete the category <strong>"{{ categoryToDelete.name }}"</strong>?</p>
+        <p>Are you sure you want to delete the category <strong>"{{ categoryToDelete?.name?.en }}"</strong>?</p>
         <p class="text-muted">This action cannot be undone.</p>
       </div>
       <template slot="footer">
-        <base-button type="secondary" @click="showDeleteModal = false">Cancel</base-button>
-        <base-button 
-          type="danger" 
-          @click="deleteCategory" 
+        <base-button type="secondary" @click="showDeleteModal = false" aria-label="Cancel delete">Cancel</base-button>
+        <base-button
+          type="danger"
+          @click="deleteCategoryHandler"
           :disabled="isDeleting"
+          aria-label="Confirm delete category"
         >
-          <i class="fa fa-spinner fa-spin" v-if="isDeleting"></i>
-          <i class="tim-icons icon-simple-remove" v-else></i>
+          <i class="fa fa-spinner fa-spin" v-if="isDeleting" aria-hidden="true"></i>
+          <i class="tim-icons icon-simple-remove" v-else aria-hidden="true"></i>
           {{ isDeleting ? 'Deleting...' : 'Delete' }}
         </base-button>
       </template>
@@ -301,49 +214,84 @@
     <modal :show="showDetailsModal" @close="showDetailsModal = false" size="lg">
       <template slot="header">
         <h4 class="modal-title">
-          <i class="tim-icons icon-zoom-split text-info"></i>
+          <i class="tim-icons icon-zoom-split text-info" aria-hidden="true"></i>
           Category Details
         </h4>
       </template>
       <div v-if="selectedCategory" class="category-details">
         <div class="row">
           <div class="col-md-6">
-            <img 
-              :src="selectedCategory.image || '/img/placeholder-category.jpg'" 
-              :alt="selectedCategory.name"
+            <img
+              :src="selectedCategory.image_url || '/img/placeholder-category.jpg'"
+              :alt="selectedCategory.name?.en"
               class="img-fluid rounded"
             />
           </div>
           <div class="col-md-6">
-            <h3>{{ selectedCategory.name }}</h3>
-            <p class="text-muted">{{ selectedCategory.description || 'No description available' }}</p>
+            <h3>{{ selectedCategory.name?.en }}</h3>
+            <p class="text-muted">{{ selectedCategory.description?.en || 'No description available' }}</p>
             <hr>
             <div class="category-info">
               <div class="info-item">
-                <strong>Items Count:</strong>
-                <span class="ml-2">{{ selectedCategory.itemsCount || 0 }}</span>
+                <strong>Display Order:</strong>
+                <span class="ml-2">{{ selectedCategory.display_order || 0 }}</span>
               </div>
               <div class="info-item">
                 <strong>Created:</strong>
-                <span class="ml-2">{{ formatDate(selectedCategory.createdAt) }}</span>
-              </div>
-              <div class="info-item">
-                <strong>Last Updated:</strong>
-                <span class="ml-2">{{ formatDate(selectedCategory.updatedAt) }}</span>
+                <span class="ml-2">{{ formatDate(selectedCategory.created_at) }}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
       <template slot="footer">
-        <base-button type="secondary" @click="showDetailsModal = false">Close</base-button>
-        <base-button 
-          type="warning" 
+        <base-button type="secondary" @click="showDetailsModal = false" aria-label="Close details modal">Close</base-button>
+        <base-button
+          type="warning"
           @click="editCategory(selectedCategory)"
           v-if="selectedCategory"
+          aria-label="Edit category"
         >
-          <i class="tim-icons icon-pencil"></i>
+          <i class="tim-icons icon-pencil" aria-hidden="true"></i>
           Edit Category
+        </base-button>
+      </template>
+    </modal>
+
+    <!-- Update Category Modal -->
+    <modal :show="showEditModal" @close="closeEditModal" size="lg">
+      <template slot="header">
+        <h4 class="modal-title">
+          <i class="tim-icons icon-pencil text-warning" aria-hidden="true"></i>
+          Update Category
+        </h4>
+      </template>
+      <div v-if="editCategoryData">
+        <form @submit.prevent="saveCategoryUpdate">
+          <div class="form-group">
+            <label>Name (EN)</label>
+            <input v-model="editCategoryData.name.en" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label>Description (EN)</label>
+            <textarea v-model="editCategoryData.description.en" class="form-control" rows="2"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Display Order</label>
+            <input v-model.number="editCategoryData.display_order" type="number" class="form-control" min="1" />
+          </div>
+          <div class="form-group">
+            <label>Image URL</label>
+            <input v-model="editCategoryData.image_url" class="form-control" />
+          </div>
+        </form>
+      </div>
+      <template slot="footer">
+        <base-button type="secondary" @click="closeEditModal">Cancel</base-button>
+        <base-button type="warning" @click="saveCategoryUpdate" :disabled="isSaving">
+          <i class="fa fa-spinner fa-spin" v-if="isSaving"></i>
+          <i class="tim-icons icon-pencil" v-else></i>
+          {{ isSaving ? 'Saving...' : 'Update' }}
         </base-button>
       </template>
     </modal>
@@ -351,249 +299,126 @@
 </template>
 
 <script>
+import { categories, isLoading, error, success, getCategories, deleteCategory, updateCategory } from '@/stores/category';
 import { BaseInput, BaseButton, Card, Modal } from '@/components';
 
 export default {
-  name: 'CategoriesList',
   components: {
-    BaseInput,
     BaseButton,
     Card,
-    Modal
+    Modal,
   },
   data() {
     return {
-      categories: [],
-      filteredCategories: [],
-      searchQuery: '',
-      isLoading: true,
-      isDeleting: false,
+      currentPage: 1,
+      itemsPerPage: 10,
       showDeleteModal: false,
       showDetailsModal: false,
+      showEditModal: false,
       categoryToDelete: null,
       selectedCategory: null,
-      currentPage: 1,
-      itemsPerPage: 10
-    }
+      editCategoryData: null,
+      isDeleting: false,
+      isSaving: false,
+    };
   },
   computed: {
+    categories() {
+      return categories.value;
+    },
+    isLoading() {
+      return isLoading.value;
+    },
+    error() {
+      return error.value;
+    },
+    success() {
+      return success.value;
+    },
     totalPages() {
-      return Math.ceil(this.filteredCategories.length / this.itemsPerPage);
+      return Math.ceil(this.categories.length / this.itemsPerPage);
     },
     paginatedCategories() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = start + this.itemsPerPage;
-      return this.filteredCategories.slice(start, end);
+      return this.categories.slice(start, end);
     },
     visiblePages() {
       const pages = [];
       const maxVisible = 5;
-      let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
-      let end = Math.min(this.totalPages, start + maxVisible - 1);
-      
-      if (end - start < maxVisible - 1) {
-        start = Math.max(1, end - maxVisible + 1);
-      }
-      
-      for (let i = start; i <= end; i++) {
+      const startPage = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+      const endPage = Math.min(this.totalPages, startPage + maxVisible - 1);
+
+      for (let i = startPage; i <= endPage; i++) {
         pages.push(i);
       }
       return pages;
-    }
+    },
   },
   methods: {
-    async loadCategories() {
-      this.isLoading = true;
-      try {
-        // Simulate API call - replace with actual API endpoint
-        const response = await this.fetchCategories();
-        this.categories = response;
-        this.filteredCategories = [...this.categories];
-      } catch (error) {
-        console.error('Error loading categories:', error);
-        this.showErrorNotification('Failed to load categories');
-      } finally {
-        this.isLoading = false;
-      }
+    async refreshCategories() {
+      await getCategories();
+      this.currentPage = 1;
     },
-    
-    async fetchCategories() {
-      // Simulate API call with sample data
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve([
-            {
-              id: 1,
-              name: 'Appetizers',
-              description: 'Delicious starters to begin your meal',
-              image: 'https://images.unsplash.com/photo-1541014741259-de529411b96a?w=400',
-              itemsCount: 12,
-              createdAt: new Date('2024-01-15'),
-              updatedAt: new Date('2024-01-20')
-            },
-            {
-              id: 2,
-              name: 'Main Course',
-              description: 'Hearty and satisfying main dishes',
-              image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400',
-              itemsCount: 25,
-              createdAt: new Date('2024-01-16'),
-              updatedAt: new Date('2024-01-22')
-            },
-            {
-              id: 3,
-              name: 'Desserts',
-              description: 'Sweet treats to end your meal perfectly',
-              image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400',
-              itemsCount: 8,
-              createdAt: new Date('2024-01-17'),
-              updatedAt: new Date('2024-01-21')
-            },
-            {
-              id: 4,
-              name: 'Beverages',
-              description: 'Refreshing drinks and specialty beverages',
-              image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400',
-              itemsCount: 15,
-              createdAt: new Date('2024-01-18'),
-              updatedAt: new Date('2024-01-23')
-            },
-            {
-              id: 5,
-              name: 'Salads',
-              description: 'Fresh and healthy salad options',
-              image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400',
-              itemsCount: 10,
-              createdAt: new Date('2024-01-19'),
-              updatedAt: new Date('2024-01-24')
-            },
-            {
-              id: 6,
-              name: 'Soups',
-              description: 'Warm and comforting soup varieties',
-              image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400',
-              itemsCount: 6,
-              createdAt: new Date('2024-01-20'),
-              updatedAt: new Date('2024-01-25')
-            }
-          ]);
-        }, 1000);
-      });
-    },
-
-    filterCategories() {
-      if (!this.searchQuery.trim()) {
-        this.filteredCategories = [...this.categories];
-      } else {
-        const query = this.searchQuery.toLowerCase();
-        this.filteredCategories = this.categories.filter(category => 
-          category.name.toLowerCase().includes(query) ||
-          (category.description && category.description.toLowerCase().includes(query))
-        );
-      }
-      this.currentPage = 1; // Reset to first page when filtering
-    },
-
-    refreshCategories() {
-      this.loadCategories();
-    },
-
-    viewDetails(category) {
-      this.selectedCategory = category;
-      this.showDetailsModal = true;
-    },
-
-    editCategory(category) {
-      // Navigate to edit page - you can implement this route
-      this.$router.push(`/categories/edit/${category.id}`);
-    },
-
-    confirmDelete(category) {
-      this.categoryToDelete = category;
-      this.showDeleteModal = true;
-    },
-
-    async deleteCategory() {
-      if (!this.categoryToDelete) return;
-      
-      this.isDeleting = true;
-      try {
-        // Simulate API call - replace with actual delete endpoint
-        await this.deleteCategoryAPI(this.categoryToDelete.id);
-        
-        // Remove from local array
-        this.categories = this.categories.filter(cat => cat.id !== this.categoryToDelete.id);
-        this.filterCategories(); // Refresh filtered list
-        
-        this.showSuccessNotification('Category deleted successfully!');
-        this.showDeleteModal = false;
-        this.categoryToDelete = null;
-      } catch (error) {
-        console.error('Error deleting category:', error);
-        this.showErrorNotification('Failed to delete category');
-      } finally {
-        this.isDeleting = false;
-      }
-    },
-
-    async deleteCategoryAPI(categoryId) {
-      // Simulate API call
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Simulate random success/failure
-          if (Math.random() > 0.1) {
-            resolve();
-          } else {
-            reject(new Error('Simulated API error'));
-          }
-        }, 1000);
-      });
-    },
-
     changePage(page) {
       if (page >= 1 && page <= this.totalPages) {
         this.currentPage = page;
       }
     },
-
+    handleImageError(event) {
+      event.target.src = '/img/placeholder-category.jpg';
+    },
     truncateText(text, maxLength) {
       if (!text) return '';
-      return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+      return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
     },
-
     formatDate(date) {
       if (!date) return 'N/A';
       return new Date(date).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
       });
     },
-
-    handleImageError(event) {
-      event.target.src = '/img/placeholder-category.jpg';
+    viewDetails(category) {
+      this.selectedCategory = category;
+      this.showDetailsModal = true;
     },
-
-    showSuccessNotification(message) {
-      this.$notify({
-        type: 'success',
-        icon: 'tim-icons icon-check-2',
-        message: message
-      });
+    editCategory(category) {
+      this.editCategoryData = { ...category };
+      this.showEditModal = true;
     },
-
-    showErrorNotification(message) {
-      this.$notify({
-        type: 'danger',
-        icon: 'tim-icons icon-simple-remove',
-        message: message
-      });
-    }
+    closeEditModal() {
+      this.showEditModal = false;
+      this.editCategoryData = null;
+    },
+    confirmDelete(category) {
+      this.categoryToDelete = category;
+      this.showDeleteModal = true;
+    },
+    async deleteCategoryHandler() {
+      if (this.categoryToDelete) {
+        this.isDeleting = true;
+        await deleteCategory(this.categoryToDelete.id);
+        this.isDeleting = false;
+        this.showDeleteModal = false;
+        this.categoryToDelete = null;
+      }
+    },
+    async saveCategoryUpdate() {
+      if (this.editCategoryData) {
+        this.isSaving = true;
+        await updateCategory(this.editCategoryData.id, this.editCategoryData);
+        this.isSaving = false;
+        this.showEditModal = false;
+        this.editCategoryData = null;
+        this.refreshCategories();
+      }
+    },
   },
-
   mounted() {
-    this.loadCategories();
-  }
+    getCategories();
+  },
 };
 </script>
 
@@ -608,7 +433,7 @@ export default {
 
 .table-responsive {
   border-radius: 8px;
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .table {
@@ -636,15 +461,6 @@ export default {
   margin-right: 0;
 }
 
-.btn-group-vertical .btn {
-  margin-bottom: 0.25rem;
-}
-
-.btn-group-vertical .btn:last-child {
-  margin-bottom: 0;
-}
-
-/* Mobile Card Styles */
 .mobile-card {
   background: #fff;
   border: 1px solid #e3e3e3;
@@ -700,16 +516,8 @@ export default {
 
 @media (max-width: 576px) {
   .mobile-actions {
-    flex-direction: column;
-  }
-  
-  .mobile-actions .btn {
-    margin-right: 0 !important;
-    margin-bottom: 0.25rem;
-  }
-  
-  .mobile-actions .btn:last-child {
-    margin-bottom: 0;
+    flex-direction: row;
+    gap: 0.25rem;
   }
 }
 

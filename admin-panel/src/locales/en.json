@@ -104,7 +104,7 @@
   "sidebar": {
     "title": "Creative Tim",
     "shortTitle": "CT",
-    "dashboard": "dashboard",
+    "dashboard": "Dashboard",
     "icons": "Icons",
     "maps": "Maps",
     "notifications": "Notifications",
@@ -118,6 +118,7 @@
     "menuList": "Menu List",
     "addCategory": "Add Category",
     "categoryList": "Category List",
-    "infos": "Infos"
+    "infos": "Settings"
   }
 }
+
