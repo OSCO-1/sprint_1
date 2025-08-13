@@ -31,9 +31,7 @@ class MenuItemRepository extends BaseRepository
      */
     public function getAll()
     {
-        return $this->model
-            ->with('menuCategory')
-            ->get();
+        return $this->model->get();
     }
 
     /**
@@ -41,9 +39,7 @@ class MenuItemRepository extends BaseRepository
      */
     public function getById(int $id)
     {
-        return $this->model
-            ->with('restaurant', 'menuCategory')
-            ->find($id);
+        return $this->model->find($id);
     }
 
     /**
