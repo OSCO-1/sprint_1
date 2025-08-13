@@ -2,7 +2,8 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: (process.env.VUE_APP_API_URL || 'http://127.0.0.1:8000/api') + '/', // Ensure trailing slash
-  timeout: 10000,
+  timeout: 30000, // Increased to 30 seconds
+  retry: 3, // Add retry attempts
 });
 
 // Add request interceptor to handle Content-Type dynamically

@@ -71,8 +71,17 @@ class MenuItemController extends Controller
      */
     public function update(UpdateMenuItemRequest $request, int $id): JsonResponse
     {
-            // dd($request->all());
+        // Debug: Log all incoming request data
+        \Log::info('Update request received', [
+            'id' => $id,
+            'all_data' => $request->all(),
+            'method' => $request->method(),
+            'has_files' => $request->hasFile('image_url')
+        ]);
+
         $validated = $request->validated();
+        
+        \Log::info('Validated data', ['validated' => $validated]);
 
         if ($request->hasFile('image_url')) {
             $validated['image_url'] = $request->file('image_url');
@@ -81,8 +90,14 @@ class MenuItemController extends Controller
         $item = $this->itemRepo->updateItem($id, $validated);
 
         if (!$item) {
+            \Log::error('Menu item not found for update', ['id' => $id]);
             return response()->json(['message' => 'Menu item not found'], 404);
         }
+
+        \Log::info('Menu item updated successfully', [
+            'id' => $id,
+            'updated_item' => $item->toArray()
+        ]);
 
         return response()->json($item);
     }

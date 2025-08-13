@@ -82,10 +82,9 @@
                 <div class="d-flex align-items-center">
                   <i class="tim-icons icon-bullet-list-67 drag-handle mr-2 text-muted" title="Drag to reorder"></i>
                   <img
-                    :src="category.image_url || '/img/placeholder-category.jpg'"
+                    :src="category.image_url"
                     :alt="category.name.en"
                     class="table-image"
-                    @error="handleImageError"
                   />
                 </div>
               </td>
@@ -284,23 +283,23 @@
           Update Category
         </h4>
       </template>
-      <div v-if="editCategoryData">
+      <div v-if="selectedCategory">
         <form @submit.prevent="saveCategoryUpdate">
           <div class="form-group">
             <label>Name (EN)</label>
-            <input v-model="editCategoryData.name.en" class="form-control" required />
+            <input v-model="editForm.name" class="form-control" required />
           </div>
           <div class="form-group">
             <label>Description (EN)</label>
-            <textarea v-model="editCategoryData.description.en" class="form-control" rows="2"></textarea>
+            <textarea v-model="editForm.description" class="form-control" rows="2"></textarea>
           </div>
           <div class="form-group">
             <label>Display Order</label>
-            <input v-model.number="editCategoryData.display_order" type="number" class="form-control" min="1" />
+            <input v-model.number="selectedCategory.display_order" type="number" class="form-control" min="1" />
           </div>
           <div class="form-group">
             <label>Image URL</label>
-            <input v-model="editCategoryData.image_url" class="form-control" />
+            <input v-model="selectedCategory.image_url" class="form-control" />
           </div>
         </form>
       </div>
@@ -394,9 +393,6 @@ export default {
         this.currentPage = page;
       }
     },
-    handleImageError(event) {
-      event.target.src = '/img/placeholder-category.jpg';
-    },
     truncateText(text, maxLength) {
       if (!text) return '';
       return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
@@ -414,9 +410,15 @@ export default {
       this.showDetailsModal = true;
     },
     editCategory(category) {
-      this.selectedCategory = category;
-      this.editForm.name = category.name.en;
-      this.editForm.description = category.description.en;
+      this.selectedCategory = { ...category }; // Create a copy to avoid direct mutation
+      
+      // Safely populate form fields with fallbacks
+      this.editForm.name = category.name?.en || category.name || '';
+      this.editForm.description = category.description?.en || category.description || '';
+      
+      console.log('Editing category:', category);
+      console.log('Edit form populated:', this.editForm);
+      
       this.showEditModal = true;
     },
     closeEditModal() {

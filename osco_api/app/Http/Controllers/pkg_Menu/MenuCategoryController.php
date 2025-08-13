@@ -63,14 +63,29 @@ class MenuCategoryController extends Controller
      */
     public function update(UpdateMenuCategoryRequest $request, int $id): JsonResponse
     {
-        // dd($request->all());
+        // Debug: Log all incoming request data
+        \Log::info('Category update request received', [
+            'id' => $id,
+            'all_data' => $request->all(),
+            'method' => $request->method(),
+            'has_files' => $request->hasFile('image_url')
+        ]);
+
         $validated = $request->validated();
+        
+        \Log::info('Category validated data', ['validated' => $validated]);
 
         $category = $this->categoryRepo->updateCategory($id, $validated);
 
         if (!$category) {
+            \Log::error('Category not found for update', ['id' => $id]);
             return response()->json(['message' => 'Category not found'], 404);
         }
+
+        \Log::info('Category updated successfully', [
+            'id' => $id,
+            'updated_category' => $category->toArray()
+        ]);
 
         return response()->json($category);
     }

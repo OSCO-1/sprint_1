@@ -46,20 +46,20 @@
               </base-input>
             </div>
             <div class="col-md-3">
-              <select 
-                class="form-control" 
+              <select
+                class="form-control"
                 v-model="selectedCategory"
                 @change="filterMenuItems"
               >
                 <option value="">All Categories</option>
-                <option v-for="category in categories" :key="category" :value="category">
-                  {{ category }}
+                <option v-for="category in availableCategories" :key="category.id" :value="category.id">
+                  {{ getCategoryDisplayName(category) }}
                 </option>
               </select>
             </div>
             <div class="col-md-2">
-              <select 
-                class="form-control" 
+              <select
+                class="form-control"
                 v-model="priceRange"
                 @change="filterMenuItems"
               >
@@ -77,9 +77,9 @@
                   type="info"
                   size="sm"
                   @click="refreshMenuItems"
-                  :disabled="isLoading"
+                  :disabled="loading"
                 >
-                  <i class="tim-icons icon-refresh-01" :class="{ 'fa-spin': isLoading }"></i>
+                  <i class="tim-icons icon-refresh-01" :class="{ 'fa-spin': loading }"></i>
                   Refresh
                 </base-button>
               </div>
@@ -90,7 +90,7 @@
     </div>
 
     <!-- Menu Items Table -->
-    <div class="row" v-if="!isLoading">
+    <div class="row" v-if="!loading">
       <div class="col-12">
         <card>
           <!-- Desktop Table View -->
@@ -103,7 +103,7 @@
                   <th style="width: 120px;">Category</th>
                   <th style="width: 100px;">Price</th>
                   <th>Description</th>
-                  <th style="width: 80px;">Rating</th>
+                  <th style="width: 80px;">Status</th>
                   <th style="width: 120px;">Created</th>
                   <th style="width: 180px;">Actions</th>
                 </tr>
@@ -111,34 +111,35 @@
               <tbody>
                 <tr v-for="menuItem in paginatedMenuItems" :key="menuItem.id">
                   <td>
-                    <img 
-                      :src="menuItem.image || '/img/placeholder-food.jpg'" 
-                      :alt="menuItem.name"
+                    <img
+                      :src="menuItem.image_url"
+                      :alt="getMenuItemName(menuItem)"
                       class="table-image"
-                      @error="handleImageError"
                     />
                   </td>
                   <td>
-                    <strong>{{ menuItem.name }}</strong>
+                    <strong>{{ getMenuItemName(menuItem) }}</strong>
                   </td>
                   <td>
-                    <span class="badge badge-primary">{{ menuItem.categoryName }}</span>
+                    <span class="badge badge-primary">{{ getCategoryName(menuItem) }}</span>
                   </td>
                   <td>
-                    <span class="text-success font-weight-bold">${{ menuItem.price.toFixed(2) }}</span>
+                    <span class="text-success font-weight-bold">{{ parseFloat(menuItem.base_price || 0).toFixed(2) }} MAD</span>
                   </td>
                   <td>
-                    <span class="text-muted">{{ truncateText(menuItem.description, 50) }}</span>
+                    <span class="text-muted">{{ truncateText(getMenuItemDescription(menuItem), 50) }}</span>
                   </td>
                   <td>
-                    <div class="rating">
-                      <i class="tim-icons icon-heart-2 text-warning"></i>
-                      <span class="ml-1">{{ menuItem.rating || 'N/A' }}</span>
-                    </div>
+                    <span
+                      class="badge"
+                      :class="menuItem.is_available ? 'badge-success' : 'badge-danger'"
+                    >
+                      {{ menuItem.is_available ? 'Available' : 'Unavailable' }}
+                    </span>
                   </td>
                   <td>
                     <small class="text-muted">
-                      {{ formatDate(menuItem.createdAt) }}
+                      {{ formatDate(menuItem.created_at) }}
                     </small>
                   </td>
                   <td>
@@ -181,30 +182,31 @@
             <div class="mobile-card" v-for="menuItem in paginatedMenuItems" :key="menuItem.id">
               <div class="row no-gutters">
                 <div class="col-4">
-                  <img 
-                    :src="menuItem.image || '/img/placeholder-food.jpg'" 
-                    :alt="menuItem.name"
+                  <img
+                    :src="menuItem.image_url"
+                    :alt="getMenuItemName(menuItem)"
                     class="mobile-image"
-                    @error="handleImageError"
                   />
                 </div>
                 <div class="col-8">
                   <div class="mobile-card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                      <h6 class="mobile-card-title mb-0">{{ menuItem.name }}</h6>
-                      <span class="text-success font-weight-bold">${{ menuItem.price.toFixed(2) }}</span>
+                      <h6 class="mobile-card-title mb-0">{{ getMenuItemName(menuItem) }}</h6>
+                      <span class="text-success font-weight-bold">{{ parseFloat(menuItem.base_price || 0).toFixed(2) }} MAD</span>
                     </div>
                     <div class="mb-2">
-                      <span class="badge badge-primary badge-sm mr-2">{{ menuItem.categoryName }}</span>
-                      <span class="rating-mobile">
-                        <i class="tim-icons icon-heart-2 text-warning"></i>
-                        <span class="ml-1">{{ menuItem.rating || 'N/A' }}</span>
+                      <span class="badge badge-primary badge-sm mr-2">{{ getCategoryName(menuItem) }}</span>
+                      <span
+                        class="badge badge-sm"
+                        :class="menuItem.is_available ? 'badge-success' : 'badge-danger'"
+                      >
+                        {{ menuItem.is_available ? 'Available' : 'Unavailable' }}
                       </span>
                     </div>
-                    <p class="mobile-card-text">{{ truncateText(menuItem.description, 80) }}</p>
+                    <p class="mobile-card-text">{{ truncateText(getMenuItemDescription(menuItem), 80) }}</p>
                     <div class="mobile-card-meta mb-2">
                       <small class="text-muted">
-                        {{ formatDate(menuItem.createdAt) }}
+                        {{ formatDate(menuItem.created_at) }}
                       </small>
                     </div>
                     <div class="mobile-actions">
@@ -245,7 +247,7 @@
     </div>
 
     <!-- Loading State -->
-    <div class="row" v-if="isLoading">
+    <div class="row" v-if="loading">
       <div class="col-12">
         <card>
           <div class="text-center py-5">
@@ -257,7 +259,7 @@
     </div>
 
     <!-- Empty State -->
-    <div class="row" v-if="!isLoading && filteredMenuItems.length === 0">
+    <div class="row" v-if="!loading && filteredMenuItems.length === 0">
       <div class="col-12">
         <card>
           <div class="text-center py-5">
@@ -268,6 +270,23 @@
               <i class="tim-icons icon-simple-add"></i>
               Add New Menu Item
             </router-link>
+          </div>
+        </card>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div class="row" v-if="errorMessage && !loading">
+      <div class="col-12">
+        <card>
+          <div class="text-center py-5">
+            <i class="tim-icons icon-alert-circle-exc fa-3x text-danger mb-3"></i>
+            <h4>Error Loading Menu Items</h4>
+            <p class="text-muted">{{ errorMessage }}</p>
+            <base-button type="primary" @click="refreshMenuItems">
+              <i class="tim-icons icon-refresh-01"></i>
+              Try Again
+            </base-button>
           </div>
         </card>
       </div>
@@ -290,9 +309,9 @@
                     <i class="tim-icons icon-double-left"></i>
                   </a>
                 </li>
-                <li 
-                  class="page-item" 
-                  v-for="page in visiblePages" 
+                <li
+                  class="page-item"
+                  v-for="page in visiblePages"
                   :key="page"
                   :class="{ active: page === currentPage }"
                 >
@@ -319,19 +338,19 @@
         </h4>
       </template>
       <div v-if="menuItemToDelete">
-        <p>Are you sure you want to delete the menu item <strong>"{{ menuItemToDelete.name }}"</strong>?</p>
+        <p>Are you sure you want to delete the menu item <strong>"{{ getMenuItemName(menuItemToDelete) }}"</strong>?</p>
         <p class="text-muted">This action cannot be undone.</p>
       </div>
       <template slot="footer">
         <base-button type="secondary" @click="showDeleteModal = false">Cancel</base-button>
-        <base-button 
-          type="danger" 
-          @click="deleteMenuItem" 
-          :disabled="isDeleting"
+        <base-button
+          type="danger"
+          @click="deleteMenuItem"
+          :disabled="deleting"
         >
-          <i class="fa fa-spinner fa-spin" v-if="isDeleting"></i>
+          <i class="fa fa-spinner fa-spin" v-if="deleting"></i>
           <i class="tim-icons icon-simple-remove" v-else></i>
-          {{ isDeleting ? 'Deleting...' : 'Delete' }}
+          {{ deleting ? 'Deleting...' : 'Delete' }}
         </base-button>
       </template>
     </modal>
@@ -347,30 +366,40 @@
       <div v-if="selectedMenuItem" class="menu-item-details">
         <div class="row">
           <div class="col-md-6">
-            <img 
-              :src="selectedMenuItem.image || '/img/placeholder-food.jpg'" 
-              :alt="selectedMenuItem.name"
+            <img
+              :src="selectedMenuItem.image_url"
+              :alt="getMenuItemName(selectedMenuItem)"
               class="img-fluid rounded"
             />
           </div>
           <div class="col-md-6">
-            <h3>{{ selectedMenuItem.name }}</h3>
-            <p class="text-primary h4">${{ selectedMenuItem.price.toFixed(2) }}</p>
-            <span class="badge badge-primary mb-3">{{ selectedMenuItem.categoryName }}</span>
-            <p class="text-muted">{{ selectedMenuItem.description }}</p>
+            <h3>{{ getMenuItemName(selectedMenuItem) }}</h3>
+            <p class="text-primary h4">{{ parseFloat(selectedMenuItem.base_price || 0).toFixed(2) }} MAD</p>
+            <span class="badge badge-primary mb-3">{{ getCategoryName(selectedMenuItem) }}</span>
+            <span
+              class="badge mb-3 ml-2"
+              :class="selectedMenuItem.is_available ? 'badge-success' : 'badge-danger'"
+            >
+              {{ selectedMenuItem.is_available ? 'Available' : 'Unavailable' }}
+            </span>
+            <p class="text-muted">{{ getMenuItemDescription(selectedMenuItem) }}</p>
             <hr>
             <div class="menu-item-info">
               <div class="info-item">
-                <strong>Rating:</strong>
-                <span class="ml-2">{{ selectedMenuItem.rating || 'N/A' }} ⭐</span>
+                <strong>Restaurant ID:</strong>
+                <span class="ml-2">{{ selectedMenuItem.restaurant_id }}</span>
+              </div>
+              <div class="info-item">
+                <strong>Category ID:</strong>
+                <span class="ml-2">{{ selectedMenuItem.menu_category_id }}</span>
               </div>
               <div class="info-item">
                 <strong>Created:</strong>
-                <span class="ml-2">{{ formatDate(selectedMenuItem.createdAt) }}</span>
+                <span class="ml-2">{{ formatDate(selectedMenuItem.created_at) }}</span>
               </div>
               <div class="info-item">
                 <strong>Last Updated:</strong>
-                <span class="ml-2">{{ formatDate(selectedMenuItem.updatedAt) }}</span>
+                <span class="ml-2">{{ formatDate(selectedMenuItem.updated_at) }}</span>
               </div>
             </div>
           </div>
@@ -378,8 +407,8 @@
       </div>
       <template slot="footer">
         <base-button type="secondary" @click="showDetailsModal = false">Close</base-button>
-        <base-button 
-          type="warning" 
+        <base-button
+          type="warning"
           @click="editMenuItem(selectedMenuItem)"
           v-if="selectedMenuItem"
         >
@@ -388,11 +417,190 @@
         </base-button>
       </template>
     </modal>
+
+    <!-- Edit Menu Item Modal -->
+    <modal :show="showEditModal" @close="cancelEdit" size="xl">
+      <template slot="header">
+        <h4 class="modal-title">
+          <i class="tim-icons icon-pencil text-warning"></i>
+          Edit Menu Item
+        </h4>
+      </template>
+      <div v-if="editingMenuItem" class="edit-menu-form">
+        <form @submit.prevent="updateMenuItem">
+          <div class="row">
+            <!-- Left Column -->
+            <div class="col-md-6">
+              <!-- Name Fields -->
+              <div class="form-group">
+                <label class="form-control-label">Name (English) *</label>
+                <base-input
+                  v-model="editForm.name.en"
+                  placeholder="Enter name in English"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-control-label">Name (French)</label>
+                <base-input
+                  v-model="editForm.name.fr"
+                  placeholder="Enter name in French"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-control-label">Name (Arabic)</label>
+                <base-input
+                  v-model="editForm.name.ar"
+                  placeholder="Enter name in Arabic"
+                />
+              </div>
+
+              <!-- Price and Category -->
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label">Price (MAD) *</label>
+                    <base-input
+                      v-model="editForm.base_price"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="0.00"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label">Category *</label>
+                    <select
+                      v-model="editForm.menu_category_id"
+                      class="form-control"
+                      required
+                    >
+                      <option value="">Select Category</option>
+                      <option
+                        v-for="category in availableCategories"
+                        :key="category.id"
+                        :value="category.id"
+                      >
+                        {{ getCategoryDisplayName(category) }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Image URL -->
+              <div class="form-group">
+                <label class="form-control-label">Image URL</label>
+                <base-input
+                  v-model="editForm.image_url"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+
+              <!-- Availability -->
+              <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                  <input
+                    id="editAvailable"
+                    v-model="editForm.is_available"
+                    type="checkbox"
+                    class="custom-control-input"
+                  >
+                  <label class="custom-control-label" for="editAvailable">
+                    Available for ordering
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-md-6">
+              <!-- Description Fields -->
+              <div class="form-group">
+                <label class="form-control-label">Description (English)</label>
+                <textarea
+                  v-model="editForm.description.en"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Enter description in English"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-control-label">Description (French)</label>
+                <textarea
+                  v-model="editForm.description.fr"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Enter description in French"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-control-label">Description (Arabic)</label>
+                <textarea
+                  v-model="editForm.description.ar"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Enter description in Arabic"
+                ></textarea>
+              </div>
+
+              <!-- Image Preview -->
+              <div class="form-group" v-if="editForm.image_url">
+                <label class="form-control-label">Image Preview</label>
+                <div class="image-preview">
+                  <img
+                    :src="editForm.image_url"
+                    :alt="editForm.name.en"
+                    class="img-fluid rounded"
+                    style="max-height: 200px; width: auto;"
+                  />
+                </div>
+              </div>
+
+              <!-- Image Upload -->
+              <div class="form-group">
+                <label class="form-control-label">Image</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  @change="onEditImageChange"
+                  class="form-control"
+                />
+                <small class="text-muted">Allowed types: jpeg, png, jpg, gif</small>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <template slot="footer">
+        <base-button type="secondary" @click="cancelEdit" :disabled="updating">
+          Cancel
+        </base-button>
+        <base-button
+          type="warning"
+          @click="updateMenuItem"
+          :disabled="updating || !editForm.name.en || !editForm.base_price || !editForm.menu_category_id"
+        >
+          <i class="fa fa-spinner fa-spin" v-if="updating"></i>
+          <i class="tim-icons icon-check-2" v-else></i>
+          {{ updating ? 'Updating...' : 'Update Menu Item' }}
+        </base-button>
+      </template>
+    </modal>
   </div>
 </template>
 
 <script>
 import { BaseInput, BaseButton, Card, Modal } from '@/components';
+import { menus, isLoading, error, success, getMenus, deleteMenu, updateMenu } from '@/stores/menu';
+import { categories, getCategories } from '@/stores/category';
 
 export default {
   name: 'MenusList',
@@ -404,23 +612,41 @@ export default {
   },
   data() {
     return {
-      menuItems: [],
       filteredMenuItems: [],
-      categories: [],
       searchQuery: '',
       selectedCategory: '',
       priceRange: '',
-      isLoading: true,
-      isDeleting: false,
+      deleting: false,
       showDeleteModal: false,
       showDetailsModal: false,
+      showEditModal: false,
       menuItemToDelete: null,
       selectedMenuItem: null,
+      editingMenuItem: null,
+      updating: false,
+      editForm: {
+        name: { en: '', fr: '', ar: '' },
+        description: { en: '', fr: '', ar: '' },
+        base_price: '',
+        menu_category_id: '',
+        is_available: true,
+        image_url: ''
+      },
       currentPage: 1,
-      itemsPerPage: 10
+      itemsPerPage: 10,
+      errorMessage: null
     }
   },
   computed: {
+    menuItems() {
+      return menus.value || [];
+    },
+    loading() {
+      return isLoading.value;
+    },
+    availableCategories() {
+      return categories.value || [];
+    },
     totalPages() {
       return Math.ceil(this.filteredMenuItems.length / this.itemsPerPage);
     },
@@ -434,135 +660,92 @@ export default {
       const maxVisible = 5;
       let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
       let end = Math.min(this.totalPages, start + maxVisible - 1);
-      
+
       if (end - start < maxVisible - 1) {
         start = Math.max(1, end - maxVisible + 1);
       }
-      
+
       for (let i = start; i <= end; i++) {
         pages.push(i);
       }
       return pages;
     }
   },
+  watch: {
+    menuItems: {
+      handler(newItems) {
+        this.filteredMenuItems = [...newItems];
+      },
+      immediate: true
+    },
+    error: {
+      handler(newError) {
+        this.errorMessage = newError;
+      },
+      immediate: true
+    }
+  },
   methods: {
     async loadMenuItems() {
-      this.isLoading = true;
       try {
-        // Simulate API call - replace with actual API endpoint
-        const response = await this.fetchMenuItems();
-        this.menuItems = response;
-        this.filteredMenuItems = [...this.menuItems];
-        this.extractCategories();
-      } catch (error) {
-        console.error('Error loading menu items:', error);
-        this.showErrorNotification('Failed to load menu items');
-      } finally {
-        this.isLoading = false;
+        await getMenus();
+        this.errorMessage = null;
+      } catch (err) {
+        console.error('Error loading menu items:', err);
+        this.errorMessage = 'Failed to load menu items. Please try again.';
       }
     },
-    
-    async fetchMenuItems() {
-      // Simulate API call with sample data
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve([
-            {
-              id: 1,
-              name: 'Grilled Chicken Caesar Salad',
-              categoryName: 'Salads',
-              price: 14.99,
-              description: 'Fresh romaine lettuce, grilled chicken breast, parmesan cheese, croutons, and our signature Caesar dressing',
-              image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400',
-              rating: 4.5,
-              createdAt: new Date('2024-01-15'),
-              updatedAt: new Date('2024-01-20')
-            },
-            {
-              id: 2,
-              name: 'Beef Burger Deluxe',
-              categoryName: 'Main Course',
-              price: 18.50,
-              description: 'Juicy beef patty with lettuce, tomato, onion, pickles, and special sauce on a brioche bun. Served with fries.',
-              image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400',
-              rating: 4.8,
-              createdAt: new Date('2024-01-16'),
-              updatedAt: new Date('2024-01-22')
-            },
-            {
-              id: 3,
-              name: 'Chocolate Lava Cake',
-              categoryName: 'Desserts',
-              price: 8.99,
-              description: 'Warm chocolate cake with a molten chocolate center, served with vanilla ice cream',
-              image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400',
-              rating: 4.9,
-              createdAt: new Date('2024-01-17'),
-              updatedAt: new Date('2024-01-21')
-            },
-            {
-              id: 4,
-              name: 'Fresh Fruit Smoothie',
-              categoryName: 'Beverages',
-              price: 6.50,
-              description: 'Blend of fresh seasonal fruits with yogurt and honey',
-              image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400',
-              rating: 4.3,
-              createdAt: new Date('2024-01-18'),
-              updatedAt: new Date('2024-01-23')
-            },
-            {
-              id: 5,
-              name: 'Crispy Chicken Wings',
-              categoryName: 'Appetizers',
-              price: 12.99,
-              description: 'Crispy chicken wings tossed in your choice of buffalo, BBQ, or honey garlic sauce',
-              image: 'https://images.unsplash.com/photo-1541014741259-de529411b96a?w=400',
-              rating: 4.6,
-              createdAt: new Date('2024-01-19'),
-              updatedAt: new Date('2024-01-24')
-            },
-            {
-              id: 6,
-              name: 'Tomato Basil Soup',
-              categoryName: 'Soups',
-              price: 7.99,
-              description: 'Creamy tomato soup with fresh basil, served with garlic bread',
-              image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400',
-              rating: 4.4,
-              createdAt: new Date('2024-01-20'),
-              updatedAt: new Date('2024-01-25')
-            },
-            {
-              id: 7,
-              name: 'Salmon Teriyaki',
-              categoryName: 'Main Course',
-              price: 24.99,
-              description: 'Grilled salmon glazed with teriyaki sauce, served with steamed vegetables and jasmine rice',
-              image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400',
-              rating: 4.7,
-              createdAt: new Date('2024-01-21'),
-              updatedAt: new Date('2024-01-26')
-            },
-            {
-              id: 8,
-              name: 'Iced Coffee',
-              categoryName: 'Beverages',
-              price: 4.50,
-              description: 'Cold brew coffee served over ice with your choice of milk',
-              image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400',
-              rating: 4.2,
-              createdAt: new Date('2024-01-22'),
-              updatedAt: new Date('2024-01-27')
-            }
-          ]);
-        }, 1000);
-      });
+
+    getMenuItemName(menuItem) {
+      if (!menuItem || !menuItem.name) return 'Unnamed Item';
+
+      // Handle different language versions
+      if (typeof menuItem.name === 'object') {
+        return menuItem.name.en || menuItem.name.en || menuItem.name.fr || 'Unnamed Item';
+      }
+
+      return menuItem.name;
     },
 
-    extractCategories() {
-      const categories = [...new Set(this.menuItems.map(item => item.categoryName))];
-      this.categories = categories.sort();
+    getMenuItemDescription(menuItem) {
+      if (!menuItem || !menuItem.description) return 'No description available';
+
+      // Handle different language versions
+      if (typeof menuItem.description === 'object') {
+        return menuItem.description.en || menuItem.description.en || menuItem.description.fr || 'No description available';
+      }
+
+      return menuItem.description;
+    },
+
+    getCategoryName(menuItem) {
+      if (!menuItem.menu_category_id) return 'Uncategorized';
+
+      const category = this.availableCategories.find(cat => cat.id === menuItem.menu_category_id);
+      if (category) {
+        return this.getCategoryDisplayName(category);
+      }
+
+      return `Category ${menuItem.menu_category_id}`;
+    },
+
+    getCategoryDisplayName(category) {
+      if (!category || !category.name) return 'Unnamed Category';
+
+      // Handle different language versions
+      if (typeof category.name === 'object') {
+        return category.name.en || category.name.fr || category.name.ar || 'Unnamed Category';
+      }
+
+      return category.name;
+    },
+
+    async loadCategories() {
+      try {
+        await getCategories();
+      } catch (err) {
+        console.error('Error loading categories:', err);
+      }
     },
 
     filterMenuItems() {
@@ -571,22 +754,28 @@ export default {
       // Filter by search query
       if (this.searchQuery.trim()) {
         const query = this.searchQuery.toLowerCase();
-        filtered = filtered.filter(item => 
-          item.name.toLowerCase().includes(query) ||
-          item.description.toLowerCase().includes(query) ||
-          item.categoryName.toLowerCase().includes(query)
-        );
+        filtered = filtered.filter(item => {
+          const name = this.getMenuItemName(item).toLowerCase();
+          const description = this.getMenuItemDescription(item).toLowerCase();
+          const category = this.getCategoryName(item).toLowerCase();
+
+          return name.includes(query) ||
+                 description.includes(query) ||
+                 category.includes(query);
+        });
       }
 
       // Filter by category
       if (this.selectedCategory) {
-        filtered = filtered.filter(item => item.categoryName === this.selectedCategory);
+        filtered = filtered.filter(item =>
+          item.menu_category_id && item.menu_category_id.toString() === this.selectedCategory.toString()
+        );
       }
 
       // Filter by price range
       if (this.priceRange) {
         filtered = filtered.filter(item => {
-          const price = item.price;
+          const price = parseFloat(item.base_price || 0);
           switch (this.priceRange) {
             case '0-10':
               return price >= 0 && price <= 10;
@@ -616,8 +805,121 @@ export default {
     },
 
     editMenuItem(menuItem) {
-      // Navigate to edit page - you can implement this route
-      this.$router.push(`/menus/edit/${menuItem.id}`);
+      this.editingMenuItem = menuItem;
+      this.populateEditForm(menuItem);
+      this.showEditModal = true;
+    },
+
+    populateEditForm(menuItem) {
+      // Handle multilingual name
+      if (typeof menuItem.name === 'object') {
+        this.editForm.name = {
+          en: menuItem.name.en || '',
+          fr: menuItem.name.fr || '',
+          ar: menuItem.name.ar || ''
+        };
+      } else {
+        this.editForm.name = {
+          en: menuItem.name || '',
+          fr: '',
+          ar: ''
+        };
+      }
+
+      // Handle multilingual description
+      if (typeof menuItem.description === 'object') {
+        this.editForm.description = {
+          en: menuItem.description.en || '',
+          fr: menuItem.description.fr || '',
+          ar: menuItem.description.ar || ''
+        };
+      } else {
+        this.editForm.description = {
+          en: menuItem.description || '',
+          fr: '',
+          ar: ''
+        };
+      }
+
+      this.editForm.base_price = menuItem.base_price || '';
+      this.editForm.menu_category_id = menuItem.menu_category_id || '';
+      this.editForm.is_available = menuItem.is_available !== false;
+      this.editForm.image_url = menuItem.image_url || '';
+    },
+
+async updateMenuItem() {
+  if (!this.editingMenuItem) return;
+
+  this.updating = true;
+  try {
+    const formData = new FormData();
+    formData.append('_method', 'PUT'); // Only if backend requires this
+    formData.append('restaurant_id', this.editingMenuItem.restaurant_id || 1); // Ensure this matches your API
+    formData.append('menu_category_id', this.editForm.menu_category_id);
+    
+    // Add all name fields
+    formData.append('name[en]', this.editForm.name.en || '');
+    formData.append('name[fr]', this.editForm.name.fr || '');
+    if (this.editForm.name.ar) {
+      formData.append('name[ar]', this.editForm.name.ar);
+    }
+    
+    // Add all description fields (this was missing!)
+    formData.append('description[en]', this.editForm.description.en || '');
+    formData.append('description[fr]', this.editForm.description.fr || '');
+    if (this.editForm.description.ar) {
+      formData.append('description[ar]', this.editForm.description.ar);
+    }
+    
+    formData.append('base_price', parseFloat(this.editForm.base_price));
+    formData.append('is_available', this.editForm.is_available ? 1 : 0);
+    
+    // Handle image upload
+    if (this.editForm.image_file) {
+      formData.append('image_url', this.editForm.image_file);
+    } else if (this.editForm.image_url) {
+      formData.append('image_url', this.editForm.image_url);
+    }
+
+    console.log('Updating menu item with data:', {
+      id: this.editingMenuItem.id,
+      formData: Object.fromEntries(formData)
+    });
+
+    await updateMenu(this.editingMenuItem.id, formData);
+    this.showSuccessNotification('Menu item updated successfully!');
+    this.showEditModal = false;
+    this.editingMenuItem = null;
+    this.resetEditForm(); // Reset form after success
+    await this.loadMenuItems(); // Force reload to ensure UI reflects changes
+  } catch (error) {
+    console.error('Error updating menu item:', error.response?.data);
+    let msg = 'Failed to update menu item';
+    if (error.response?.data?.errors) {
+      msg = Object.values(error.response.data.errors).join(' ');
+    } else if (error.response?.data?.message) {
+      msg = error.response.data.message;
+    }
+    this.showErrorNotification(msg);
+  } finally {
+    this.updating = false;
+  }
+},
+    cancelEdit() {
+      this.showEditModal = false;
+      this.editingMenuItem = null;
+      this.resetEditForm();
+    },
+
+    resetEditForm() {
+      this.editForm = {
+        name: { en: '', fr: '', ar: '' },
+        description: { en: '', fr: '', ar: '' },
+        base_price: '',
+        menu_category_id: '',
+        is_available: true,
+        image_url: ''
+      };
     },
 
     confirmDelete(menuItem) {
@@ -627,16 +929,10 @@ export default {
 
     async deleteMenuItem() {
       if (!this.menuItemToDelete) return;
-      
-      this.isDeleting = true;
+
+      this.deleting = true;
       try {
-        // Simulate API call - replace with actual delete endpoint
-        await this.deleteMenuItemAPI(this.menuItemToDelete.id);
-        
-        // Remove from local array
-        this.menuItems = this.menuItems.filter(item => item.id !== this.menuItemToDelete.id);
-        this.filterMenuItems(); // Refresh filtered list
-        
+        await deleteMenu(this.menuItemToDelete.id);
         this.showSuccessNotification('Menu item deleted successfully!');
         this.showDeleteModal = false;
         this.menuItemToDelete = null;
@@ -644,22 +940,8 @@ export default {
         console.error('Error deleting menu item:', error);
         this.showErrorNotification('Failed to delete menu item');
       } finally {
-        this.isDeleting = false;
+        this.deleting = false;
       }
-    },
-
-    async deleteMenuItemAPI(menuItemId) {
-      // Simulate API call
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Simulate random success/failure
-          if (Math.random() > 0.1) {
-            resolve();
-          } else {
-            reject(new Error('Simulated API error'));
-          }
-        }, 1000);
-      });
     },
 
     changePage(page) {
@@ -682,10 +964,6 @@ export default {
       });
     },
 
-    handleImageError(event) {
-      event.target.src = '/img/placeholder-food.jpg';
-    },
-
     showSuccessNotification(message) {
       this.$notify({
         type: 'success',
@@ -700,11 +978,22 @@ export default {
         icon: 'tim-icons icon-simple-remove',
         message: message
       });
+    },
+
+    onEditImageChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.editForm.image_file = file;
+        this.editForm.image_url = URL.createObjectURL(file); // For preview
+      }
     }
   },
 
-  mounted() {
-    this.loadMenuItems();
+  async mounted() {
+    await Promise.all([
+      this.loadMenuItems(),
+      this.loadCategories()
+    ]);
   }
 };
 </script>
@@ -754,17 +1043,6 @@ export default {
 
 .btn-group-vertical .btn:last-child {
   margin-bottom: 0;
-}
-
-.rating {
-  display: flex;
-  align-items: center;
-}
-
-.rating-mobile {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.875rem;
 }
 
 /* Mobile Card Styles */
@@ -824,16 +1102,16 @@ export default {
   .mobile-actions {
     flex-direction: column;
   }
-  
+
   .mobile-actions .btn {
     margin-right: 0 !important;
     margin-bottom: 0.25rem;
   }
-  
+
   .mobile-actions .btn:last-child {
     margin-bottom: 0;
   }
-  
+
   .mobile-card-body {
     padding: 0.75rem;
   }
@@ -863,5 +1141,36 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.edit-menu-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.edit-menu-form .form-control-label {
+  font-weight: 600;
+  color: #525f7f;
+  margin-bottom: 0.5rem;
+}
+
+.edit-menu-form .custom-control {
+  padding-left: 1.5rem;
+}
+
+.edit-menu-form .custom-control-label {
+  font-weight: 500;
+  color: #525f7f;
+}
+
+.image-preview {
+  text-align: center;
+  padding: 1rem;
+  border: 2px dashed #e3e3e3;
+  border-radius: 8px;
+  background-color: #f8f9fe;
+}
+
+.image-preview img {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 </style>

@@ -22,6 +22,7 @@ Route::prefix('categories')->group(function () {
     Route::post('/', [MenuCategoryController::class, 'store']);         // Create new category
     Route::get('/{id}', [MenuCategoryController::class, 'show']);       // Get single category
     Route::put('/{id}', [MenuCategoryController::class, 'update']);     // Update category
+    Route::post('/{id}', [MenuCategoryController::class, 'update']);    // Update category (POST with _method=PUT)
     Route::delete('/{id}', [MenuCategoryController::class, 'destroy']); // Delete category
 
     // Reorder categories
@@ -35,5 +36,6 @@ Route::prefix('items')->group(function () {
     Route::post('/', [MenuItemController::class, 'store']);         // Create new menu item
     Route::get('/{id}', [MenuItemController::class, 'show']);       // Get single menu item
     Route::put('/{id}', [MenuItemController::class, 'update']);     // Update menu item
+    Route::post('/{id}', [MenuItemController::class, 'update']);    // Update menu item (POST with _method=PUT)
     Route::delete('/{id}', [MenuItemController::class, 'destroy']); // Delete menu item
 });

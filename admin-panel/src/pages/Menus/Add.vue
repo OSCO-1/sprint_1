@@ -40,18 +40,54 @@
           </template>
 
           <form @submit.prevent="submitMenuItem">
-            <!-- Category Name -->
+            <!-- Language Selector -->
             <div class="row">
               <div class="col-md-12">
-                <base-input
-                  label="Category Name *"
-                  placeholder="Select or enter category (e.g., Appetizers, Main Course, Desserts)"
-                  v-model="menuItem.categoryName"
-                  :class="{ 'has-danger': errors.categoryName }"
-                  required
-                >
-                  <small v-if="errors.categoryName" class="text-danger">{{ errors.categoryName }}</small>
-                </base-input>
+                <label class="form-control-label">Language *</label>
+                <div class="language-selector mb-3">
+                  <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label 
+                      v-for="lang in availableLanguages" 
+                      :key="lang.code"
+                      :class="['btn', 'btn-outline-primary', { 'active': selectedLanguage === lang.code }]"
+                      @click="selectedLanguage = lang.code"
+                    >
+                      <input type="radio" :value="lang.code" v-model="selectedLanguage" autocomplete="off">
+                      <i :class="lang.icon" class="mr-1"></i>
+                      {{ lang.name }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category Selection -->
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>Category *</label>
+                  <select 
+                    v-model="menuItem.categoryId" 
+                    class="form-control"
+                    :class="{ 'has-danger': errors.categoryId }"
+                    :disabled="isLoadingCategories"
+                    required
+                  >
+                    <option value="" v-if="isLoadingCategories">Loading categories...</option>
+                    <option value="" v-else-if="availableCategories.length === 0">No categories available</option>
+                    <option value="" v-else>Select a category</option>
+                    <option v-for="category in availableCategories" :key="category.id" :value="category.id">
+                      {{ category.name?.en || category.name || `Category ${category.id}` }}
+                    </option>
+                  </select>
+                  <small v-if="errors.categoryId" class="text-danger">{{ errors.categoryId }}</small>
+                  <small v-if="isLoadingCategories" class="text-info">
+                    <i class="fa fa-spinner fa-spin"></i> Loading categories...
+                  </small>
+                  <small v-else-if="availableCategories.length === 0" class="text-warning">
+                    No categories found. <router-link to="/categories/add">Create a category first</router-link>.
+                  </small>
+                </div>
               </div>
             </div>
 
@@ -59,9 +95,9 @@
             <div class="row">
               <div class="col-md-12">
                 <base-input
-                  label="Item Name *"
-                  placeholder="Enter menu item name (e.g., Grilled Chicken Sandwich)"
-                  v-model="menuItem.name"
+                  :label="`Item Name (${getLanguageName(selectedLanguage)}) *`"
+                  :placeholder="`Enter menu item name in ${getLanguageName(selectedLanguage)}`"
+                  v-model="menuItem.name[selectedLanguage]"
                   :class="{ 'has-danger': errors.name }"
                   required
                 >
@@ -76,9 +112,9 @@
                 <base-input
                   label="Price *"
                   type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="Enter price (e.g., 12.99)"
+                  step="1"
+                  min="1"
+                  placeholder="Enter price"
                   v-model="menuItem.price"
                   :class="{ 'has-danger': errors.price }"
                   required
@@ -94,18 +130,18 @@
             <!-- Description -->
             <div class="row">
               <div class="col-md-12">
-                <base-input>
-                  <label>Description *</label>
+                <div class="form-group">
+                  <label>Description ({{ getLanguageName(selectedLanguage) }}) *</label>
                   <textarea
                     rows="4"
                     class="form-control"
-                    placeholder="Describe the menu item, ingredients, and preparation method"
-                    v-model="menuItem.description"
+                    :placeholder="`Describe the menu item in ${getLanguageName(selectedLanguage)}`"
+                    v-model="menuItem.description[selectedLanguage]"
                     :class="{ 'has-danger': errors.description }"
                     required
                   ></textarea>
                   <small v-if="errors.description" class="text-danger">{{ errors.description }}</small>
-                </base-input>
+                </div>
               </div>
             </div>
 
@@ -209,60 +245,77 @@ export default {
   },
   data() {
     return {
+      selectedLanguage: 'en', // Default language
+      availableLanguages: [
+        { code: 'en', name: 'English', icon: 'tim-icons icon-world' },
+        { code: 'fr', name: 'Français', icon: 'tim-icons icon-world' },
+        { code: 'ar', name: 'العربية', icon: 'tim-icons icon-world' }
+      ],
       menuItem: {
-        categoryName: '',
-        name: '',
+        categoryId: '',
+        name: {
+          en: '',
+          fr: '',
+          ar: ''
+        },
         price: '',
-        description: '',
-        image: null,
-        imagePreview: null
+        description: {
+          en: '',
+          fr: '',
+          ar: ''
+        },
+        image: null
       },
+      availableCategories: [],
       errors: {},
-      isSubmitting: false
-    }
+      isSubmitting: false,
+      isLoadingCategories: false
+    };
   },
   methods: {
     validateForm() {
       this.errors = {};
       let isValid = true;
 
-      // Validate category name
-      if (!this.menuItem.categoryName || this.menuItem.categoryName.trim().length < 2) {
-        this.errors.categoryName = 'Category name must be at least 2 characters long';
-        isValid = false;
-      } else if (this.menuItem.categoryName.length > 50) {
-        this.errors.categoryName = 'Category name must be less than 50 characters';
+      // Category validation
+      if (!this.menuItem.categoryId) {
+        this.errors.categoryId = 'Category selection is required';
         isValid = false;
       }
 
-      // Validate menu item name
-      if (!this.menuItem.name || this.menuItem.name.trim().length < 2) {
-        this.errors.name = 'Menu item name must be at least 2 characters long';
+      // Name validation - English is always required, others are optional
+      if (!this.menuItem.name.en || !this.menuItem.name.en.trim()) {
+        this.errors.name = 'Item name (English) is required';
         isValid = false;
-      } else if (this.menuItem.name.length > 100) {
-        this.errors.name = 'Menu item name must be less than 100 characters';
+      } else if (this.menuItem.name.en.length < 3) {
+        this.errors.name = 'Item name must be at least 3 characters long';
+        isValid = false;
+      }
+      
+      // If current language is not English and has content, validate it too
+      if (this.selectedLanguage !== 'en' && this.menuItem.name[this.selectedLanguage] && this.menuItem.name[this.selectedLanguage].trim()) {
+        if (this.menuItem.name[this.selectedLanguage].length < 3) {
+          this.errors.name = `Item name (${this.getLanguageName(this.selectedLanguage)}) must be at least 3 characters long`;
+          isValid = false;
+        }
+      }
+
+      // Price validation
+      if (!this.menuItem.price) {
+        this.errors.price = 'Price is required';
+        isValid = false;
+      } else if (parseFloat(this.menuItem.price) <= 0) {
+        this.errors.price = 'Price must be greater than 0';
         isValid = false;
       }
 
-      // Validate price
-      if (!this.menuItem.price || this.menuItem.price <= 0) {
-        this.errors.price = 'Please enter a valid price greater than 0';
-        isValid = false;
-      } else if (this.menuItem.price > 999.99) {
-        this.errors.price = 'Price must be less than $999.99';
+      // Description validation (for current selected language)
+      if (!this.menuItem.description[this.selectedLanguage] || !this.menuItem.description[this.selectedLanguage].trim()) {
+        this.errors.description = `Description (${this.getLanguageName(this.selectedLanguage)}) is required`;
         isValid = false;
       }
 
-      // Validate description
-      if (!this.menuItem.description || this.menuItem.description.trim().length < 10) {
-        this.errors.description = 'Description must be at least 10 characters long';
-        isValid = false;
-      } else if (this.menuItem.description.length > 500) {
-        this.errors.description = 'Description must be less than 500 characters';
-        isValid = false;
-      }
-
-      // Validate image
+      // Image validation
       if (!this.menuItem.image) {
         this.errors.image = 'Please upload an image';
         isValid = false;
@@ -329,13 +382,30 @@ export default {
       this.isSubmitting = true;
 
       try {
-        // Simulate API call with FormData for image upload
+        // Create FormData for proper API submission
         const formData = new FormData();
-        formData.append('categoryName', this.menuItem.categoryName);
-        formData.append('name', this.menuItem.name);
-        formData.append('price', this.menuItem.price);
-        formData.append('description', this.menuItem.description);
-        formData.append('image', this.menuItem.image);
+        formData.append('restaurant_id', 1); // Default restaurant ID
+        formData.append('menu_category_id', this.menuItem.categoryId || 1); // Category ID
+        
+        // Add multilingual name fields
+        formData.append('name[en]', this.menuItem.name.en || '');
+        formData.append('name[fr]', this.menuItem.name.fr || '');
+        formData.append('name[ar]', this.menuItem.name.ar || '');
+        
+        // Add multilingual description fields
+        formData.append('description[en]', this.menuItem.description.en || '');
+        formData.append('description[fr]', this.menuItem.description.fr || '');
+        formData.append('description[ar]', this.menuItem.description.ar || '');
+        
+        formData.append('base_price', parseFloat(this.menuItem.price) || 0);
+        formData.append('is_available', 1); // Default to available
+        
+        // Add image if provided
+        if (this.menuItem.image) {
+          formData.append('image_url', this.menuItem.image);
+        }
+
+        console.log('Creating menu item with data:', Object.fromEntries(formData));
 
         await this.createMenuItem(formData);
 
@@ -351,36 +421,79 @@ export default {
 
       } catch (error) {
         console.error('Error creating menu item:', error);
-        this.showErrorNotification('Failed to create menu item. Please try again.');
+        let errorMessage = 'Failed to create menu item. Please try again.';
+        
+        if (error.response?.data?.errors) {
+          errorMessage = Object.values(error.response.data.errors).join(' ');
+        } else if (error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        }
+        
+        this.showErrorNotification(errorMessage);
       } finally {
         this.isSubmitting = false;
       }
     },
 
+    async loadCategories() {
+      this.isLoadingCategories = true;
+      try {
+        console.log('Starting to load categories...');
+        
+        // Import the category store functions
+        const { getCategories, categories } = await import('@/stores/category');
+        
+        console.log('Category store imported, calling getCategories...');
+        await getCategories();
+        
+        // Get categories from the reactive reference
+        this.availableCategories = categories.value || [];
+        
+        console.log('Categories loaded:', this.availableCategories);
+        console.log('Number of categories:', this.availableCategories.length);
+        
+        if (this.availableCategories.length === 0) {
+          console.warn('No categories found - check if categories exist in database');
+          this.showErrorNotification('No categories found. Please create categories first.');
+        }
+      } catch (error) {
+        console.error('Error loading categories:', error);
+        console.error('Error details:', error.response?.data);
+        this.showErrorNotification('Failed to load categories: ' + (error.message || 'Unknown error'));
+      } finally {
+        this.isLoadingCategories = false;
+      }
+    },
+
     async createMenuItem(formData) {
-      // Simulate API call with delay
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Simulate random success/failure for demo
-          if (Math.random() > 0.1) { // 90% success rate
-            resolve({ id: Date.now(), ...formData });
-          } else {
-            reject(new Error('Simulated API error'));
-          }
-        }, 2000);
-      });
+      // Import and use the actual addMenu function from the store
+      const { addMenu } = await import('@/stores/menu');
+      return await addMenu(formData);
     },
 
     resetForm() {
       this.menuItem = {
-        categoryName: '',
-        name: '',
+        categoryId: '',
+        name: {
+          en: '',
+          fr: '',
+          ar: ''
+        },
         price: '',
-        description: '',
-        image: null,
-        imagePreview: null
+        description: {
+          en: '',
+          fr: '',
+          ar: ''
+        },
+        image: null
       };
       this.errors = {};
+      this.selectedLanguage = 'en';
+    },
+
+    getLanguageName(code) {
+      const lang = this.availableLanguages.find(l => l.code === code);
+      return lang ? lang.name : code;
     },
 
     showSuccessNotification(message) {
@@ -400,12 +513,15 @@ export default {
     }
   },
 
-  mounted() {
-    // Focus on the category name input when component mounts
+  async mounted() {
+    // Load categories when component mounts
+    await this.loadCategories();
+    
+    // Focus on the category select when component mounts
     this.$nextTick(() => {
-      const categoryInput = this.$el.querySelector('input[placeholder*="category"]');
-      if (categoryInput) {
-        categoryInput.focus();
+      const categorySelect = this.$el.querySelector('select');
+      if (categorySelect) {
+        categorySelect.focus();
       }
     });
   }

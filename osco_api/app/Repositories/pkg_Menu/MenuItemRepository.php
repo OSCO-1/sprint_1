@@ -47,21 +47,38 @@ class MenuItemRepository extends BaseRepository
      */
     public function updateItem(int $id, array $data)
     {
+        \Log::info('Repository updateItem called', [
+            'id' => $id,
+            'data' => $data
+        ]);
+
         $item = $this->model->find($id);
 
         if (!$item) {
+            \Log::error('Item not found in repository', ['id' => $id]);
             return null;
         }
+
+        \Log::info('Item found, before update', [
+            'id' => $id,
+            'current_item' => $item->toArray()
+        ]);
 
         // Handle image upload if provided
         if (isset($data['image_url']) && $data['image_url'] instanceof \Illuminate\Http\UploadedFile) {
             $path = $data['image_url']->store('menu_items', 'public');
             $data['image_url'] = $path;
+            \Log::info('Image uploaded', ['path' => $path]);
         }
 
-        $item->update($data);
+        $updateResult = $item->update($data);
+        
+        \Log::info('Update result', [
+            'success' => $updateResult,
+            'updated_item' => $item->fresh()->toArray()
+        ]);
 
-        return $item;
+        return $item->fresh(); // Return fresh instance from database
     }
 
     /**
