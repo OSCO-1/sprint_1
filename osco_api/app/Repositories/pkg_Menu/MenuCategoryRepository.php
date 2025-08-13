@@ -103,14 +103,13 @@ class MenuCategoryRepository extends BaseRepository
     /**
      * Reorder categories for a restaurant.
      * 
-     * @param int $restaurantId
      * @param array $orderedIds Array of category IDs in new order.
      * Example: [5, 2, 9] → category ID 5 will be display_order 1, ID 2 will be 2, etc.
      */
     public function reorder(array $orderedIds): void
     {
         foreach ($orderedIds as $order => $id) {
-            // Update each category's 'order' column (or your custom order column)
+            // Update each category's 'display_order' column
             $this->model->where('id', $id)->update(['display_order' => $order + 1]);
         }
     }

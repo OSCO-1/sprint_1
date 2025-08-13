@@ -59,5 +59,75 @@ const updateCategory = async (id, data) => {
     isLoading.value = false;
   }
 };
+// Add new category
+const addCategory = async (categoryData) => {
+  isLoading.value = true;
+  error.value = null;
+  success.value = null;
 
-export { categories, isLoading, error, success, getCategories, deleteCategory, updateCategory };
+  try {
+    console.log('Sending POST request to categories endpoint...');
+    console.log('Category data:', categoryData);
+    
+    const response = await api.post('categories', categoryData);
+    console.log('Category creation response:', response.data);
+    
+    // Optionally, fetch categories again to update the list
+    await getCategories();
+    success.value = 'Category added successfully';
+    
+    return response.data;
+  } catch (err) {
+    console.error('Category creation error:', err);
+    console.error('Error response:', err.response?.data);
+    console.error('Error status:', err.response?.status);
+    
+    // Handle validation errors
+    if (err.response?.data?.errors) {
+      const validationErrors = Object.values(err.response.data.errors).flat();
+      error.value = validationErrors.join(', ');
+    } else {
+      error.value = err.response?.data?.message || err.response?.data?.error || 'Failed to add category';
+    }
+    
+    // Re-throw the error so the component can handle it
+    throw err;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Reorder categories
+const reorderCategories = async (orderedIds) => {
+  isLoading.value = true;
+  error.value = null;
+  success.value = null;
+
+  try {
+    console.log('Reordering categories with IDs:', orderedIds);
+    
+    const response = await api.post('categories/reorder', {
+      ordered_ids: orderedIds
+    });
+    
+    console.log('Reorder response:', response.data);
+    
+    // Refresh categories to get updated order
+    await getCategories();
+    success.value = 'Categories reordered successfully';
+    
+    return response.data;
+  } catch (err) {
+    console.error('Category reorder error:', err);
+    console.error('Error response:', err.response?.data);
+    
+    error.value = err.response?.data?.message || err.response?.data?.error || 'Failed to reorder categories';
+    
+    // Re-throw the error so the component can handle it
+    throw err;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+export { categories, isLoading, error, success, getCategories, deleteCategory, updateCategory, addCategory, reorderCategories };
