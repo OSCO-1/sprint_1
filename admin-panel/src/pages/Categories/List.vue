@@ -53,7 +53,10 @@
         <table class="table table-responsive">
           <thead>
             <tr>
-              <th>Image</th>
+              <th>
+                <i class="tim-icons icon-bullet-list-67 mr-1"></i>
+                Image
+              </th>
               <th>Name</th>
               <th>Display Order</th>
               <th>Description</th>
@@ -62,14 +65,29 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="category in categories" :key="category.id">
+            <tr 
+              v-for="(category, index) in sortedCategories" 
+              :key="category.id"
+              :data-id="category.id"
+              :data-index="index"
+              draggable="true"
+              @dragstart="handleDragStart($event, category, index)"
+              @dragover="handleDragOver"
+              @drop="handleDrop($event, index)"
+              @dragend="handleDragEnd"
+              :class="{ 'dragging': draggedItem && draggedItem.id === category.id, 'drag-over': dragOverIndex === index }"
+              class="draggable-row"
+            >
               <td>
-                <img
-                  :src="category.image_url || '/img/placeholder-category.jpg'"
-                  :alt="category.name.en"
-                  class="table-image"
-                  @error="handleImageError"
-                />
+                <div class="d-flex align-items-center">
+                  <i class="tim-icons icon-bullet-list-67 drag-handle mr-2 text-muted" title="Drag to reorder"></i>
+                  <img
+                    :src="category.image_url || '/img/placeholder-category.jpg'"
+                    :alt="category.name.en"
+                    class="table-image"
+                    @error="handleImageError"
+                  />
+                </div>
               </td>
               <td>
                 <strong>{{ category.name.en }}</strong>
@@ -299,7 +317,7 @@
 </template>
 
 <script>
-import { categories, isLoading, error, success, getCategories, deleteCategory, updateCategory } from '@/stores/category';
+import { categories, isLoading, error, success, getCategories, deleteCategory, updateCategory, reorderCategories } from '@/stores/category';
 import { BaseInput, BaseButton, Card, Modal } from '@/components';
 
 export default {
@@ -312,12 +330,19 @@ export default {
     return {
       currentPage: 1,
       itemsPerPage: 10,
-      showDeleteModal: false,
       showDetailsModal: false,
       showEditModal: false,
-      categoryToDelete: null,
+      showDeleteModal: false,
       selectedCategory: null,
-      editCategoryData: null,
+      editForm: {
+        name: '',
+        description: ''
+      },
+      // Drag and drop state
+      draggedItem: null,
+      draggedIndex: null,
+      dragOverIndex: null,
+      isReordering: false,
       isDeleting: false,
       isSaving: false,
     };
@@ -325,6 +350,10 @@ export default {
   computed: {
     categories() {
       return categories.value;
+    },
+    sortedCategories() {
+      // Sort categories by display_order for consistent drag and drop
+      return [...this.categories].sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
     },
     isLoading() {
       return isLoading.value;
@@ -385,12 +414,17 @@ export default {
       this.showDetailsModal = true;
     },
     editCategory(category) {
-      this.editCategoryData = { ...category };
+      this.selectedCategory = category;
+      this.editForm.name = category.name.en;
+      this.editForm.description = category.description.en;
       this.showEditModal = true;
     },
     closeEditModal() {
       this.showEditModal = false;
-      this.editCategoryData = null;
+      this.editForm = {
+        name: '',
+        description: ''
+      };
     },
     confirmDelete(category) {
       this.categoryToDelete = category;
@@ -406,15 +440,104 @@ export default {
       }
     },
     async saveCategoryUpdate() {
-      if (this.editCategoryData) {
+      if (this.selectedCategory) {
         this.isSaving = true;
-        await updateCategory(this.editCategoryData.id, this.editCategoryData);
+        await updateCategory(this.selectedCategory.id, {
+          name: { en: this.editForm.name },
+          description: { en: this.editForm.description },
+          display_order: this.selectedCategory.display_order,
+          image_url: this.selectedCategory.image_url
+        });
         this.isSaving = false;
         this.showEditModal = false;
-        this.editCategoryData = null;
         this.refreshCategories();
       }
     },
+    handleDragStart(event, category, index) {
+      this.draggedItem = category;
+      this.draggedIndex = index;
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/html', event.target.outerHTML);
+      
+      // Add visual feedback
+      event.target.style.opacity = '0.5';
+    },
+
+    handleDragOver(event) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+      
+      // Get the index of the row being dragged over
+      const row = event.target.closest('tr');
+      if (row) {
+        const index = parseInt(row.dataset.index);
+        this.dragOverIndex = index;
+      }
+    },
+
+    handleDrop(event, dropIndex) {
+      event.preventDefault();
+      
+      if (this.draggedIndex === null || this.draggedIndex === dropIndex) {
+        this.resetDragState();
+        return;
+      }
+
+      this.reorderItems(this.draggedIndex, dropIndex);
+      this.resetDragState();
+    },
+
+    handleDragEnd(event) {
+      // Reset visual feedback
+      event.target.style.opacity = '1';
+      this.resetDragState();
+    },
+
+    resetDragState() {
+      this.draggedItem = null;
+      this.draggedIndex = null;
+      this.dragOverIndex = null;
+    },
+
+    async reorderItems(fromIndex, toIndex) {
+      if (this.isReordering) return;
+      
+      this.isReordering = true;
+      
+      try {
+        // Create a copy of the sorted categories array
+        const items = [...this.sortedCategories];
+        
+        // Move the item from fromIndex to toIndex
+        const [movedItem] = items.splice(fromIndex, 1);
+        items.splice(toIndex, 0, movedItem);
+        
+        // Extract the IDs in the new order
+        const orderedIds = items.map(item => item.id);
+        
+        console.log('Reordering from index', fromIndex, 'to index', toIndex);
+        console.log('New order:', orderedIds);
+        
+        // Call the API to update the order
+        await reorderCategories(orderedIds);
+        
+        this.$notify({
+          type: 'success',
+          icon: 'tim-icons icon-check-2',
+          message: 'Categories reordered successfully!'
+        });
+        
+      } catch (error) {
+        console.error('Error reordering categories:', error);
+        this.$notify({
+          type: 'danger',
+          icon: 'tim-icons icon-simple-remove',
+          message: 'Failed to reorder categories. Please try again.'
+        });
+      } finally {
+        this.isReordering = false;
+      }
+    }
   },
   mounted() {
     getCategories();
@@ -431,103 +554,53 @@ export default {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.table-responsive {
-  border-radius: 8px;
-  overflow-x: auto;
+/* Drag and Drop Styles */
+.draggable-row {
+  cursor: move;
+  transition: all 0.2s ease;
 }
 
-.table {
-  margin-bottom: 0;
+.draggable-row:hover {
+  background-color: #f8f9fa;
 }
 
-.table th {
-  border-top: none;
-  font-weight: 600;
-  color: #525f7f;
-  background-color: #f8f9fe;
-  padding: 1rem 0.75rem;
+.draggable-row.dragging {
+  opacity: 0.5;
+  background-color: #e3f2fd;
 }
 
-.table td {
-  padding: 1rem 0.75rem;
+.draggable-row.drag-over {
+  background-color: #fff3e0;
+  border-top: 2px solid #1d8cf8;
+}
+
+.drag-handle {
+  cursor: grab;
+  font-size: 1.2rem;
+  transition: color 0.2s ease;
+}
+
+.drag-handle:hover {
+  color: #1d8cf8 !important;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.draggable-row td {
   vertical-align: middle;
 }
 
-.btn-group .btn {
-  margin-right: 0.25rem;
+.pagination {
+  justify-content: center;
+  margin-top: 20px;
 }
 
-.btn-group .btn:last-child {
-  margin-right: 0;
-}
-
-.mobile-card {
-  background: #fff;
-  border: 1px solid #e3e3e3;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  overflow: hidden;
-  transition: box-shadow 0.2s ease;
-}
-
-.mobile-card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.mobile-image {
-  width: 100%;
-  height: 120px;
-  object-fit: cover;
-}
-
-.mobile-card-body {
-  padding: 1rem;
-}
-
-.mobile-card-title {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #525f7f;
-}
-
-.mobile-card-text {
-  font-size: 0.875rem;
-  color: #8898aa;
-  margin-bottom: 0.5rem;
-  line-height: 1.4;
-}
-
-.mobile-card-meta {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 0.5rem;
-}
-
-.mobile-actions {
-  display: flex;
-  gap: 0.25rem;
-}
-
-.badge-sm {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-}
-
-@media (max-width: 576px) {
-  .mobile-actions {
-    flex-direction: row;
-    gap: 0.25rem;
-  }
-}
-
-.category-details .info-item {
-  margin-bottom: 0.5rem;
-}
-
-.pagination .page-link {
+.pagination .page-item .page-link {
   color: #1d8cf8;
-  border-color: #dee2e6;
+  border-color: #1d8cf8;
+  background-color: transparent;
 }
 
 .pagination .page-item.active .page-link {

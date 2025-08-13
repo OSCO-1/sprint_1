@@ -40,13 +40,34 @@
           </template>
 
           <form @submit.prevent="submitCategory">
+            <!-- Language Selector -->
+            <div class="row">
+              <div class="col-md-12">
+                <label class="form-control-label">Language *</label>
+                <div class="language-selector mb-3">
+                  <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label 
+                      v-for="lang in availableLanguages" 
+                      :key="lang.code"
+                      :class="['btn', 'btn-outline-primary', { 'active': selectedLanguage === lang.code }]"
+                      @click="selectedLanguage = lang.code"
+                    >
+                      <input type="radio" :value="lang.code" v-model="selectedLanguage" autocomplete="off">
+                      <i :class="lang.icon" class="mr-1"></i>
+                      {{ lang.name }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Category Name -->
             <div class="row">
               <div class="col-md-12">
                 <base-input
-                  label="Category Name *"
-                  placeholder="Enter category name (e.g., Electronics, Clothing, Food)"
-                  v-model="category.name"
+                  :label="`Category Name (${getLanguageName(selectedLanguage)}) *`"
+                  :placeholder="`Enter category name in ${getLanguageName(selectedLanguage)}`"
+                  v-model="category.name[selectedLanguage]"
                   :class="{ 'has-danger': errors.name }"
                   required
                 >
@@ -59,12 +80,12 @@
             <div class="row">
               <div class="col-md-12">
                 <base-input>
-                  <label>Description</label>
+                  <label>Description ({{ getLanguageName(selectedLanguage) }})</label>
                   <textarea
                     rows="4"
                     class="form-control"
-                    placeholder="Describe what this category is for (optional)"
-                    v-model="category.description"
+                    :placeholder="`Describe what this category is for in ${getLanguageName(selectedLanguage)} (optional)`"
+                    v-model="category.description[selectedLanguage]"
                     :class="{ 'has-danger': errors.description }"
                   ></textarea>
                   <small v-if="errors.description" class="text-danger">{{ errors.description }}</small>
@@ -76,7 +97,7 @@
             <div class="row">
               <div class="col-md-12">
                 <label class="form-control-label">Category Image *</label>
-                <div 
+                <div
                   class="image-upload-container"
                   :class="{ 'has-image': category.imagePreview, 'has-error': errors.image }"
                   @dragover.prevent
@@ -84,21 +105,21 @@
                   @drop.prevent="handleImageDrop"
                   @click="triggerFileInput"
                 >
-                  <input 
+                  <input
                     ref="fileInput"
-                    type="file" 
-                    accept="image/*" 
-                    @change="handleImageUpload" 
+                    type="file"
+                    accept="image/*"
+                    @change="handleImageUpload"
                     style="display: none;"
                   />
-                  
+
                   <div v-if="!category.imagePreview" class="upload-placeholder">
                     <i class="tim-icons icon-cloud-upload-94 upload-icon"></i>
                     <h4>Upload Category Image</h4>
                     <p>Drag and drop an image here, or click to browse</p>
                     <small class="text-muted">Supported formats: JPG, PNG, GIF (Max 5MB)</small>
                   </div>
-                  
+
                   <div v-else class="image-preview-container">
                     <img :src="category.imagePreview" alt="Category Image Preview" class="preview-image" />
                     <div class="image-overlay">
@@ -134,7 +155,7 @@
                     <i class="fa fa-spinner fa-spin" v-if="isSubmitting"></i>
                     {{ isSubmitting ? 'Creating...' : 'Create Category' }}
                   </base-button>
-                  
+
                   <base-button
                     type="secondary"
                     size="lg"
@@ -145,7 +166,7 @@
                     <i class="tim-icons icon-refresh-01"></i>
                     Reset
                   </base-button>
-                  
+
                   <router-link to="/categories/list" class="btn btn-link btn-lg ml-2">
                     <i class="tim-icons icon-minimal-left"></i>
                     Back to List
@@ -161,7 +182,9 @@
 </template>
 
 <script>
+import { addCategory, error, success, isLoading } from '@/stores/category';
 import { BaseInput, BaseButton, Card } from '@/components';
+
 
 export default {
   name: 'AddCategory',
@@ -172,11 +195,25 @@ export default {
   },
   data() {
     return {
+      selectedLanguage: 'en', // Default language
+      availableLanguages: [
+        { code: 'en', name: 'English', icon: 'tim-icons icon-world' },
+        { code: 'ar', name: 'العربية', icon: 'tim-icons icon-world' },
+        { code: 'fr', name: 'Français', icon: 'tim-icons icon-world' }
+      ],
       category: {
-        name: '',
-        description: '',
+        name: {
+          en: '',
+          ar: '',
+          fr: ''
+        },
+        description: {
+          en: '',
+          ar: '',
+          fr: ''
+        },
         image: null,
-        imagePreview: null
+        imagePreview: null,
       },
       errors: {},
       isSubmitting: false
@@ -187,18 +224,20 @@ export default {
       this.errors = {};
       let isValid = true;
 
-      // Validate category name
-      if (!this.category.name || this.category.name.trim().length < 2) {
-        this.errors.name = 'Category name must be at least 2 characters long';
+      // Validate category name for selected language
+      const currentName = this.category.name[this.selectedLanguage];
+      if (!currentName || currentName.trim().length < 2) {
+        this.errors.name = `Category name in ${this.getLanguageName(this.selectedLanguage)} must be at least 2 characters long`;
         isValid = false;
-      } else if (this.category.name.length > 50) {
-        this.errors.name = 'Category name must be less than 50 characters';
+      } else if (currentName.length > 50) {
+        this.errors.name = `Category name in ${this.getLanguageName(this.selectedLanguage)} must be less than 50 characters`;
         isValid = false;
       }
 
-      // Validate description length
-      if (this.category.description && this.category.description.length > 500) {
-        this.errors.description = 'Description must be less than 500 characters';
+      // Validate description length for selected language
+      const currentDescription = this.category.description[this.selectedLanguage];
+      if (currentDescription && currentDescription.length > 500) {
+        this.errors.description = `Description in ${this.getLanguageName(this.selectedLanguage)} must be less than 500 characters`;
         isValid = false;
       }
 
@@ -223,10 +262,10 @@ export default {
 
     processImageFile(file) {
       if (!file) return;
-      
+
       // Clear previous errors
       delete this.errors.image;
-      
+
       // Validate file type
       if (!file.type.startsWith('image/')) {
         this.errors.image = 'Please upload a valid image file';
@@ -269,54 +308,72 @@ export default {
       this.isSubmitting = true;
 
       try {
-        // Simulate API call with FormData for image upload
-        const formData = new FormData();
-        formData.append('name', this.category.name);
-        formData.append('description', this.category.description);
-        formData.append('image', this.category.image);
+        // First, upload the image to get a URL
+        let imageUrl = null;
+        if (this.category.image) {
+          imageUrl = await this.uploadImage(this.category.image);
+          if (!imageUrl) {
+            this.showErrorNotification('Failed to upload image. Please try again.');
+            return;
+          }
+        }
 
-        await this.createCategory(formData);
-        
+        // Prepare data for API (JSON format, not FormData)
+        const categoryData = {
+          restaurant_id: 1, // Default restaurant ID
+          name: this.category.name,
+          description: this.category.description,
+          image_url: imageUrl,
+        };
+
+        console.log('Submitting category with data:', categoryData);
+
+        await addCategory(categoryData);
+
+        // Check if there was an error in the store
+        if (error.value) {
+          this.showErrorNotification(error.value);
+          return;
+        }
+
         this.showSuccessNotification('Category created successfully!');
-        
-        // Reset form after successful submission
         this.resetForm();
-        
-        // Redirect to categories list
+
         setTimeout(() => {
           this.$router.push('/categories/list');
         }, 1500);
-        
-      } catch (error) {
-        console.error('Error creating category:', error);
-        this.showErrorNotification('Failed to create category. Please try again.');
+
+      } catch (err) {
+        console.error('Error creating category:', err);
+        const errorMessage = err.response?.data?.message || err.message || 'Failed to create category. Please try again.';
+        this.showErrorNotification(errorMessage);
       } finally {
         this.isSubmitting = false;
       }
     },
 
-    async createCategory(formData) {
-      // Simulate API call with delay
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Simulate random success/failure for demo
-          if (Math.random() > 0.1) { // 90% success rate
-            resolve({ id: Date.now(), ...formData });
-          } else {
-            reject(new Error('Simulated API error'));
-          }
-        }, 2000);
-      });
-    },
-
     resetForm() {
       this.category = {
-        name: '',
-        description: '',
+        name: {
+          en: '',
+          ar: '',
+          fr: ''
+        },
+        description: {
+          en: '',
+          ar: '',
+          fr: ''
+        },
         image: null,
-        imagePreview: null
+        imagePreview: null,
       };
       this.errors = {};
+      this.selectedLanguage = 'en'; // Reset to default language
+    },
+
+    getLanguageName(code) {
+      const lang = this.availableLanguages.find(l => l.code === code);
+      return lang ? lang.name : code;
     },
 
     showSuccessNotification(message) {
@@ -325,6 +382,30 @@ export default {
         icon: 'tim-icons icon-check-2',
         message: message
       });
+    },
+
+    async uploadImage(file) {
+      try {
+        const formData = new FormData();
+        formData.append('image', file);
+        
+        // You might need to create an image upload endpoint
+        // For now, we'll create a temporary URL or use a placeholder
+        // In a real app, you'd upload to your server or cloud storage
+        
+        // Create a temporary blob URL for now
+        // TODO: Replace with actual image upload endpoint
+        const imageUrl = URL.createObjectURL(file);
+        
+        // For demo purposes, return a placeholder URL
+        // In production, you'd upload to your server and return the actual URL
+        const displayName = this.category.name[this.selectedLanguage] || this.category.name.en || 'Category';
+        return `https://via.placeholder.com/300x200?text=${encodeURIComponent(displayName)}`;
+        
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        return null;
+      }
     },
 
     showErrorNotification(message) {
@@ -425,5 +506,56 @@ export default {
 
 .text-danger {
   color: #fd5d93 !important;
+}
+
+/* Language Selector Styles */
+.language-selector .btn-group {
+  width: 100%;
+}
+
+.language-selector .btn {
+  flex: 1;
+  border-radius: 6px;
+  margin: 0 2px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.language-selector .btn:first-child {
+  margin-left: 0;
+}
+
+.language-selector .btn:last-child {
+  margin-right: 0;
+}
+
+.language-selector .btn-outline-primary {
+  border-color: #1d8cf8;
+  color: #1d8cf8;
+  background-color: transparent;
+}
+
+.language-selector .btn-outline-primary:hover,
+.language-selector .btn-outline-primary.active {
+  background-color: #1d8cf8;
+  border-color: #1d8cf8;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(29, 140, 248, 0.3);
+}
+
+.language-selector .btn-outline-primary.active {
+  font-weight: 600;
+}
+
+.language-selector input[type="radio"] {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .language-selector .btn {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+  }
 }
 </style>
