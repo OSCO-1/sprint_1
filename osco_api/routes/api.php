@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\pkg_Core\RestaurantController;
 use App\Http\Controllers\pkg_Menu\MenuCategoryController;
+use App\Http\Controllers\pkg_Menu\MenuItemController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/test', function () {
@@ -25,4 +26,14 @@ Route::prefix('categories')->group(function () {
 
     // Reorder categories
     Route::post('reorder', [MenuCategoryController::class, 'reorder']);
+});
+
+
+
+Route::prefix('items')->group(function () {
+    Route::get('/', [MenuItemController::class, 'index']);          // List all menu items
+    Route::post('/', [MenuItemController::class, 'store']);         // Create new menu item
+    Route::get('/{id}', [MenuItemController::class, 'show']);       // Get single menu item
+    Route::put('/{id}', [MenuItemController::class, 'update']);     // Update menu item
+    Route::delete('/{id}', [MenuItemController::class, 'destroy']); // Delete menu item
 });
