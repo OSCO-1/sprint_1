@@ -63,6 +63,7 @@ class MenuCategoryController extends Controller
      */
     public function update(UpdateMenuCategoryRequest $request, int $id): JsonResponse
     {
+        // dd($request->all());
         $validated = $request->validated();
 
         $category = $this->categoryRepo->updateCategory($id, $validated);

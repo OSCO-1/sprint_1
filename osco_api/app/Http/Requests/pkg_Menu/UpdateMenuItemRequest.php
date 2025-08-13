@@ -15,7 +15,6 @@ class UpdateMenuItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'restaurant_id'     => ['sometimes', 'integer', 'exists:restaurants,id'],
             'menu_category_id'  => ['sometimes', 'integer', 'exists:menu_categories,id'],
             'name'              => ['sometimes', 'array'],
             'name.*'            => ['required_with:name', 'string', 'max:255'],

@@ -71,6 +71,7 @@ class MenuItemController extends Controller
      */
     public function update(UpdateMenuItemRequest $request, int $id): JsonResponse
     {
+            // dd($request->all());
         $validated = $request->validated();
 
         if ($request->hasFile('image_url')) {
