@@ -16,7 +16,7 @@
           <!-- Header Image Section -->
           <div class="relative bg-red-500 h-64 sm:h-72 rounded-t-3xl sm:rounded-t-3xl overflow-hidden">
             <img
-              :src="pizzaImage" 
+              :src="`http://127.0.0.1:8000/storage${menuItem.image_url}`" 
               :alt="menuItem.name" 
               class="w-full h-full object-cover absolute top-0"
             />
@@ -60,7 +60,6 @@
 <script setup>
 import { ref } from 'vue';
 import { X } from 'lucide-vue-next';
-import pizzaImage from '@/assets/pizza.png';
 
 // eslint-disable-next-line no-unused-vars
 const props = defineProps({

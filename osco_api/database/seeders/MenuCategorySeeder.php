@@ -23,7 +23,7 @@ class MenuCategorySeeder extends Seeder
                     'en' => 'Discover our delicious pizzas, made with fresh ingredients and homemade dough.',
                     'ar' => 'اكتشف البيتزا اللذيذة لدينا، المحضرة بمكونات طازجة وعجينة مصنوعة يدويًا.'
                 ],
-                'image_url' => '/menu_categories/pizzas.jpg',
+                'image_url' => '/categories_seeders/pizzas.jpg',
                 'display_order' => 1,
             ],
             [
@@ -33,7 +33,7 @@ class MenuCategorySeeder extends Seeder
                     'en' => 'Generously filled tacos with our famous cheese sauce, for an unforgettable experience.',
                     'ar' => 'تاكوس غني بحشوته اللذيذة وصلصة الجبن الشهيرة لتجربة لا تُنسى.'
                 ],
-                'image_url' => '/menu_categories/tacos.jpg',
+                'image_url' => '/categories_seeders/tacos.jpg',
                 'display_order' => 2,
             ],
             [
@@ -43,7 +43,7 @@ class MenuCategorySeeder extends Seeder
                     'en' => 'The authentic taste of shawarma, marinated in oriental spices and grilled to perfection.',
                     'ar' => 'الطعم الأصيل للشاورما، المتبلة بالبهارات الشرقية والمشوية بإتقان.'
                 ],
-                'image_url' => '/menu_categories/shawarma.jpg',
+                'image_url' => '/categories_seeders/shawarma.jpg',
                 'display_order' => 3,
             ],
             [
@@ -53,7 +53,7 @@ class MenuCategorySeeder extends Seeder
                     'en' => 'Gourmet burgers with quality meat and soft buns.',
                     'ar' => 'برجر شهي محضر من لحم عالي الجودة وخبز طري.'
                 ],
-                'image_url' => '/menu_categories/burgers.jpg',
+                'image_url' => '/categories_seeders/burgers.jpg',
                 'display_order' => 4,
             ],
             [
@@ -63,7 +63,7 @@ class MenuCategorySeeder extends Seeder
                     'en' => 'A wide choice of hot and crispy sandwiches and paninis for every appetite.',
                     'ar' => 'تشكيلة واسعة من الساندويتشات والبانيني الساخنة والمقرمشة لجميع الأذواق.'
                 ],
-                'image_url' => '/menu_categories/sandwiches.jpg',
+                'image_url' => '/categories_seeders/sandwiches.jpg',
                 'display_order' => 5,
             ],
             [
@@ -73,7 +73,7 @@ class MenuCategorySeeder extends Seeder
                     'en' => 'Complete dishes served on a plate with fries and fresh salad.',
                     'ar' => 'أطباق متكاملة تقدم مع بطاطس مقلية وسلطة طازجة.'
                 ],
-                'image_url' => '/menu_categories/plates.jpg',
+                'image_url' => '/categories_seeders/plates.jpg',
                 'display_order' => 6,
             ],
             [
@@ -83,7 +83,7 @@ class MenuCategorySeeder extends Seeder
                     'en' => 'Fresh and composed salads for a light and healthy meal.',
                     'ar' => 'سلطات طازجة ومتنوعة لوجبة خفيفة وصحية.'
                 ],
-                'image_url' => '/menu_categories/salads.jpg',
+                'image_url' => '/categories_seeders/salads.jpg',
                 'display_order' => 7,
             ],
             [
@@ -93,7 +93,7 @@ class MenuCategorySeeder extends Seeder
                     'en' => 'To complete your meal: golden fries, chicken wings, and more.',
                     'ar' => 'لتكمل وجبتك: بطاطس ذهبية، أجنحة دجاج وأكثر.'
                 ],
-                'image_url' => '/menu_categories/side.jpg',
+                'image_url' => '/categories_seeders/side.jpg',
                 'display_order' => 8,
             ],
             [
@@ -103,7 +103,7 @@ class MenuCategorySeeder extends Seeder
                     'en' => 'Finish your meal on a sweet note with our homemade desserts.',
                     'ar' => 'اختم وجبتك بلمسة حلوة مع حلوياتنا المصنوعة منزليًا.'
                 ],
-                'image_url' => '/menu_categories/desserts.jpg',
+                'image_url' => '/categories_seeders/desserts.jpg',
                 'display_order' => 9,
             ],
             [
@@ -113,7 +113,7 @@ class MenuCategorySeeder extends Seeder
                     'en' => 'A selection of fresh drinks, juices, and sodas to quench your thirst.',
                     'ar' => 'تشكيلة من المشروبات الباردة والعصائر والمياه الغازية لتروي عطشك.'
                 ],
-                'image_url' => '/menu_categories/drinks.jpg',
+                'image_url' => '/categories_seeders/drinks.jpg',
                 'display_order' => 10,
             ],
         ];
