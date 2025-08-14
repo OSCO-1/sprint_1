@@ -3,7 +3,7 @@
 
 
 
-## GIT ss
+## GIT
 
 ```bash
 git add -f storage/app/public/menuItems_seeders
