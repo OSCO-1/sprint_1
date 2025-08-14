@@ -40,10 +40,10 @@
             <!-- Title and Description -->
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ menuItem.name }}</h2>
-              <p class="text-gray-600 leading-relaxed text-sm sm:text-base">{{ menuItem.description }}</p>
+              <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ menuItem.name.en }}</h2>
+              <p class="text-gray-600 leading-relaxed text-sm sm:text-base">{{ menuItem.description.en }}</p>
             </div>
-            <h2 class="text-2xl sm:text-3xl font-bold text-orange-600 mb-2">{{ menuItem.price }} MAD</h2>
+            <h2 class="text-2xl sm:text-3xl font-bold text-orange-600 mb-2">{{ menuItem.base_price }} DH</h2>
           </div>
             
             

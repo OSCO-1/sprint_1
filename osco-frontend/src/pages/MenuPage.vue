@@ -215,10 +215,10 @@ onMounted(async () => {
         </div>
 
         <!-- Category List -->
-        <div v-else-if="categoryItems.length > 0" class="mb-6 lg:mb-8" data-aos="fade-up" data-aos-delay="200">
+        <div v-else-if="categoryItems && categoryItems.length > 0" class="mb-6 lg:mb-8" data-aos="fade-up" data-aos-delay="200">
           <!-- Mobile: Horizontal scrollable categories -->
           <div class="lg:hidden overflow-x-auto scroll-smooth flex space-x-4 px-4">
-            <div v-for="category in categoryItems" :key="category.id" class="flex flex-col items-center flex-shrink-0">
+            <div v-for="category in categoryItems || []" :key="category.id" class="flex flex-col items-center flex-shrink-0">
               <button 
                 @click="handleCategoryFilter(category.id)"
                 :class="[
@@ -229,13 +229,13 @@ onMounted(async () => {
                 <div v-if="category.name === 'Promotions'" class="text-white text-xl font-bold">%</div>
                 <img v-else :src="pizzaImage" alt="Category" class="w-10 h-10 object-cover rounded-xl">
               </button>
-              <span class="text-xs text-black font-medium text-center">{{ category.name }}</span>
+              <span class="text-xs text-black font-medium text-center">{{ category.name.en }}</span>
             </div>
           </div>
 
           <!-- Desktop: All categories in a grid -->
           <div class="hidden lg:grid grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-6">
-            <div v-for="category in categoryItems" :key="category.id" class="flex flex-col items-center">
+            <div v-for="category in categoryItems || []" :key="category.id" class="flex flex-col items-center">
               <button 
                 @click="handleCategoryFilter(category.id)"
                 :class="[
@@ -246,7 +246,7 @@ onMounted(async () => {
                 <div v-if="category.name === 'Promotions'" class="text-white text-2xl xl:text-3xl font-bold">%</div>
                 <img v-else :src="pizzaImage" alt="Category" class="w-14 h-14 xl:w-16 xl:h-16 object-cover rounded-2xl">
               </button>
-              <span class="text-sm xl:text-base text-black font-medium text-center">{{ category.name }}</span>
+              <span class="text-sm xl:text-base text-black font-medium text-center">{{ category.name.en }}</span>
             </div>
           </div>
         </div>
@@ -268,7 +268,7 @@ onMounted(async () => {
     <div class="px-4 sm:px-6 lg:px-8 pb-6 lg:pb-12">
       <div class="max-w-7xl mx-auto">
         <!-- No Results Message -->
-        <div v-if="searchTerm && filteredMenuItems.length === 0" class="text-center py-12 lg:py-20">
+        <div v-if="searchTerm && filteredMenuItems && filteredMenuItems.length === 0" class="text-center py-12 lg:py-20">
           <div class="text-gray-400 mb-4 lg:mb-6">
             <Search class="mx-auto h-12 w-12 lg:h-16 lg:w-16" />
           </div>
@@ -281,7 +281,7 @@ onMounted(async () => {
           <!-- Mobile: Single column -->
           <div class="space-y-4 lg:hidden">
             <div
-              v-for="item in filteredMenuItems"
+              v-for="item in filteredMenuItems || []"
               :key="item.id"
               class="bg-white rounded-2xl overflow-hidden shadow-sm cursor-pointer hover:shadow-md transition-shadow duration-200"
               @click="handleItemSelect(item)"
@@ -299,15 +299,15 @@ onMounted(async () => {
               <!-- Restaurant Info -->
               <div class="px-4 pb-4">
                 <div class="flex items-start justify-between mb-2">
-                  <h3 class="text-xl font-bold text-black">{{ item.name }}</h3>
+                  <h3 class="text-xl font-bold text-black">{{ item.name.en }}</h3>
                 </div>
                 
                 <p class="text-gray-500 text-sm mb-2 line-clamp-1">
-                  {{ item.description }}
+                  {{ item.description.en }}
                 </p>
                 
                 <div class="flex items-center text-gray-400 text-xl text-bold mb-4 text-orange-600">
-                  <span>{{ item.price }} MAD</span>
+                  <span>{{ item.base_price }} DH</span>
                 </div>
               </div>
             </div>
@@ -316,7 +316,7 @@ onMounted(async () => {
           <!-- Desktop: Grid layout -->
           <div class="hidden lg:grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 xl:gap-8">
             <div
-              v-for="(item, index) in filteredMenuItems"
+              v-for="(item, index) in filteredMenuItems || []"
               :key="item.id"
               class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
               @click="handleItemSelect(item)"
@@ -335,7 +335,7 @@ onMounted(async () => {
               <!-- Restaurant Info -->
               <div class="px-6 pb-6">
                 <div class="flex items-start justify-between mb-3">
-                  <h3 class="text-xl xl:text-2xl font-bold text-black group-hover:text-orange-600 transition-colors">{{ item.name }}</h3>
+                  <h3 class="text-xl xl:text-2xl font-bold text-black group-hover:text-orange-600 transition-colors">{{ item.name.en }}</h3>
                   <!-- <div class="flex items-center space-x-1">
                     <Star class="w-4 h-4 xl:w-5 xl:h-5 text-orange-400 fill-current" />
                     <span class="text-orange-500 font-medium text-sm xl:text-base">New</span>
@@ -343,7 +343,7 @@ onMounted(async () => {
                 </div>
                 
                 <p class="text-gray-500 text-sm xl:text-base mb-4 line-clamp-2">
-                  {{ item.description }}
+                  {{ item.description.en }}
                 </p>
                 
                 <div class="flex items-center justify-between mb-6">

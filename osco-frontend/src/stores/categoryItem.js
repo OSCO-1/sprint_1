@@ -10,8 +10,8 @@ const success = ref(false);
 const getCategoryItems = async () => {
   isLoading.value = true;
   try {
-    const response = await api.get('menu-category');
-    categoryItems.value = response.data.data;
+    const response = await api.get('categories');
+    categoryItems.value = response.data;
     success.value = true;
   } catch (err) {
     error.value = err.response ? err.response.data : 'Network Error';

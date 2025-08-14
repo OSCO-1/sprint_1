@@ -34,6 +34,7 @@ Route::prefix('categories')->group(function () {
 Route::prefix('items')->group(function () {
     Route::get('/', [MenuItemController::class, 'index']);          // List all menu items
     Route::post('/', [MenuItemController::class, 'store']);         // Create new menu item
+    Route::get('/filter/{categoryId}', [MenuItemController::class, 'filterByCategory']); // Get items by category
     Route::get('/{id}', [MenuItemController::class, 'show']);       // Get single menu item
     Route::put('/{id}', [MenuItemController::class, 'update']);     // Update menu item
     Route::post('/{id}', [MenuItemController::class, 'update']);    // Update menu item (POST with _method=PUT)

@@ -115,4 +115,13 @@ class MenuItemController extends Controller
 
         return response()->json(['message' => 'Menu item deleted successfully']);
     }
+
+    /**
+     * Filter menu items by category ID.
+     */
+    public function filterByCategory(int $categoryId): JsonResponse
+    {
+        $items = $this->itemRepo->getAll()->where('menu_category_id', $categoryId);
+        return response()->json(['data' => $items]);
+    }
 }
