@@ -227,7 +227,15 @@ onMounted(async () => {
                 ]"
               >
                 <div v-if="category.name === 'Promotions'" class="text-white text-xl font-bold">%</div>
-                <img v-else :src="pizzaImage" alt="Category" class="w-10 h-10 object-cover rounded-xl">
+                <img 
+                  v-else 
+                  :src="`http://127.0.0.1:8000/storage${category.image_url}`" 
+                  :alt="category.name.en || 'Category'" 
+                  class="w-10 h-10 object-cover rounded-xl"
+                  @error="handleImageError"
+                  @load="handleImageLoad"
+                >
+
               </button>
               <span class="text-xs text-black font-medium text-center">{{ category.name.en }}</span>
             </div>

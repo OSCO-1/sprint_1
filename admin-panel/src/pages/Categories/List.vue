@@ -27,6 +27,18 @@
       </div>
     </div>
 
+    <!-- Search Bar -->
+    <div class="row mb-3">
+      <div class="col-lg-6 col-md-8 col-sm-12 mx-auto">
+        <base-input
+          v-model="searchTerm"
+          placeholder="Search categories..."
+          icon="tim-icons icon-zoom-split"
+          class="w-100"
+        />
+      </div>
+    </div>
+
     <!-- Refresh Button -->
     <div class="row">
       <div class="col-12">
@@ -48,7 +60,7 @@
     </div>
 
     <!-- Categories Table -->
-    <div class="row" v-if="!isLoading && categories.length > 0">
+    <div class="row" v-if="!isLoading && filteredCategories.length > 0">
       <div class="col-12">
         <table class="table table-responsive">
           <thead>
@@ -66,7 +78,7 @@
           </thead>
           <tbody>
             <tr 
-              v-for="(category, index) in sortedCategories" 
+              v-for="(category, index) in filteredSortedCategories" 
               :key="category.id"
               :data-id="category.id"
               :data-index="index"
@@ -344,6 +356,7 @@ export default {
       isReordering: false,
       isDeleting: false,
       isSaving: false,
+      searchTerm: '',
     };
   },
   computed: {
@@ -382,6 +395,22 @@ export default {
       }
       return pages;
     },
+    filteredCategories() {
+      if (!this.searchTerm.trim()) return this.categories;
+      const term = this.searchTerm.trim().toLowerCase();
+      return this.categories.filter(cat =>
+        (cat.name?.en || '').toLowerCase().includes(term) ||
+        (cat.name?.ar || '').toLowerCase().includes(term) ||
+        (cat.name?.fr || '').toLowerCase().includes(term) ||
+        (cat.description?.en || '').toLowerCase().includes(term) ||
+        (cat.description?.ar || '').toLowerCase().includes(term) ||
+        (cat.description?.fr || '').toLowerCase().includes(term)
+      );
+    },
+    filteredSortedCategories() {
+      // Sort filtered categories by display_order
+      return [...this.filteredCategories].sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+    },
   },
   methods: {
     async refreshCategories() {
@@ -411,14 +440,14 @@ export default {
     },
     editCategory(category) {
       this.selectedCategory = { ...category }; // Create a copy to avoid direct mutation
-      
+
       // Safely populate form fields with fallbacks
       this.editForm.name = category.name?.en || category.name || '';
       this.editForm.description = category.description?.en || category.description || '';
-      
+
       console.log('Editing category:', category);
       console.log('Edit form populated:', this.editForm);
-      
+
       this.showEditModal = true;
     },
     closeEditModal() {
@@ -460,7 +489,7 @@ export default {
       this.draggedIndex = index;
       event.dataTransfer.effectAllowed = 'move';
       event.dataTransfer.setData('text/html', event.target.outerHTML);
-      
+
       // Add visual feedback
       event.target.style.opacity = '0.5';
     },
@@ -468,7 +497,7 @@ export default {
     handleDragOver(event) {
       event.preventDefault();
       event.dataTransfer.dropEffect = 'move';
-      
+
       // Get the index of the row being dragged over
       const row = event.target.closest('tr');
       if (row) {
@@ -479,7 +508,7 @@ export default {
 
     handleDrop(event, dropIndex) {
       event.preventDefault();
-      
+
       if (this.draggedIndex === null || this.draggedIndex === dropIndex) {
         this.resetDragState();
         return;
@@ -503,32 +532,32 @@ export default {
 
     async reorderItems(fromIndex, toIndex) {
       if (this.isReordering) return;
-      
+
       this.isReordering = true;
-      
+
       try {
         // Create a copy of the sorted categories array
         const items = [...this.sortedCategories];
-        
+
         // Move the item from fromIndex to toIndex
         const [movedItem] = items.splice(fromIndex, 1);
         items.splice(toIndex, 0, movedItem);
-        
+
         // Extract the IDs in the new order
         const orderedIds = items.map(item => item.id);
-        
+
         console.log('Reordering from index', fromIndex, 'to index', toIndex);
         console.log('New order:', orderedIds);
-        
+
         // Call the API to update the order
         await reorderCategories(orderedIds);
-        
+
         this.$notify({
           type: 'success',
           icon: 'tim-icons icon-check-2',
           message: 'Categories reordered successfully!'
         });
-        
+
       } catch (error) {
         console.error('Error reordering categories:', error);
         this.$notify({

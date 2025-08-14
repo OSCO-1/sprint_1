@@ -25,10 +25,10 @@ const getCategories = async (retryCount = 0) => {
       return getCategories(retryCount + 1);
     }
 
-    const errorMessage = err.code === 'ECONNABORTED' 
+    const errorMessage = err.code === 'ECONNABORTED'
       ? 'Server timeout - please check your connection and try again'
       : err.response?.data?.message || 'Failed to fetch categories';
-    
+
     error.value = errorMessage;
     console.error('Error fetching categories:', err);
   } finally {
@@ -59,12 +59,12 @@ const updateCategory = async (id, data) => {
 
   try {
     console.log('Updating category with data:', { id, data });
-    
+
     // Categories use JSON data, not FormData, so regular PUT works fine
     const response = await api.put(`categories/${id}`, data);
-    
+
     console.log('Category update response:', response.data);
-    
+
     const index = categories.value.findIndex((category) => category.id == id);
     if (index !== -1) {
       categories.value[index] = response.data;
@@ -72,16 +72,16 @@ const updateCategory = async (id, data) => {
     } else {
       console.warn('Category not found in local store, refreshing list');
     }
-    
+
     // Refresh the entire list to ensure consistency
     await getCategories();
     success.value = 'Category updated successfully';
-    
+
     return response.data;
   } catch (err) {
     console.error('Error updating category:', err);
     console.error('Error response:', err.response?.data);
-    
+
     const errorMessage = err.response?.data?.message || 'Failed to update category';
     if (err.response?.data?.errors) {
       error.value = Object.values(err.response.data.errors).join(', ');
@@ -100,22 +100,20 @@ const addCategory = async (categoryData) => {
   success.value = null;
 
   try {
-    console.log('Sending POST request to categories endpoint...');
-    console.log('Category data:', categoryData);
-    
-    const response = await api.post('categories', categoryData);
-    console.log('Category creation response:', response.data);
-    
-    // Optionally, fetch categories again to update the list
+    let config = {};
+    // If FormData, set correct headers
+    if (categoryData instanceof FormData) {
+      config.headers = { 'Content-Type': 'multipart/form-data' };
+    }
+    const response = await api.post('categories', categoryData, config);
     await getCategories();
     success.value = 'Category added successfully';
-    
     return response.data;
   } catch (err) {
     console.error('Category creation error:', err);
     console.error('Error response:', err.response?.data);
     console.error('Error status:', err.response?.status);
-    
+
     // Handle validation errors
     if (err.response?.data?.errors) {
       const validationErrors = Object.values(err.response.data.errors).flat();
@@ -123,7 +121,7 @@ const addCategory = async (categoryData) => {
     } else {
       error.value = err.response?.data?.message || err.response?.data?.error || 'Failed to add category';
     }
-    
+
     // Re-throw the error so the component can handle it
     throw err;
   } finally {
@@ -139,24 +137,24 @@ const reorderCategories = async (orderedIds) => {
 
   try {
     console.log('Reordering categories with IDs:', orderedIds);
-    
+
     const response = await api.post('categories/reorder', {
       ordered_ids: orderedIds
     });
-    
+
     console.log('Reorder response:', response.data);
-    
+
     // Refresh categories to get updated order
     await getCategories();
     success.value = 'Categories reordered successfully';
-    
+
     return response.data;
   } catch (err) {
     console.error('Category reorder error:', err);
     console.error('Error response:', err.response?.data);
-    
+
     error.value = err.response?.data?.message || err.response?.data?.error || 'Failed to reorder categories';
-    
+
     // Re-throw the error so the component can handle it
     throw err;
   } finally {

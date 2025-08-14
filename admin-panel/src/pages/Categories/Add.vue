@@ -46,8 +46,8 @@
                 <label class="form-control-label">Language *</label>
                 <div class="language-selector mb-3">
                   <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label 
-                      v-for="lang in availableLanguages" 
+                    <label
+                      v-for="lang in availableLanguages"
                       :key="lang.code"
                       :class="['btn', 'btn-outline-primary', { 'active': selectedLanguage === lang.code }]"
                       @click="selectedLanguage = lang.code"
@@ -220,35 +220,42 @@ export default {
     }
   },
   methods: {
-    validateForm() {
-      this.errors = {};
-      let isValid = true;
+  validateForm() {
+  this.errors = {};
+  let isValid = true;
 
-      // Validate category name for selected language
-      const currentName = this.category.name[this.selectedLanguage];
-      if (!currentName || currentName.trim().length < 2) {
-        this.errors.name = `Category name in ${this.getLanguageName(this.selectedLanguage)} must be at least 2 characters long`;
-        isValid = false;
-      } else if (currentName.length > 50) {
-        this.errors.name = `Category name in ${this.getLanguageName(this.selectedLanguage)} must be less than 50 characters`;
-        isValid = false;
-      }
+  // Validate category name for selected language
+  const currentName = this.category.name[this.selectedLanguage];
+  if (!currentName || currentName.trim().length < 2) {
+    this.errors.name = `Category name in ${this.getLanguageName(this.selectedLanguage)} must be at least 2 characters long`;
+    isValid = false;
+  } else if (currentName.length > 50) {
+    this.errors.name = `Category name in ${this.getLanguageName(this.selectedLanguage)} must be less than 50 characters`;
+    isValid = false;
+  }
 
-      // Validate description length for selected language
-      const currentDescription = this.category.description[this.selectedLanguage];
-      if (currentDescription && currentDescription.length > 500) {
-        this.errors.description = `Description in ${this.getLanguageName(this.selectedLanguage)} must be less than 500 characters`;
-        isValid = false;
-      }
+  // Additional validation: Check if at least one language has a name
+  const hasAnyName = Object.values(this.category.name).some(name => name && name.trim().length > 0);
+  if (!hasAnyName) {
+    this.errors.name = 'Category name must be provided in at least one language';
+    isValid = false;
+  }
 
-      // Validate image
-      if (!this.category.image) {
-        this.errors.image = 'Please upload an image';
-        isValid = false;
-      }
+  // Validate description length for selected language
+  const currentDescription = this.category.description[this.selectedLanguage];
+  if (currentDescription && currentDescription.length > 500) {
+    this.errors.description = `Description in ${this.getLanguageName(this.selectedLanguage)} must be less than 500 characters`;
+    isValid = false;
+  }
 
-      return isValid;
-    },
+  // Validate image
+  if (!this.category.image) {
+    this.errors.image = 'Please upload an image';
+    isValid = false;
+  }
+
+  return isValid;
+},
 
     handleImageUpload(event) {
       const file = event.target.files[0];
@@ -299,58 +306,82 @@ export default {
       delete this.errors.image;
     },
 
-    async submitCategory() {
-      if (!this.validateForm()) {
-        this.showErrorNotification('Please fix the errors in the form');
-        return;
+async submitCategory() {
+  if (!this.validateForm()) {
+    this.showErrorNotification('Please fix the errors in the form');
+    return;
+  }
+
+  this.isSubmitting = true;
+
+  try {
+    // Ensure all languages have at least the current language's value
+    const processedName = { ...this.category.name };
+    const processedDescription = { ...this.category.description };
+
+    // If other languages are empty, use the current language's value as fallback
+    // or use empty strings if that's what your API expects
+    this.availableLanguages.forEach(lang => {
+      if (!processedName[lang.code] || processedName[lang.code].trim() === '') {
+        // Option 1: Use current language value as fallback
+        processedName[lang.code] = this.category.name[this.selectedLanguage] || '';
+
+        // Option 2: Use empty string (uncomment if your API accepts empty strings)
+        // processedName[lang.code] = '';
       }
 
-      this.isSubmitting = true;
-
-      try {
-        // First, upload the image to get a URL
-        let imageUrl = null;
-        if (this.category.image) {
-          imageUrl = await this.uploadImage(this.category.image);
-          if (!imageUrl) {
-            this.showErrorNotification('Failed to upload image. Please try again.');
-            return;
-          }
-        }
-
-        // Prepare data for API (JSON format, not FormData)
-        const categoryData = {
-          restaurant_id: 1, // Default restaurant ID
-          name: this.category.name,
-          description: this.category.description,
-          image_url: imageUrl,
-        };
-
-        console.log('Submitting category with data:', categoryData);
-
-        await addCategory(categoryData);
-
-        // Check if there was an error in the store
-        if (error.value) {
-          this.showErrorNotification(error.value);
-          return;
-        }
-
-        this.showSuccessNotification('Category created successfully!');
-        this.resetForm();
-
-        setTimeout(() => {
-          this.$router.push('/categories/list');
-        }, 1500);
-
-      } catch (err) {
-        console.error('Error creating category:', err);
-        const errorMessage = err.response?.data?.message || err.message || 'Failed to create category. Please try again.';
-        this.showErrorNotification(errorMessage);
-      } finally {
-        this.isSubmitting = false;
+      if (!processedDescription[lang.code]) {
+        // For description, empty string is usually fine
+        processedDescription[lang.code] = this.category.description[this.selectedLanguage] || '';
       }
-    },
+    });
+
+    // Prepare FormData for API
+    const formData = new FormData();
+    formData.append('restaurant_id', 1);
+
+    // Send as individual language fields (try this first)
+    Object.keys(processedName).forEach(lang => {
+      formData.append(`name[${lang}]`, processedName[lang]);
+      formData.append(`description[${lang}]`, processedDescription[lang]);
+    });
+
+    // Alternative: If your API expects JSON strings, uncomment these instead:
+    // formData.append('name', JSON.stringify(processedName));
+    // formData.append('description', JSON.stringify(processedDescription));
+
+    formData.append('image', this.category.image);
+
+    console.log('FormData contents:');
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+
+    // Call addCategory with FormData
+    await addCategory(formData);
+
+    if (error.value) {
+      this.showErrorNotification(error.value);
+      return;
+    }
+
+    this.showSuccessNotification('Category created successfully!');
+    this.resetForm();
+
+    setTimeout(() => {
+      this.$router.push('/categories/list');
+    }, 1500);
+
+  } catch (err) {
+    console.error('Error creating category:', err);
+    console.error('Full error response:', err.response);
+
+    const errorMessage = err.response?.data?.message || err.message || 'Failed to create category. Please try again.';
+    this.showErrorNotification(errorMessage);
+  } finally {
+    this.isSubmitting = false;
+  }
+},
 
     resetForm() {
       this.category = {
@@ -388,20 +419,20 @@ export default {
       try {
         const formData = new FormData();
         formData.append('image', file);
-        
+
         // You might need to create an image upload endpoint
         // For now, we'll create a temporary URL or use a placeholder
         // In a real app, you'd upload to your server or cloud storage
-        
+
         // Create a temporary blob URL for now
         // TODO: Replace with actual image upload endpoint
         const imageUrl = URL.createObjectURL(file);
-        
+
         // For demo purposes, return a placeholder URL
         // In production, you'd upload to your server and return the actual URL
         const displayName = this.category.name[this.selectedLanguage] || this.category.name.en || 'Category';
         return `https://via.placeholder.com/300x200?text=${encodeURIComponent(displayName)}`;
-        
+
       } catch (error) {
         console.error('Error uploading image:', error);
         return null;

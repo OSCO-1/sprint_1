@@ -7,7 +7,7 @@
     
     <!-- Header with language selector -->
     <div class="relative z-10 flex justify-between items-center p-4 lg:p-6">
-      <div class="text-white font-bold text-lg">COMPARTO</div>
+      <div class="text-yellow-500 font-bold text-lg">AVINIDA</div>
       <div class="relative">
         <!-- Language Selector Button -->
         <button 
@@ -30,7 +30,7 @@
         <!-- Language Dropdown -->
         <div 
           v-if="isLanguageDropdownOpen"
-          class="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg overflow-hidden"
+          class="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg overflow-hidden z-50"
         >
           <button
             v-for="language in languages"
@@ -46,62 +46,40 @@
       </div>
     </div>
 
-    <!-- Main content -->
-    <div class="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 lg:px-6">
-      
-      <!-- Logo with hexagon pattern -->
-      <div class="mb-8 lg:mb-12">
-        <div class="relative">
-          <!-- Hexagon pattern -->
-          <div class="flex flex-wrap justify-center items-center mb-4">
-            <!-- Top row -->
-            <div class="flex">
-              <div class="w-8 h-8 lg:w-10 lg:h-10 bg-yellow-500 transform rotate-45 mx-1 mb-2"></div>
-              <div class="w-8 h-8 lg:w-10 lg:h-10 bg-yellow-500 transform rotate-45 mx-1 mb-2"></div>
-              <div class="w-8 h-8 lg:w-10 lg:h-10 bg-yellow-500 transform rotate-45 mx-1 mb-2"></div>
-            </div>
-          </div>
-          <!-- Bottom row -->
-          <div class="flex justify-center">
-            <div class="flex">
-              <div class="w-8 h-8 lg:w-10 lg:h-10 bg-black transform rotate-45 mx-1"></div>
-              <div class="w-8 h-8 lg:w-10 lg:h-10 bg-black transform rotate-45 mx-1"></div>
-              <div class="w-8 h-8 lg:w-10 lg:h-10 bg-black transform rotate-45 mx-1"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <!-- Main content container -->
+    <div class="relative z-10 flex flex-col items-center justify-center h-full px-4 lg:px-6 pb-32">
       <!-- Restaurant name and description -->
-      <div class="text-center mb-12 lg:mb-16">
-        <h1 class="text-4xl lg:text-6xl font-bold text-white mb-4 font-serif">
-          Cafe Restaurant
+      <div class="text-center mb-8 lg:mb-12">
+        <h1 class="text-4xl lg:text-6xl font-bold text-white mb-2 lg:mb-4 font-serif">
+          Restaurant
         </h1>
-        <h2 class="text-3xl lg:text-5xl font-bold text-white mb-2 font-serif">
-          Comparto
+        <h2 class="text-3xl lg:text-5xl font-bold text-yellow-500 mb-2 font-serif">
+          Avinida
         </h2>
       </div>
 
       <!-- Menu button -->
       <button 
         @click="goToMenu"
-        class="bg-orange-500 text-white px-12 lg:px-16 py-4 lg:py-5 text-lg lg:text-xl font-semibold rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+        class="bg-orange-500 text-white px-8 lg:px-12 py-3 lg:py-4 text-base lg:text-lg font-semibold rounded-lg hover:bg-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
       >
         Notre menu
       </button>
+    </div>
 
-      <!-- Bottom navigation icons -->
-      <div class="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex space-x-8 mb-4 bg-white/10 backdrop-blur-sm p-4 rounded-full shadow-lg">
-        <button class="text-white hover:text-yellow-500 transition-colors duration-200">
-          <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+    <!-- Bottom navigation icons - Fixed positioning -->
+    <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10">
+      <div class="flex space-x-6 bg-white/10 backdrop-blur-sm p-3 rounded-full shadow-lg border border-white/20">
+        <button class="text-white hover:text-yellow-500 transition-colors duration-200 p-2">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
           </svg>
         </button>
         <button 
           @click="goToInfo"
-          class="text-white hover:text-yellow-500 transition-colors duration-200"
+          class="text-white hover:text-yellow-500 transition-colors duration-200 p-2"
         >
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
           </svg>
