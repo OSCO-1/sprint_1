@@ -228,7 +228,7 @@ onMounted(async () => {
                 <div v-if="category.name === 'Promotions'" class="text-white text-xl font-bold">%</div>
                 <img 
                   v-else 
-                  :src="`http://127.0.0.1:8000/storage${category.image_url}`" 
+                  :src="`https://oscoapi-hjtj1.sevalla.app/storage${category.image_url}`" 
                   :alt="category.name.en || 'Category'" 
                   class="w-10 h-10 object-cover rounded-xl"
                   @error="handleImageError"
@@ -251,7 +251,7 @@ onMounted(async () => {
                 ]"
               >
                 <div v-if="category.name === 'Promotions'" class="text-white text-2xl xl:text-3xl font-bold">%</div>
-                <img v-else :src="`http://127.0.0.1:8000/storage${category.image_url}`" alt="Category" class="w-14 h-14 xl:w-16 xl:h-16 object-cover rounded-2xl">
+                <img v-else :src="`https://oscoapi-hjtj1.sevalla.app/storage${category.image_url}`" alt="Category" class="w-14 h-14 xl:w-16 xl:h-16 object-cover rounded-2xl">
               </button>
               <span class="text-sm xl:text-base text-black font-medium text-center">{{ category.name.en }}</span>
             </div>
@@ -296,7 +296,7 @@ onMounted(async () => {
               <!-- Placeholder Image Area -->
             <div class="h-40 bg-gray-100 rounded-2xl mb-4 overflow-hidden">
               <img 
-                :src="`http://127.0.0.1:8000/storage${item.image_url}`"
+                :src="`https://oscoapi-hjtj1.sevalla.app/storage${item.image_url}`"
                 alt="{{ item.name.en }}" 
                 class="w-full h-full object-cover"
               >
