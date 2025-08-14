@@ -112,7 +112,7 @@
                 <tr v-for="menuItem in paginatedMenuItems" :key="menuItem.id">
                   <td>
                     <img
-                      :src="menuItem.image_url"
+                      :src="`https://oscoapi-hjtj1.sevalla.app/storage${menuItem.image_url}`"
                       :alt="getMenuItemName(menuItem)"
                       class="table-image"
                     />
@@ -856,24 +856,24 @@ async updateMenuItem() {
     formData.append('_method', 'PUT'); // Only if backend requires this
     formData.append('restaurant_id', this.editingMenuItem.restaurant_id || 1); // Ensure this matches your API
     formData.append('menu_category_id', this.editForm.menu_category_id);
-    
+
     // Add all name fields
     formData.append('name[en]', this.editForm.name.en || '');
     formData.append('name[fr]', this.editForm.name.fr || '');
     if (this.editForm.name.ar) {
       formData.append('name[ar]', this.editForm.name.ar);
     }
-    
+
     // Add all description fields (this was missing!)
     formData.append('description[en]', this.editForm.description.en || '');
     formData.append('description[fr]', this.editForm.description.fr || '');
     if (this.editForm.description.ar) {
       formData.append('description[ar]', this.editForm.description.ar);
     }
-    
+
     formData.append('base_price', parseFloat(this.editForm.base_price));
     formData.append('is_available', this.editForm.is_available ? 1 : 0);
-    
+
     // Handle image upload
     if (this.editForm.image_file) {
       formData.append('image_url', this.editForm.image_file);

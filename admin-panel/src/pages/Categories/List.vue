@@ -77,8 +77,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr 
-              v-for="(category, index) in filteredSortedCategories" 
+            <tr
+              v-for="(category, index) in filteredSortedCategories"
               :key="category.id"
               :data-id="category.id"
               :data-index="index"
@@ -94,7 +94,7 @@
                 <div class="d-flex align-items-center">
                   <i class="tim-icons icon-bullet-list-67 drag-handle mr-2 text-muted" title="Drag to reorder"></i>
                   <img
-                    :src="category.image_url"
+                    :src="`https://oscoapi-hjtj1.sevalla.app/storage${category.image_url}`"
                     :alt="category.name.en"
                     class="table-image"
                   />
