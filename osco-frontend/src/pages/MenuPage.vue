@@ -1,7 +1,6 @@
 <script setup>
 import { categoryItems, isLoading, error, getCategoryItems } from '@/stores/categoryItem';
 import { menuItems, getMenuItems, filterMenuItemsByCategory, searchItems } from '@/stores/menuItem';
-import pizzaImage from '../assets/pizza.png';
 import { computed, onMounted, ref, nextTick, watch } from 'vue';
 import Detail from '@/components/DetailView.vue';
 import { Search, X } from 'lucide-vue-next';
@@ -128,10 +127,10 @@ onMounted(async () => {
                 </svg>
               </button>
             <div class="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center shadow-md">
-              <span class="text-white font-bold text-lg lg:text-xl">BV</span>
+              <span class="text-white font-bold text-lg lg:text-xl">AF</span>
             </div>
             <div>
-              <h1 class="text-xl lg:text-2xl font-bold text-gray-900">Bella Vista</h1>
+              <h1 class="text-xl lg:text-2xl font-bold text-yellow-500">AVINIDA</h1>
             </div>
           </div>
 
@@ -227,7 +226,15 @@ onMounted(async () => {
                 ]"
               >
                 <div v-if="category.name === 'Promotions'" class="text-white text-xl font-bold">%</div>
-                <img v-else :src="pizzaImage" alt="Category" class="w-10 h-10 object-cover rounded-xl">
+                <img 
+                  v-else 
+                  :src="`http://127.0.0.1:8000/storage${category.image_url}`" 
+                  :alt="category.name.en || 'Category'" 
+                  class="w-10 h-10 object-cover rounded-xl"
+                  @error="handleImageError"
+                  @load="handleImageLoad"
+                >
+
               </button>
               <span class="text-xs text-black font-medium text-center">{{ category.name.en }}</span>
             </div>
@@ -244,7 +251,7 @@ onMounted(async () => {
                 ]"
               >
                 <div v-if="category.name === 'Promotions'" class="text-white text-2xl xl:text-3xl font-bold">%</div>
-                <img v-else :src="pizzaImage" alt="Category" class="w-14 h-14 xl:w-16 xl:h-16 object-cover rounded-2xl">
+                <img v-else :src="`http://127.0.0.1:8000/storage${category.image_url}`" alt="Category" class="w-14 h-14 xl:w-16 xl:h-16 object-cover rounded-2xl">
               </button>
               <span class="text-sm xl:text-base text-black font-medium text-center">{{ category.name.en }}</span>
             </div>
@@ -289,8 +296,8 @@ onMounted(async () => {
               <!-- Placeholder Image Area -->
             <div class="h-40 bg-gray-100 rounded-2xl mb-4 overflow-hidden">
               <img 
-                :src="pizzaImage"
-                alt="Pizza" 
+                :src="`http://127.0.0.1:8000/storage${item.image_url}`"
+                alt="{{ item.name.en }}" 
                 class="w-full h-full object-cover"
               >
             </div>

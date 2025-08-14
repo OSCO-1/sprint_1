@@ -608,26 +608,13 @@ export default {
       return error.value;
     },
     hasChanges() {
-      return this.info.name !== this.originalInfo.name ||
-             this.info.headline !== this.originalInfo.headline ||
-             this.info.description !== this.originalInfo.description ||
-             this.info.currency !== this.originalInfo.currency;
+      return JSON.stringify(this.info) !== JSON.stringify(this.originalInfo);
     },
     hasContactChanges() {
-      return this.contact.address !== this.originalContact.address ||
-             this.contact.phone_number !== this.originalContact.phone_number ||
-             this.contact.phone_fix !== this.originalContact.phone_fix ||
-             this.contact.gmail !== this.originalContact.gmail;
+      return JSON.stringify(this.contact) !== JSON.stringify(this.originalContact);
     },
     hasBrandingChanges() {
-      return this.branding.logo_light_theme_url !== this.originalBranding.logo_light_theme_url ||
-             this.branding.cover_image_url !== this.originalBranding.cover_image_url ||
-             this.branding.google_maps_link !== this.originalBranding.google_maps_link ||
-             this.branding.facebook !== this.originalBranding.facebook ||
-             this.branding.instagram !== this.originalBranding.instagram ||
-             this.branding.youtube !== this.originalBranding.youtube ||
-             this.branding.snapchat !== this.originalBranding.snapchat ||
-             this.branding.tiktok !== this.originalBranding.tiktok;
+      return JSON.stringify(this.branding) !== JSON.stringify(this.originalBranding);
     },
     hasAnyChanges() {
       return this.hasChanges || this.hasContactChanges || this.hasBrandingChanges;
@@ -650,7 +637,7 @@ export default {
       // Validate URLs only if fields are non-empty - without side effects
       const urlFields = [
         'logo_light_theme_url',
-        'cover_image_url', 
+        'cover_image_url',
         'google_maps_link',
         'facebook',
         'instagram',

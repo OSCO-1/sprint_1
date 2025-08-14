@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'login', 'logout', 'profile', '*'],
+    'paths' => ['api/*', 'login', 'logout', 'profile', 'storage/*'],
     'allowed_methods' => ['*'],
     'allowed_origins' => ['*'], // For development only! Use specific URLs in production.
     'allowed_origins_patterns' => [],
