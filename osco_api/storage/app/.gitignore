@@ -1,4 +1,6 @@
 *
 !private/
 !public/
+!public/categories_seeders/
+!public/menuItems_seeders/
 !.gitignore
