@@ -108,12 +108,35 @@ class MenuCategoryController extends Controller
     /**
      * Reorder categories.
      */
-    public function reorder(ReorderMenuCategoryRequest $request): JsonResponse
+    public function reorder(Request $request): JsonResponse
     {
-        $validated = $request->validated();
+        try {
+            // Simple validation without form request
+            $orderedIds = $request->input('ordered_ids', []);
+            
+            if (empty($orderedIds) || !is_array($orderedIds)) {
+                return response()->json(['message' => 'Invalid ordered_ids parameter'], 400);
+            }
 
-        $this->categoryRepo->reorder($validated['ordered_ids']);
+            // Validate all IDs are integers
+            foreach ($orderedIds as $id) {
+                if (!is_numeric($id)) {
+                    return response()->json(['message' => 'All IDs must be numeric'], 400);
+                }
+            }
 
-        return response()->json(['message' => 'Categories reordered successfully']);
+            // Simple reorder without complex repository method
+            foreach ($orderedIds as $order => $id) {
+                MenuCategory::where('id', $id)->update(['display_order' => $order + 1]);
+            }
+
+            return response()->json(['message' => 'Categories reordered successfully']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to reorder categories',
+                'error' => $e->getMessage(),
+                'debug' => config('app.debug') ? $e->getTraceAsString() : null
+            ], 500);
+        }
     }
 }

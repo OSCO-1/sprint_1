@@ -108,9 +108,39 @@ class MenuCategoryRepository extends BaseRepository
      */
     public function reorder(array $orderedIds): void
     {
-        foreach ($orderedIds as $order => $id) {
-            // Update each category's 'display_order' column
-            $this->model->where('id', $id)->update(['display_order' => $order + 1]);
+        try {
+            \Log::info('Starting reorder process', ['ordered_ids' => $orderedIds]);
+            
+            // Use database transaction for atomic updates
+            DB::transaction(function () use ($orderedIds) {
+                foreach ($orderedIds as $order => $id) {
+                    \Log::info('Updating category', ['id' => $id, 'new_order' => $order + 1]);
+                    
+                    // Check if category exists before updating
+                    $category = $this->model->find($id);
+                    if (!$category) {
+                        throw new \Exception("Category with ID {$id} not found");
+                    }
+                    
+                    // Update each category's 'display_order' column
+                    $updated = $this->model->where('id', $id)->update(['display_order' => $order + 1]);
+                    
+                    if (!$updated) {
+                        throw new \Exception("Failed to update category {$id}");
+                    }
+                    
+                    \Log::info('Category updated successfully', ['id' => $id, 'order' => $order + 1]);
+                }
+            });
+            
+            \Log::info('Reorder process completed successfully');
+        } catch (\Exception $e) {
+            \Log::error('Reorder process failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'ordered_ids' => $orderedIds
+            ]);
+            throw $e;
         }
     }
 }
