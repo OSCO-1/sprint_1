@@ -111,27 +111,45 @@ class MenuCategoryController extends Controller
     public function reorder(Request $request): JsonResponse
     {
         try {
+            \Log::info('Reorder request received', [
+                'request_data' => $request->all(),
+                'method' => $request->method()
+            ]);
+
             // Simple validation without form request
             $orderedIds = $request->input('ordered_ids', []);
             
             if (empty($orderedIds) || !is_array($orderedIds)) {
+                \Log::error('Invalid ordered_ids parameter', ['ordered_ids' => $orderedIds]);
                 return response()->json(['message' => 'Invalid ordered_ids parameter'], 400);
             }
 
             // Validate all IDs are integers
             foreach ($orderedIds as $id) {
                 if (!is_numeric($id)) {
+                    \Log::error('Non-numeric ID found', ['id' => $id]);
                     return response()->json(['message' => 'All IDs must be numeric'], 400);
                 }
             }
 
-            // Simple reorder without complex repository method
-            foreach ($orderedIds as $order => $id) {
-                MenuCategory::where('id', $id)->update(['display_order' => $order + 1]);
-            }
+            // Convert to integers
+            $orderedIds = array_map('intval', $orderedIds);
+
+            \Log::info('Using repository reorder method', ['ordered_ids' => $orderedIds]);
+
+            // Use the repository method for proper error handling and transaction support
+            $this->categoryRepo->reorder($orderedIds);
+
+            \Log::info('Categories reordered successfully');
 
             return response()->json(['message' => 'Categories reordered successfully']);
         } catch (\Exception $e) {
+            \Log::error('Reorder failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all()
+            ]);
+
             return response()->json([
                 'message' => 'Failed to reorder categories',
                 'error' => $e->getMessage(),

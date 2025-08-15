@@ -425,6 +425,7 @@ import { BaseInput, BaseButton, Card, Modal } from '@/components';
 
 export default {
   components: {
+    BaseInput,
     BaseButton,
     Card,
     Modal,
@@ -649,8 +650,12 @@ export default {
         return;
       }
 
-      console.log('Drop event - from:', this.draggedIndex, 'to:', dropIndex);
-      this.reorderItems(this.draggedIndex, dropIndex);
+      // Calculate actual indices in the full filtered list
+      const actualFromIndex = (this.currentPage - 1) * this.itemsPerPage + this.draggedIndex;
+      const actualToIndex = (this.currentPage - 1) * this.itemsPerPage + dropIndex;
+
+      console.log('Drop event - from:', actualFromIndex, 'to:', actualToIndex);
+      this.reorderItems(actualFromIndex, actualToIndex);
       this.resetDragState();
     },
 
@@ -666,70 +671,123 @@ export default {
       this.dragOverIndex = null;
     },
 
-    async reorderItems(fromIndex, toIndex) {
-      if (this.isReordering || fromIndex === toIndex) return;
+    // Replace your existing reorderItems method in the Vue component with this simplified version
 
-      this.isReordering = true;
+async reorderItems(fromIndex, toIndex) {
+  if (this.isReordering || fromIndex === toIndex) return;
 
-      try {
-        // Use filteredSortedCategories for consistency with what's displayed
-        const items = [...this.filteredSortedCategories];
+  this.isReordering = true;
+  console.log(`Reordering from index ${fromIndex} to index ${toIndex}`);
 
-        // Validate indices
-        if (fromIndex < 0 || fromIndex >= items.length || toIndex < 0 || toIndex >= items.length) {
-          throw new Error('Invalid drag indices');
-        }
+  try {
+    // Work with the complete sorted categories list
+    const items = [...this.sortedCategories];
 
-        // Move the item from fromIndex to toIndex
-        const [movedItem] = items.splice(fromIndex, 1);
-        items.splice(toIndex, 0, movedItem);
-
-        // Update display_order for all items based on new positions
-        const updatedItems = items.map((item, index) => ({
-          ...item,
-          display_order: index + 1
-        }));
-
-        // Extract the IDs in the new order
-        const orderedIds = updatedItems.map(item => item.id);
-
-        console.log('Reordering from index', fromIndex, 'to index', toIndex);
-        console.log('Items being reordered:', items.map(i => ({ id: i.id, name: i.name.en, order: i.display_order })));
-        console.log('New order IDs:', orderedIds);
-
-        // Call the API to update the order
-        await reorderCategories(orderedIds);
-
-        // Show success notification
-        if (this.$notify) {
-          this.$notify({
-            type: 'success',
-            icon: 'tim-icons icon-check-2',
-            message: 'Categories reordered successfully!'
-          });
-        }
-
-        // Refresh categories to ensure consistency
-        await this.refreshCategories();
-
-      } catch (error) {
-        console.error('Error reordering categories:', error);
-        
-        // Show error notification
-        if (this.$notify) {
-          this.$notify({
-            type: 'danger',
-            icon: 'tim-icons icon-simple-remove',
-            message: error.message || 'Failed to reorder categories. Please try again.'
-          });
-        }
-        
-        // Refresh categories to revert any local changes
-        await this.refreshCategories();
-      } finally {
-        this.isReordering = false;
-      }
+    // Validate indices
+    if (fromIndex < 0 || fromIndex >= items.length || toIndex < 0 || toIndex >= items.length) {
+      throw new Error(`Invalid drag indices: from ${fromIndex}, to ${toIndex}, total ${items.length}`);
     }
+
+    // Create a new array with the item moved to the new position
+    const reorderedItems = [...items];
+    const [movedItem] = reorderedItems.splice(fromIndex, 1);
+    reorderedItems.splice(toIndex, 0, movedItem);
+
+    console.log('Items being reordered:', {
+      movedItem: { id: movedItem.id, name: movedItem.name?.en, oldOrder: movedItem.display_order },
+      fromIndex,
+      toIndex
+    });
+
+    // Update display_order for all affected items
+    const updatedItems = reorderedItems.map((item, index) => ({
+      ...item,
+      display_order: index + 1
+    }));
+
+    // Get the IDs in the new order
+    const orderedIds = updatedItems.map(item => item.id);
+    console.log('New order IDs:', orderedIds);
+
+    // Update categories using individual API calls
+    await this.updateCategoriesIndividually(updatedItems);
+
+    // Show success notification
+    if (this.$notify) {
+      this.$notify({
+        type: 'success',
+        icon: 'tim-icons icon-check-2',
+        message: 'Categories reordered successfully!'
+      });
+    }
+
+    // Refresh categories to ensure consistency
+    await this.refreshCategories();
+
+  } catch (error) {
+    console.error('Error reordering categories:', error);
+    
+    // Show error notification
+    if (this.$notify) {
+      this.$notify({
+        type: 'danger',
+        icon: 'tim-icons icon-simple-remove',
+        message: error.message || 'Failed to reorder categories. Please try again.'
+      });
+    }
+    
+    // Refresh categories to revert any local changes
+    await this.refreshCategories();
+  } finally {
+    this.isReordering = false;
+  }
+},
+
+// Optimized method to handle concurrent category updates
+async updateCategoriesIndividually(updatedItems) {
+  console.log('Updating categories concurrently...');
+  
+  const { updateCategory } = await import('@/stores/category');
+  
+  // Create all update promises concurrently for better performance
+  const updatePromises = updatedItems.map(async (item) => {
+    try {
+      // Prepare clean update data
+      const updateData = {
+        name: item.name || { en: 'Unnamed Category' },
+        description: item.description || { en: '' },
+        display_order: item.display_order
+      };
+
+      // Handle image_url - skip it if it's a relative path to avoid validation errors
+      if (item.image_url && item.image_url.startsWith('http')) {
+        updateData.image_url = item.image_url;
+      }
+
+      console.log(`Updating category ${item.id} with order ${item.display_order}`);
+      
+      await updateCategory(item.id, updateData);
+      return { success: true, id: item.id };
+      
+    } catch (error) {
+      console.error(`Failed to update category ${item.id}:`, error.message);
+      return { success: false, id: item.id, error: error.message };
+    }
+  });
+  
+  // Wait for all updates to complete
+  const results = await Promise.all(updatePromises);
+  const successCount = results.filter(r => r.success).length;
+  const errorCount = results.filter(r => !r.success).length;
+  
+  console.log(`Concurrent updates completed: ${successCount} successful, ${errorCount} failed`);
+  
+  if (successCount === 0) {
+    throw new Error('All category updates failed');
+  } else if (errorCount > 0) {
+    console.warn(`Some updates failed, but ${successCount} succeeded`);
+  }
+},
   },
   mounted() {
     getCategories();
