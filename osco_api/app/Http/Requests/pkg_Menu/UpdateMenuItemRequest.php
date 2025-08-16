@@ -15,12 +15,12 @@ class UpdateMenuItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'menu_category_id'  => ['sometimes', 'integer', 'exists:menu_categories,id'],
-            'name'              => ['sometimes', 'array'],
-            'name.*'            => ['required_with:name', 'string', 'max:255'],
-            'description'       => ['sometimes', 'array'],
+            'menu_category_id'  => ['nullable', 'integer', 'exists:menu_categories,id'],
+            'name'              => ['nullable', 'array'],
+            'name.*'            => ['nullable', 'string', 'max:255'],
+            'description'       => ['nullable', 'array'],
             'description.*'     => ['nullable', 'string'],
-            'image_url'         => ['sometimes', 'nullable', function ($attribute, $value, $fail) {
+            'image_url'         => ['nullable', function ($attribute, $value, $fail) {
                 // If it's a file upload, validate as image
                 if ($value instanceof \Illuminate\Http\UploadedFile) {
                     $validator = \Validator::make(
@@ -37,8 +37,8 @@ class UpdateMenuItemRequest extends FormRequest
                     return true;
                 }
             }],
-            'base_price'        => ['sometimes', 'numeric', 'min:0'],
-            'is_available'      => ['sometimes', 'boolean'],
+            'base_price'        => ['nullable', 'numeric', 'min:0'],
+            'is_available'      => ['nullable', 'boolean'],
         ];
     }
 }

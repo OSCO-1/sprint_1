@@ -28,6 +28,9 @@ Route::prefix('categories')->group(function () {
     // Reorder categories
     Route::post('reorder', [MenuCategoryController::class, 'reorder']);
     
+    // Upload image
+    Route::post('upload-image', [MenuCategoryController::class, 'uploadImage']);
+    
     // Test endpoint for debugging
     Route::post('test-reorder', function(Illuminate\Http\Request $request) {
         try {

@@ -15,8 +15,8 @@ class UpdateMenuCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['sometimes', 'required', 'array'],
-            'name.*' => ['required', 'string', 'max:255'],
+            'name' => ['sometimes', 'nullable', 'array'],
+            'name.*' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'array'],
             'description.*' => ['nullable', 'string'],
             'image_url' => ['nullable', 'url', 'max:255'],
@@ -29,7 +29,7 @@ class UpdateMenuCategoryRequest extends FormRequest
         return [
             'name.required' => 'The category name is required when updating.',
             'name.array' => 'The category name must be provided for each language.',
-            'name.*.required' => 'Each language version of the name is required.',
+            'name.*.required' => 'At least one language version of the name is required.',
             'name.*.string' => 'Each language version of the name must be a string.',
             'name.*.max' => 'Each language version of the name may not be greater than 255 characters.',
             'description.array' => 'The description must be an array of language strings.',
