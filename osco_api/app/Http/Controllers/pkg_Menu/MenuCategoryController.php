@@ -158,4 +158,52 @@ class MenuCategoryController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Upload image for category.
+     */
+    public function uploadImage(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'image' => 'required|image|mimes:jpeg,jpg,png,gif,webp|max:5120', // 5MB max
+                'type' => 'nullable|string'
+            ]);
+
+            $file = $request->file('image');
+            
+            // Generate unique filename
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            
+            // Store in public/storage/categories directory
+            $path = $file->storeAs('categories', $filename, 'public');
+            
+            // Generate URL that matches frontend expectations (without /storage prefix)
+            $url = '/categories/' . $filename;
+            
+            \Log::info('Image uploaded successfully', [
+                'filename' => $filename,
+                'path' => $path,
+                'url' => $url
+            ]);
+
+            return response()->json([
+                'message' => 'Image uploaded successfully',
+                'url' => $url,
+                'path' => $path,
+                'filename' => $filename
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Image upload failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'message' => 'Image upload failed',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

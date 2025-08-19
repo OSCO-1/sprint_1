@@ -12,7 +12,6 @@ const getMenuItems = async () => {
     isLoading.value = true;
     try {
         const response = await api.get("items");
-        console.log("getMenuItems response:", response.data);
         menuItems.value = Array.isArray(response.data) ? response.data : [];
         success.value = true;
     } catch (err) {
