@@ -1,65 +1,34 @@
 <?php
-
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
-use App\Models\pkg_Core\Restaurant;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use Notifiable;
+
+    protected $fillable = ['name', 'email', 'password'];
+    protected $hidden = ['password', 'remember_token'];
 
     /**
-     * The attributes that are mass assignable.
+     * Get the identifier that will be stored in the JWT subject claim.
      *
-     * @var list<string>
+     * @return mixed
      */
-    protected $fillable = [
-        'restaurant_id',
-        'name',
-        'email',
-        'password',
-        'role',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-
-    public function restaurant()
-    {
-        return $this->belongsTo(Restaurant::class);
-    }
     public function getJWTIdentifier()
     {
-        return $this->getKey();
+        return $this->getKey(); // Typically returns the user's primary key (e.g., id)
     }
+
+    /**
+     * Return a key-value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
     public function getJWTCustomClaims()
     {
-        return [];
+        return []; // Add custom claims if needed, e.g., ['role' => $this->role]
     }
 }
