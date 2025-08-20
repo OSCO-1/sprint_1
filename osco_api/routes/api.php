@@ -27,15 +27,15 @@ Route::prefix('categories')->group(function () {
 
     // Reorder categories
     Route::post('reorder', [MenuCategoryController::class, 'reorder']);
-    
+
     // Upload image
     Route::post('upload-image', [MenuCategoryController::class, 'uploadImage']);
-    
+
     // Test endpoint for debugging
     Route::post('test-reorder', function(Illuminate\Http\Request $request) {
         try {
             $orderedIds = $request->input('ordered_ids', []);
-            
+
             // Test basic response
             return response()->json([
                 'message' => 'Test endpoint working',
@@ -61,4 +61,14 @@ Route::prefix('items')->group(function () {
     Route::put('/{id}', [MenuItemController::class, 'update']);     // Update menu item
     Route::post('/{id}', [MenuItemController::class, 'update']);    // Update menu item (POST with _method=PUT)
     Route::delete('/{id}', [MenuItemController::class, 'destroy']); // Delete menu item
+});
+
+// auth
+use App\Http\Controllers\AuthController;
+
+Route::post('register', [AuthController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);
+Route::middleware('auth:api')->group(function () {
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('profile', [AuthController::class, 'profile']);
 });
