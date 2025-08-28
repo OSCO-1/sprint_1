@@ -21,7 +21,7 @@ class MenuItemRepository extends BaseRepository
         if (isset($data['image_url']) && $data['image_url'] instanceof \Illuminate\Http\UploadedFile) {
             $path = $data['image_url']->store('menu_items', 'public');
             // Store the full URL with base path
-            $data['image_url'] = 'https://oscoapi-hjtj1.sevalla.app/storage/' . $path;
+            $data['image_url'] = $path;
         }
 
         return $this->model->create($data);
@@ -74,7 +74,7 @@ class MenuItemRepository extends BaseRepository
         }
 
         $updateResult = $item->update($data);
-        
+
         \Log::info('Update result', [
             'success' => $updateResult,
             'updated_item' => $item->fresh()->toArray()

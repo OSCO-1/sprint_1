@@ -263,9 +263,8 @@ onMounted(async () => {
           <div class="relative h-32 bg-gray-100 overflow-hidden">
             <img 
               :src="`https://oscoapi-hjtj1.sevalla.app/storage/${item.image_url}`"
-              :alt="item.name.en" 
+              :alt="item.image_url" 
               class="w-full h-full object-cover"
-              @error="$event.target.src = 'https://via.placeholder.com/200x128/f3f4f6/9ca3af?text=No+Image'"
             >
           </div>
           
