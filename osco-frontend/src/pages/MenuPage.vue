@@ -203,7 +203,7 @@ onMounted(async () => {
             <div v-if="category.name === 'Promotions'" class="text-white text-xl font-bold">%</div>
             <img 
               v-else 
-              :src="`https://oscoapi-hjtj1.sevalla.app/storage${category.image_url}`" 
+              :src="`https://oscoapi-hjtj1.sevalla.app/storage/${category.image_url}`" 
               :alt="category.name.en || 'Category'" 
               class="w-12 h-12 object-cover rounded-xl"
               @error="handleImageError"
@@ -262,7 +262,7 @@ onMounted(async () => {
           <!-- Image -->
           <div class="relative h-32 bg-gray-100 overflow-hidden">
             <img 
-              :src="`https://oscoapi-hjtj1.sevalla.app/storage${item.image_url}`"
+              :src="`https://oscoapi-hjtj1.sevalla.app/storage/${item.image_url}`"
               :alt="item.name.en" 
               class="w-full h-full object-cover"
               @error="$event.target.src = 'https://via.placeholder.com/200x128/f3f4f6/9ca3af?text=No+Image'"

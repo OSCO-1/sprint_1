@@ -16,7 +16,7 @@
           <!-- Header Image Section -->
           <div class="relative bg-red-500 h-64 sm:h-72 rounded-t-3xl sm:rounded-t-3xl overflow-hidden">
             <img
-              :src="`https://oscoapi-hjtj1.sevalla.app/storage${menuItem.image_url}`" 
+              :src="`https://oscoapi-hjtj1.sevalla.app/storage/${menuItem.image_url}`" 
               :alt="menuItem.name" 
               class="w-full h-full object-cover absolute top-0"
             />
