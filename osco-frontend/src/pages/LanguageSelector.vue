@@ -51,20 +51,6 @@
             </svg>
           </button>
 
-          <!-- Dutch -->
-          <button 
-            @click="selectLanguage('nl')"
-            class="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-orange-50 rounded-xl transition-all duration-300 transform hover:scale-105 group border-2 border-transparent hover:border-orange-200"
-          >
-            <div class="flex items-center">
-              <img src="https://flagcdn.com/w40/nl.png" alt="Dutch" class="w-8 h-6 mr-4 rounded">
-              <h2 class="text-gray-800 font-semibold">Nederlands</h2>
-            </div>
-            <svg class="w-5 h-5 text-gray-400 group-hover:text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </button>
-
           <!-- English -->
           <button 
             @click="selectLanguage('en')"
@@ -79,14 +65,14 @@
             </svg>
           </button>
 
-          <!-- German -->
+          <!-- Arabic -->
           <button 
-            @click="selectLanguage('de')"
+            @click="selectLanguage('ar')"
             class="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-orange-50 rounded-xl transition-all duration-300 transform hover:scale-105 group border-2 border-transparent hover:border-orange-200"
           >
             <div class="flex items-center">
-              <img src="https://flagcdn.com/w40/de.png" alt="German" class="w-8 h-6 mr-4 rounded">
-              <h2 class="text-gray-800 font-semibold">Deutsch</h2>
+              <img src="https://flagcdn.com/w40/sa.png" alt="Arabic" class="w-8 h-6 mr-4 rounded">
+              <h2 class="text-gray-800 font-semibold">العربية</h2>
             </div>
             <svg class="w-5 h-5 text-gray-400 group-hover:text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>

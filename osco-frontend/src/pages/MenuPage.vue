@@ -6,6 +6,16 @@ import Detail from '@/components/DetailView.vue';
 import { Search, X } from 'lucide-vue-next';
 import AOS from 'aos';
 import router from '@/router';
+import { 
+  selectedLanguage, 
+  isLanguageDropdownOpen, 
+  languages, 
+  currentLanguage, 
+  setLanguage, 
+  toggleLanguageDropdown, 
+  initializeLanguage, 
+  getLocalizedText 
+} from '@/stores/language';
 
 // Define searchTerm for the search bar
 const searchTerm = ref('');
@@ -15,36 +25,7 @@ const selectedCategory = ref(null);
 const shadowDetail = ref(false);
 const selectedItem = ref(null);
 
-// Language selector state
-const isLanguageDropdownOpen = ref(false);
-const selectedLanguage = ref({
-  code: 'fr',
-  name: 'Français',
-  flag: 'https://flagcdn.com/w20/fr.png'
-});
-
-const languages = [
-  {
-    code: 'fr',
-    name: 'Français',
-    flag: 'https://flagcdn.com/w20/fr.png'
-  },
-  {
-    code: 'nl',
-    name: 'Nederlands',
-    flag: 'https://flagcdn.com/w20/nl.png'
-  },
-  {
-    code: 'en',
-    name: 'English',
-    flag: 'https://flagcdn.com/w20/gb.png'
-  },
-  {
-    code: 'de',
-    name: 'Deutsch',
-    flag: 'https://flagcdn.com/w20/de.png'
-  }
-];
+// Language selector state is now managed by the language store
 
 //handle item selection
 const handleItemSelect = (item) => {
@@ -59,15 +40,7 @@ const filteredMenuItems = computed(() => {
   }
   return menuItems.value;
 });
-// Language selector methods
-const toggleLanguageDropdown = () => {
-  isLanguageDropdownOpen.value = !isLanguageDropdownOpen.value;
-};
-
-const selectLanguage = (language) => {
-  selectedLanguage.value = language;
-  isLanguageDropdownOpen.value = false;
-};
+// Language selector methods are now handled by the language store
 
 // Navigation methods
 const goBack = () => {
@@ -102,6 +75,9 @@ watch(filteredMenuItems, async () => {
 
 // Fetch categories and menu items on mount
 onMounted(async () => {
+  // Initialize language from localStorage
+  initializeLanguage();
+  
   await getCategoryItems();
   await getMenuItems();
   // Initialize AOS after content is loaded
@@ -136,8 +112,8 @@ onMounted(async () => {
             @click="toggleLanguageDropdown"
             class="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-lg px-3 py-2 text-gray-700 transition-all duration-200"
           >
-            <img :src="selectedLanguage.flag" :alt="selectedLanguage.code" class="w-5 h-3 rounded-sm">
-            <span class="text-sm font-medium">{{ selectedLanguage.name }}</span>
+            <img :src="currentLanguage.flag" :alt="currentLanguage.code" class="w-5 h-3 rounded-sm">
+            <span class="text-sm font-medium">{{ currentLanguage.name }}</span>
             <svg 
               class="w-4 h-4 transition-transform duration-200" 
               :class="{ 'rotate-180': isLanguageDropdownOpen }"
@@ -157,9 +133,9 @@ onMounted(async () => {
             <button
               v-for="language in languages"
               :key="language.code"
-              @click="selectLanguage(language)"
+              @click="setLanguage(language.code)"
               class="w-full flex items-center space-x-3 px-4 py-3 text-gray-800 hover:bg-orange-50 transition-colors duration-200"
-              :class="{ 'bg-orange-100': selectedLanguage.code === language.code }"
+              :class="{ 'bg-orange-100': selectedLanguage === language.code }"
             >
               <img :src="language.flag" :alt="language.code" class="w-5 h-3 rounded-sm">
               <span class="text-sm font-medium">{{ language.name }}</span>
@@ -210,7 +186,7 @@ onMounted(async () => {
               @load="handleImageLoad"
             >
           </button>
-          <span class="text-xs text-gray-600 font-medium text-center">{{ category.name.en }}</span>
+          <span class="text-xs text-gray-600 font-medium text-center">{{ getLocalizedText(category.name) }}</span>
         </div>
       </div>
 
@@ -270,8 +246,8 @@ onMounted(async () => {
           
           <!-- Content -->
           <div class="p-3">
-            <h3 class="font-bold text-black text-sm mb-1 line-clamp-1">{{ item.name.en }}</h3>
-            <p class="text-gray-500 text-xs mb-2 line-clamp-1">{{ item.description.en }}</p>
+            <h3 class="font-bold text-black text-sm mb-1 line-clamp-1">{{ getLocalizedText(item.name) }}</h3>
+            <p class="text-gray-500 text-xs mb-2 line-clamp-1">{{ getLocalizedText(item.description) }}</p>
             
             <!-- Price and Add Button -->
             <div class="flex items-center justify-between">

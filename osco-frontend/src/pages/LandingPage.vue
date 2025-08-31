@@ -14,8 +14,8 @@
           @click="toggleLanguageDropdown"
           class="flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-3 py-2 text-white hover:bg-white/20 transition-all duration-200"
         >
-          <img :src="selectedLanguage.flag" :alt="selectedLanguage.code" class="w-5 h-3 rounded-sm">
-          <span class="text-sm font-medium">{{ selectedLanguage.name }}</span>
+          <img :src="currentLanguage.flag" :alt="currentLanguage.code" class="w-5 h-3 rounded-sm">
+          <span class="text-sm font-medium">{{ currentLanguage.name }}</span>
           <svg 
             class="w-4 h-4 transition-transform duration-200" 
             :class="{ 'rotate-180': isLanguageDropdownOpen }"
@@ -35,9 +35,9 @@
           <button
             v-for="language in languages"
             :key="language.code"
-            @click="selectLanguage(language)"
+            @click="setLanguage(language.code)"
             class="w-full flex items-center space-x-3 px-4 py-3 text-gray-800 hover:bg-orange-50 transition-colors duration-200"
-            :class="{ 'bg-orange-100': selectedLanguage.code === language.code }"
+            :class="{ 'bg-orange-100': selectedLanguage === language.code }"
           >
             <img :src="language.flag" :alt="language.code" class="w-5 h-3 rounded-sm">
             <span class="text-sm font-medium">{{ language.name }}</span>
@@ -51,10 +51,10 @@
       <!-- Restaurant name and description -->
       <div class="text-center mb-8 lg:mb-12">
         <h1 class="text-4xl lg:text-6xl font-bold text-white mb-2 lg:mb-4 font-serif">
-          Restaurant
+          {{ getLocalizedText(content.welcome) }}
         </h1>
         <h2 class="text-3xl lg:text-5xl font-bold text-yellow-500 mb-2 font-serif">
-          Avinida
+          {{ getLocalizedText(content.restaurantName) }}
         </h2>
       </div>
 
@@ -63,7 +63,7 @@
         @click="goToMenu"
         class="bg-orange-500 text-white px-8 lg:px-12 py-3 lg:py-4 text-base lg:text-lg font-semibold rounded-lg hover:bg-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
       >
-        Notre menu
+        {{ getLocalizedText(content.menuButton) }}
       </button>
     </div>
 
@@ -91,49 +91,42 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { onMounted } from 'vue'
+import { 
+  selectedLanguage, 
+  isLanguageDropdownOpen, 
+  languages, 
+  currentLanguage, 
+  setLanguage, 
+  toggleLanguageDropdown, 
+  initializeLanguage 
+} from '@/stores/language'
 
 const router = useRouter()
 
-// Language selector state
-const isLanguageDropdownOpen = ref(false)
-const selectedLanguage = ref({
-  code: 'fr',
-  name: 'Français',
-  flag: 'https://flagcdn.com/w20/fr.png'
-})
-
-const languages = [
-  {
-    code: 'fr',
-    name: 'Français',
-    flag: 'https://flagcdn.com/w20/fr.png'
+// Multi-language content
+const content = {
+  welcome: {
+    fr: 'Restaurant',
+    en: 'Restaurant',
+    ar: 'مطعم'
   },
-  {
-    code: 'nl',
-    name: 'Nederlands',
-    flag: 'https://flagcdn.com/w20/nl.png'
+  restaurantName: {
+    fr: 'Avinida',
+    en: 'Avinida', 
+    ar: 'أفينيدا'
   },
-  {
-    code: 'en',
-    name: 'English',
-    flag: 'https://flagcdn.com/w20/gb.png'
-  },
-  {
-    code: 'de',
-    name: 'Deutsch',
-    flag: 'https://flagcdn.com/w20/de.png'
+  menuButton: {
+    fr: 'Notre menu',
+    en: 'Our menu',
+    ar: 'قائمتنا'
   }
-]
-
-// Language selector methods
-const toggleLanguageDropdown = () => {
-  isLanguageDropdownOpen.value = !isLanguageDropdownOpen.value
 }
 
-const selectLanguage = (language) => {
-  selectedLanguage.value = language
-  isLanguageDropdownOpen.value = false
+// Helper function to get localized text
+const getLocalizedText = (textObject) => {
+  const langCode = currentLanguage.value.dbField
+  return textObject[langCode] || textObject.fr || textObject.en
 }
 
 // Navigation methods
@@ -144,6 +137,11 @@ const goToMenu = () => {
 const goToInfo = () => {
   router.push('/info')
 }
+
+// Initialize language on mount
+onMounted(() => {
+  initializeLanguage()
+})
 </script>
 
 <style scoped>
