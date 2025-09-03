@@ -17,7 +17,7 @@
           <!-- Restaurant Logo and Name -->
           <div class="flex items-center">
             <div class="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center shadow-md">
-              <span class="text-white font-bold text-lg lg:text-xl">CR</span>
+              <span class="text-white font-bold text-lg lg:text-xl">OC</span>
             </div>
           </div>
           
@@ -42,7 +42,7 @@
       <!-- Hero Section -->
       <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
         <div class="h-64 lg:h-80 bg-cover bg-center"
-             :style="{ backgroundImage: `url(${restaurant.image})` }">
+             style="backgroundImage: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')">
           <div class="h-full bg-black bg-opacity-30 flex items-end">
             <div class="p-6 lg:p-8 text-white">
               <h2 class="text-3xl lg:text-4xl font-bold mb-2">{{ getLocalizedText(content.welcome) }} {{ restaurant.name }}</h2>
@@ -111,34 +111,34 @@
 
             <!-- Social Media Links -->
             <div class="flex items-start">
-              <svg class="w-5 h-5 text-gray-400 mt-1 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 mt-1 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
               </svg>
               <div>
                 <p class="font-medium text-gray-900">{{ getLocalizedText(content.followUs) }}</p>
                 <div class="flex space-x-4 mt-2">
                   <a v-if="restaurant.facebook" :href="restaurant.facebook" target="_blank" class="text-gray-600 hover:text-orange-500">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 2.04c-5.5 0-9.96 4.46-9.96 9.96 0 5.06 3.75 9.24 8.64 9.9v-7h-2.58v-2.9h2.58v-2.2c0-2.55 1.53-3.95 3.85-3.95 1.1 0 2.04.08 2.32.12v2.7h-1.58c-1.24 0-1.48.59-1.48 1.45v1.9h2.96l-.39 2.9h-2.57v7c4.89-.66 8.64-4.84 8.64-9.9 0-5.5-4.46-9.96-9.96-9.96z"/>
                     </svg>
                   </a>
                   <a v-if="restaurant.instagram" :href="restaurant.instagram" target="_blank" class="text-gray-600 hover:text-orange-500">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 2.16c3.2 0 3.58.01 4.84.07 1.17.06 1.8.24 2.22.4.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.34 1.05.4 2.22.06 1.26.07 1.64.07 4.84s-.01 3.58-.07 4.84c-.06 1.17-.24 1.8-.4 2.22-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.05.34-2.22.4-1.26.06-1.64.07-4.84.07s-3.58-.01-4.84-.07c-1.17-.06-1.8-.24-2.22-.4-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.34-1.05-.4-2.22-.06-1.26-.07-1.64-.07-4.84s.01-3.58.07-4.84c.06-1.17.24-1.8.4-2.22.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.05-.34 2.22-.4 1.26-.06 1.64-.07 4.84-.07zm0-2.16c-3.25 0-3.66.01-4.94.07-1.28.06-2.16.26-2.92.56-.79.31-1.46.72-2.12 1.38-.66.66-1.07 1.33-1.38 2.12-.3.76-.5 1.64-.56 2.92-.06 1.28-.07 1.69-.07 4.94s.01 3.66.07 4.94c.06 1.28.26 2.16.56 2.92.31.79.72 1.46 1.38 2.12.66.66 1.33 1.07 2.12 1.38.76.3 1.64.5 2.92.56 1.28.06 1.69.07 4.94.07s3.66-.01 4.94-.07c1.28-.06 2.16-.26 2.92-.56.79-.31 1.46-.72 2.12-1.38.66-.66 1.07-1.33 1.38-2.12.3-.76.5-1.64.56-2.92.06-1.28.07-1.69.07-4.94s-.01-3.66-.07-4.94c-.06-1.28-.26-2.16-.56-2.92-.31-.79-.72-1.46-1.38-2.12-.66-.66-1.33-1.07-2.12-1.38-.76-.3-1.64-.5-2.92-.56-1.28-.06-1.69-.07-4.94-.07zm0 5.83a6.17 6.17 0 100 12.34 6.17 6.17 0 000-12.34zm0 10.18a4.01 4.01 0 110-8.02 4.01 4.01 0 010 8.02zm6.44-10.62a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/>
                     </svg>
                   </a>
                   <a v-if="restaurant.youtube" :href="restaurant.youtube" target="_blank" class="text-gray-600 hover:text-orange-500">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M23.5 6.5c-.3-1.1-1.1-2-2.2-2.3C19.2 4 12 4 12 4s-7.2 0-9.3.2c-1.1.3-1.9 1.2-2.2 2.3C.2 8.6 0 11.1 0 12s.2 3.4.5 5.5c.3 1.1 1.1 2 2.2 2.3 2.1.2 9.3.2 9.3.2s7.2 0 9.3-.2c1.1-.3 1.9-1.2 2.2-2.3.3-2.1.5-4.6.5-5.5s-.2-3.4-.5-5.5zM9.6 16.4V7.6l6.2 4.4-6.2 4.4z"/>
                     </svg>
                   </a>
                   <a v-if="restaurant.snapchat" :href="restaurant.snapchat" target="_blank" class="text-gray-600 hover:text-orange-500">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm0 2.4c3.31 0 6 2.69 6 6 0 1.65-.67 3.14-1.76 4.23-.48.48-.76.88-.76 1.45 0 .58.29 1.09.76 1.45-.18.11-.37.22-.57.31-1.06.46-2.2.69-3.43.69-1.23 0-2.37-.23-3.43-.69-.2-.09-.39-.2-.57-.31.47-.36.76-.87.76-1.45 0-.57-.28-1.08-.76-1.45C6.67 11.14 6 9.65 6 8c0-3.31 2.69-6 6-6zm4.8 12.6c-.47-.36-.76-.87-.76-1.45 0-.57.28-1.08.76-1.45.47-.36.76-.87.76-1.45 0-.58-.29-1.09-.76-1.45-.48-.48-1.12-.88-1.76-1.14-.64-.26-1.31-.39-2-.39s-1.36.13-2 .39c-.64.26-1.28.66-1.76 1.14-.47.36-.76.87-.76 1.45 0 .58.29 1.09.76 1.45.47.36.76.87.76 1.45 0 .58-.29 1.09-.76 1.45-.18.11-.37.22-.57.31-1.06.46-2.2.69-3.43.69-.29 0-.58-.02-.86-.06.47-.36.76-.87.76-1.45 0-.57-.28-1.08-.76-1.45-.47-.36-.76-.87-.76-1.45 0-.58.29-1.09.76-1.45C3.67 5.14 6.69 2.4 12 2.4s8.33 2.74 8.33 6c0 1.65-.67 3.14-1.76 4.23-.48.48-.76.88-.76 1.45 0 .58.29 1.09.76 1.45-.18.11-.37.22-.57.31-1.06.46-2.2.69-3.43.69-.29 0-.58-.02-.86-.06z"/>
                     </svg>
                   </a>
                   <a v-if="restaurant.tiktok" :href="restaurant.tiktok" target="_blank" class="text-gray-600 hover:text-orange-500">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm6.75 8.25c-.45.81-1.08 1.53-1.89 2.07-.27-.81-.45-1.65-.45-2.52 0-2.79-2.25-5.04-5.04-5.04-1.08 0-2.07.36-2.88.99v-.99h-2.25v12.6c0 1.26.99 2.25 2.25 2.25s2.25-.99 2.25-2.25V11.7c.81.36 1.71.54 2.61.54 2.79 0 5.04-2.25 5.04-5.04 0-.54-.09-1.08-.27-1.62.81.27 1.53.72 2.07 1.35v-1.89h-1.44z"/>
                     </svg>
                   </a>

@@ -6,16 +6,17 @@
     <div class="absolute inset-0 bg-black bg-opacity-40"></div>
     
     <!-- Header with language selector -->
-    <div class="relative z-10 flex justify-between items-center p-4 lg:p-6">
-      <div class="text-yellow-500 font-bold text-lg">AVINIDA</div>
-      <div class="relative">
+    <div class="relative flex justify-between items-center p-4 lg:p-6" style="z-index: 50;">
+      <div class="text-yellow-500 font-bold text-lg">OSCO</div>
+      <div class="relative language-selector" style="z-index: 51;">
         <!-- Language Selector Button -->
         <button 
-          @click="toggleLanguageDropdown"
-          class="flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-3 py-2 text-white hover:bg-white/20 transition-all duration-200"
+          @click.stop="toggleLanguageDropdown"
+          class="flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-3 py-2 text-white hover:bg-white/20 transition-all duration-200 relative cursor-pointer"
+          style="pointer-events: auto;"
         >
-          <img :src="currentLanguage.flag" :alt="currentLanguage.code" class="w-5 h-3 rounded-sm">
-          <span class="text-sm font-medium">{{ currentLanguage.name }}</span>
+          <img :src="currentLanguageDisplay.flag" :alt="currentLanguageDisplay.code" class="w-5 h-3 rounded-sm">
+          <span class="text-sm font-medium">{{ currentLanguageDisplay.name }}</span>
           <svg 
             class="w-4 h-4 transition-transform duration-200" 
             :class="{ 'rotate-180': isLanguageDropdownOpen }"
@@ -30,14 +31,16 @@
         <!-- Language Dropdown -->
         <div 
           v-if="isLanguageDropdownOpen"
-          class="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg overflow-hidden z-50"
+          class="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg overflow-hidden"
+          style="z-index: 52;"
         >
           <button
             v-for="language in languages"
             :key="language.code"
-            @click="setLanguage(language.code)"
-            class="w-full flex items-center space-x-3 px-4 py-3 text-gray-800 hover:bg-orange-50 transition-colors duration-200"
+            @click.stop="setLanguage(language.code)"
+            class="w-full flex items-center space-x-3 px-4 py-3 text-gray-800 hover:bg-orange-50 transition-colors duration-200 cursor-pointer"
             :class="{ 'bg-orange-100': selectedLanguage === language.code }"
+            style="pointer-events: auto;"
           >
             <img :src="language.flag" :alt="language.code" class="w-5 h-3 rounded-sm">
             <span class="text-sm font-medium">{{ language.name }}</span>
@@ -47,14 +50,14 @@
     </div>
 
     <!-- Main content container -->
-    <div class="relative z-10 flex flex-col items-center justify-center h-full px-4 lg:px-6 pb-32">
+    <div class="relative flex flex-col items-center justify-center h-full px-4 lg:px-6 pb-32" style="z-index: 10;">
       <!-- Restaurant name and description -->
       <div class="text-center mb-8 lg:mb-12">
         <h1 class="text-4xl lg:text-6xl font-bold text-white mb-2 lg:mb-4 font-serif">
-          {{ getLocalizedText(content.welcome) }}
+          {{ localizedContent.welcome }}
         </h1>
         <h2 class="text-3xl lg:text-5xl font-bold text-yellow-500 mb-2 font-serif">
-          {{ getLocalizedText(content.restaurantName) }}
+          {{ localizedContent.restaurantName }}
         </h2>
       </div>
 
@@ -63,12 +66,12 @@
         @click="goToMenu"
         class="bg-orange-500 text-white px-8 lg:px-12 py-3 lg:py-4 text-base lg:text-lg font-semibold rounded-lg hover:bg-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
       >
-        {{ getLocalizedText(content.menuButton) }}
+        {{ localizedContent.menuButton }}
       </button>
     </div>
 
     <!-- Bottom navigation icons - Fixed positioning -->
-    <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10">
+    <div class="absolute bottom-16 left-1/2 transform -translate-x-1/2" style="z-index: 20;">
       <div class="flex space-x-6 bg-white/10 backdrop-blur-sm p-3 rounded-full shadow-lg border border-white/20">
         <button class="text-white hover:text-yellow-500 transition-colors duration-200 p-2">
           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -91,12 +94,11 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import { onMounted } from 'vue'
+import { onMounted , computed } from 'vue'
 import { 
   selectedLanguage, 
   isLanguageDropdownOpen, 
   languages, 
-  currentLanguage, 
   setLanguage, 
   toggleLanguageDropdown, 
   initializeLanguage 
@@ -107,14 +109,14 @@ const router = useRouter()
 // Multi-language content
 const content = {
   welcome: {
-    fr: 'Restaurant',
-    en: 'Restaurant',
-    ar: 'مطعم'
+    fr: 'Bienvenue au',
+    en: 'Welcome to',
+    ar: 'مرحباً بكم في'
   },
   restaurantName: {
-    fr: 'Avinida',
-    en: 'Avinida', 
-    ar: 'أفينيدا'
+    fr: 'Restaurant OSCO',
+    en: 'OSCO Restaurant',
+    ar: 'مطعم أوسكو'
   },
   menuButton: {
     fr: 'Notre menu',
@@ -123,11 +125,17 @@ const content = {
   }
 }
 
-// Helper function to get localized text
-const getLocalizedText = (textObject) => {
-  const langCode = currentLanguage.value.dbField
-  return textObject[langCode] || textObject.fr || textObject.en
-}
+// Computed properties for localized content
+const localizedContent = computed(() => ({
+  welcome: content.welcome[selectedLanguage.value] || content.welcome.en,
+  restaurantName: content.restaurantName[selectedLanguage.value] || content.restaurantName.en,
+  menuButton: content.menuButton[selectedLanguage.value] || content.menuButton.en
+}))
+
+// Computed property for current language display
+const currentLanguageDisplay = computed(() => {
+  return languages.find(lang => lang.code === selectedLanguage.value) || languages[0]
+})
 
 // Navigation methods
 const goToMenu = () => {
