@@ -27,6 +27,16 @@ const selectedItem = ref(null);
 
 // Language selector state is now managed by the language store
 
+// Computed property for text direction
+const textDirection = computed(() => {
+  return selectedLanguage.value === 'ar' ? 'rtl' : 'ltr'
+})
+
+// Computed property for text alignment
+const textAlign = computed(() => {
+  return selectedLanguage.value === 'ar' ? 'text-right' : 'text-left'
+})
+
 //handle item selection
 const handleItemSelect = (item) => {
   selectedItem.value = item;
@@ -87,13 +97,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50" :dir="textDirection">
     <!-- Mobile Header -->
     <div class="bg-white px-4 py-3 shadow-sm">
 
       <!-- Navigation Header -->
       <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center">
           <button 
             @click="goBack"
             class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -102,8 +112,8 @@ onMounted(async () => {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
           </button>
-          <div class="flex space-x-4">
-            <button class="text-black font-medium border-b-2 border-orange-500 pb-1">OSCO</button>
+          <div class="flex">
+            <button class="text-yellow-500 font-bold text-lg">OSCO</button>
           </div>
         </div>
         <!-- Language Selector -->
@@ -154,6 +164,7 @@ onMounted(async () => {
             type="text"
             placeholder="Search for food..."
             class="block w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white text-sm"
+            :dir="textDirection"
           />
           <div v-if="searchTerm" class="absolute inset-y-0 right-0 pr-4 flex items-center">
             <button 
@@ -245,13 +256,13 @@ onMounted(async () => {
           </div>
           
           <!-- Content -->
-          <div class="p-3">
-            <h3 class="font-bold text-black text-sm mb-1 line-clamp-1">{{ getLocalizedText(item.name) }}</h3>
-            <p class="text-gray-500 text-xs mb-2 line-clamp-1">{{ getLocalizedText(item.description) }}</p>
+          <div class="p-3" :class="textAlign">
+            <h3 class="font-bold text-black text-sm mb-1 line-clamp-1" :dir="textDirection">{{ getLocalizedText(item.name) }}</h3>
+            <p class="text-gray-500 text-xs mb-2 line-clamp-1" :dir="textDirection">{{ getLocalizedText(item.description) }}</p>
             
             <!-- Price and Add Button -->
             <div class="flex items-center justify-between">
-              <span class="font-bold text-orange-600 text-sm">${{ item.base_price }}</span>
+              <span class="font-bold text-orange-600 text-sm">{{ item.base_price }} DH</span>
             </div>
           </div>
         </div>

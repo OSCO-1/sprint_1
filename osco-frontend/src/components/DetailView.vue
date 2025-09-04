@@ -12,6 +12,7 @@
           v-if="visible"
           class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col"
           @click.stop
+          :dir="textDirection"
         >
           <!-- Header Image Section -->
           <div class="relative bg-red-500 h-64 sm:h-72 rounded-t-3xl sm:rounded-t-3xl overflow-hidden">
@@ -39,10 +40,10 @@
           >
             <!-- Title and Description -->
           <div class="flex items-center justify-between mb-4">
-            <div>
-              <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ getLocalizedText(menuItem.name) }}</h2>
-              <h2 class="text-2xl sm:text-3xl font-bold text-orange-600 mb-2">{{ menuItem.base_price }} DH</h2>
-              <p class="text-gray-600 leading-relaxed text-sm sm:text-base">{{ getLocalizedText(menuItem.description) }}</p>
+            <div :class="textAlign">
+              <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2" :dir="textDirection">{{ getLocalizedText(menuItem.name) }}</h2>
+              <h2 class="text-2xl sm:text-3xl font-bold text-orange-600 mb-2" :dir="textDirection">{{ menuItem.base_price }} DH</h2>
+              <p class="text-gray-600 leading-relaxed text-sm sm:text-base" :dir="textDirection">{{ getLocalizedText(menuItem.description) }}</p>
             </div>
           </div>
             
@@ -58,9 +59,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { X } from 'lucide-vue-next';
-import { getLocalizedText } from '@/stores/language';
+import { getLocalizedText, selectedLanguage } from '@/stores/language';
 
 // eslint-disable-next-line no-unused-vars
 const props = defineProps({
@@ -72,6 +73,16 @@ const emit = defineEmits(['close']);
 
 const scrollY = ref(0);
 const contentArea = ref(null);
+
+// Computed property for text direction
+const textDirection = computed(() => {
+  return selectedLanguage.value === 'ar' ? 'rtl' : 'ltr'
+})
+
+// Computed property for text alignment
+const textAlign = computed(() => {
+  return selectedLanguage.value === 'ar' ? 'text-right' : 'text-left'
+})
 
 // Handle scroll events for image animation
 const handleScroll = (event) => {
