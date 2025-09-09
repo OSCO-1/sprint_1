@@ -9,32 +9,12 @@
     <div class="relative z-10 max-w-md w-full">
       <!-- Logo and Welcome -->
       <div class="text-center mt-8">
-        <!-- Logo with hexagon pattern -->
-        <div class="mb-8">
-          <div class="relative mx-auto w-24 h-24">
-            <!-- Hexagon pattern -->
-            <div class="flex flex-wrap justify-center items-center mb-2">
-              <!-- Top row -->
-              <div class="flex">
-                <div class="w-6 h-6 bg-yellow-300 transform rotate-45 mx-0.5 mb-1"></div>
-                <div class="w-6 h-6 bg-yellow-300 transform rotate-45 mx-0.5 mb-1"></div>
-                <div class="w-6 h-6 bg-yellow-300 transform rotate-45 mx-0.5 mb-1"></div>
-              </div>
-            </div>
-            <!-- Bottom row -->
-            <div class="flex justify-center">
-              <div class="flex">
-                <div class="w-6 h-6 bg-white transform rotate-45 mx-0.5"></div>
-                <div class="w-6 h-6 bg-white transform rotate-45 mx-0.5"></div>
-                <div class="w-6 h-6 bg-white transform rotate-45 mx-0.5"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        
       </div>
 
       <!-- Language Selection -->
       <div class="bg-white rounded-2xl shadow-2xl p-8">
+        <img :src="oscoLogo" alt="OSCO Logo" class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-white shadow-lg">
         <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Sélectionnez votre langue</h1>
         <div class="space-y-4">
           <!-- French -->
@@ -95,6 +75,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import oscoLogo from '../assets/osco_logo.jpg'
 
 const router = useRouter()
 const isLoading = ref(false)
