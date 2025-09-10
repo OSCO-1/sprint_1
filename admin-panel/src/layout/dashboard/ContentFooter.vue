@@ -4,7 +4,7 @@
       <ul class="nav">
         <li class="nav-item">
           <a class="nav-link" href="http://www.creative-tim.com">
-            Creative Tim
+            OSCO
           </a>
         </li>
         <li class="nav-item">
@@ -22,7 +22,7 @@
           >Binar Code</a
         >&nbsp;&
         <a href="https://www.creative-tim.com" target="_blank" rel="noopener"
-          >Creative Tim</a
+          >OSCO</a
         >
         for a better web.
       </div>

@@ -41,7 +41,7 @@ We are very excited to share this dashboard with you and we look forward to hear
 
 - Clone the repo: `git clone https://github.com/creativetimofficial/vue-black-dashboard.git`.
 - [Download from Github](https://github.com/creativetimofficial/vue-black-dashboard/archive/master.zip).
-- [Download from Creative Tim](https://www.creative-tim.com/product/vue-black-dashboard).
+- [Download from OSCO](https://www.creative-tim.com/product/vue-black-dashboard).
 
 ## Deploy
 
@@ -181,15 +181,15 @@ If you have questions or need help integrating the product please [contact us](h
 
 ## Licensing
 
-- Copyright 2024 Creative Tim (https://www.creative-tim.com/)
+- Copyright 2024 OSCO (https://www.creative-tim.com/)
 
 - Licensed under MIT (https://github.com/creativetimofficial/vue-black-dashboard/issues/blob/master/LICENSE.md)
 
 ## Useful Links
 
-- [More products](https://www.creative-tim.com/bootstrap-themes) from Creative Tim
+- [More products](https://www.creative-tim.com/bootstrap-themes) from OSCO
 - [Tutorials](https://www.youtube.com/channel/UCVyTG4sCw-rOvB9oHkzZD1w)
-- [Freebies](https://www.creative-tim.com/bootstrap-themes/free) from Creative Tim
+- [Freebies](https://www.creative-tim.com/bootstrap-themes/free) from OSCO
 - [Affiliate Program](https://www.creative-tim.com/affiliates/new) (earn money)
 
 ##### Social Media

@@ -7,7 +7,7 @@
           >Binar Code</a
         >&nbsp;&
         <a href="https://www.creative-tim.com" target="_blank" rel="noopener"
-          >Creative Tim</a
+          >OSCO</a
         >
         for a better web.
       </div>
