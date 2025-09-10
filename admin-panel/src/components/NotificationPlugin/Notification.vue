@@ -183,5 +183,34 @@ export default {
   &.right {
     right: 20px;
   }
+
+  // Mobile-specific positioning
+  @media (max-width: 768px) {
+    &[data-notify="container"] {
+      width: calc(100% - 40px);
+      max-width: 400px;
+    }
+    
+    &.center {
+      left: 20px;
+      right: 20px;
+      margin: 0 auto;
+    }
+    &.left {
+      left: 20px;
+      right: 20px;
+      margin: 0;
+    }
+    &.right {
+      left: 20px;
+      right: 20px;
+      margin: 0;
+    }
+    
+    // Force top center positioning on mobile
+    &.top {
+      top: 20px !important;
+    }
+  }
 }
 </style>

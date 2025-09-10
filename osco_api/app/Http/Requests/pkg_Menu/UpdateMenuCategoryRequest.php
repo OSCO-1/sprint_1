@@ -19,7 +19,7 @@ class UpdateMenuCategoryRequest extends FormRequest
             'name.*' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'array'],
             'description.*' => ['nullable', 'string'],
-            'image_url' => ['nullable', 'url', 'max:255'],
+            'image_url' => ['nullable', 'url', 'max:2048'],
             'display_order' => ['nullable', 'integer', 'min:0'],
         ];
     }

@@ -586,7 +586,7 @@
                   @change="onEditImageChange"
                   class="form-control"
                 />
-                <small class="text-muted">Allowed types: jpeg, png, jpg, gif</small>
+                <small class="text-muted">Allowed types: JPEG, PNG, GIF, WebP (Large images will be automatically compressed)</small>
               </div>
             </div>
           </div>
@@ -886,8 +886,12 @@ async updateMenuItem() {
     formData.append('base_price', parseFloat(this.editForm.base_price));
     formData.append('is_available', this.editForm.is_available ? 1 : 0);
 
-    // Handle image upload
+    // Handle image upload with validation
     if (this.editForm.image_file) {
+      // Final validation before upload
+      if (this.editForm.image_file.size > 2 * 1024 * 1024) { // 2MB final check
+        throw new Error('Processed image is still too large. Please try a smaller image.');
+      }
       formData.append('image_url', this.editForm.image_file);
     } else if (this.editForm.image_url) {
       formData.append('image_url', this.editForm.image_url);
@@ -984,12 +988,252 @@ async updateMenuItem() {
       });
     },
 
-    onEditImageChange(event) {
+    showInfoNotification(message) {
+      this.$notify({
+        type: 'info',
+        icon: 'tim-icons icon-bell-55',
+        message: message
+      });
+    },
+
+    async onEditImageChange(event) {
       const file = event.target.files[0];
       if (file) {
-        this.editForm.image_file = file;
-        this.editForm.image_url = URL.createObjectURL(file); // For preview
+        await this.processEditImageFile(file);
       }
+    },
+
+    async processEditImageFile(file) {
+      if (!file) {
+        this.showErrorNotification('No file selected');
+        return;
+      }
+
+      // Comprehensive file validation
+      const validationResult = this.validateImageFile(file);
+      if (!validationResult.isValid) {
+        this.showErrorNotification(validationResult.error);
+        return;
+      }
+
+      // Show loading state for large files
+      if (file.size > 1024 * 1024) { // 1MB
+        this.showInfoNotification('Processing large image, please wait...');
+      }
+
+      try {
+        // Compress image if it's too large
+        const processedFile = await this.compressImageIfNeeded(file);
+        
+        // Validate processed file
+        if (!processedFile || processedFile.size === 0) {
+          throw new Error('Image compression failed - resulting file is empty');
+        }
+        
+        this.editForm.image_file = processedFile;
+        this.editForm.image_url = URL.createObjectURL(processedFile); // For preview
+        
+        // Show success message for compressed images
+        if (file.size > processedFile.size) {
+          const originalSizeMB = (file.size / (1024 * 1024)).toFixed(1);
+          const compressedSizeMB = (processedFile.size / (1024 * 1024)).toFixed(1);
+          this.showSuccessNotification(`Image compressed from ${originalSizeMB}MB to ${compressedSizeMB}MB`);
+        }
+      } catch (error) {
+        this.handleImageProcessingError(error);
+      }
+    },
+
+    validateImageFile(file) {
+      // File type validation with specific formats
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type.toLowerCase())) {
+        return {
+          isValid: false,
+          error: `Invalid file type: ${file.type}. Allowed formats: JPEG, PNG, GIF, WebP`
+        };
+      }
+
+      // File size validation (max 50MB for initial upload)
+      const maxSize = 50 * 1024 * 1024; // 50MB
+      if (file.size > maxSize) {
+        return {
+          isValid: false,
+          error: `File too large: ${(file.size / (1024 * 1024)).toFixed(1)}MB. Maximum allowed: 50MB`
+        };
+      }
+
+      // Minimum file size validation
+      const minSize = 1024; // 1KB
+      if (file.size < minSize) {
+        return {
+          isValid: false,
+          error: 'File too small. Please select a valid image file.'
+        };
+      }
+
+      // File name validation
+      if (!file.name || file.name.trim() === '') {
+        return {
+          isValid: false,
+          error: 'Invalid file name'
+        };
+      }
+
+      // Check for suspicious file extensions
+      const fileName = file.name.toLowerCase();
+      const suspiciousExtensions = ['.exe', '.bat', '.cmd', '.scr', '.pif', '.com'];
+      if (suspiciousExtensions.some(ext => fileName.includes(ext))) {
+        return {
+          isValid: false,
+          error: 'Invalid file type detected. Please upload only image files.'
+        };
+      }
+
+      return { isValid: true };
+    },
+
+    handleImageProcessingError(error) {
+      let errorMessage = 'Failed to process image';
+      
+      if (error.message.includes('compression failed')) {
+        errorMessage = 'Image compression failed. Please try a different image or reduce the file size manually.';
+      } else if (error.message.includes('corrupted')) {
+        errorMessage = 'The image file appears to be corrupted. Please try a different image.';
+      } else if (error.message.includes('dimensions')) {
+        errorMessage = error.message;
+      } else if (error.message.includes('read')) {
+        errorMessage = 'Unable to read the image file. Please check the file and try again.';
+      } else if (error.message.includes('network') || error.message.includes('timeout')) {
+        errorMessage = 'Network error while processing image. Please check your connection and try again.';
+      } else if (error.message) {
+        errorMessage = `Image processing error: ${error.message}`;
+      }
+      
+      this.showErrorNotification(errorMessage);
+    },
+
+    async compressImageIfNeeded(file) {
+      // If file is already small enough, return as is
+      if (file.size <= 1024 * 1024) { // 1MB
+        return file;
+      }
+
+      return new Promise((resolve, reject) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Check canvas support
+        if (!ctx) {
+          reject(new Error('Canvas not supported in this browser'));
+          return;
+        }
+        
+        const img = new Image();
+        const objectUrl = URL.createObjectURL(file);
+        
+        // Set timeout for image loading
+        const timeout = setTimeout(() => {
+          URL.revokeObjectURL(objectUrl);
+          reject(new Error('Image loading timeout. File may be too large or corrupted.'));
+        }, 30000); // 30 seconds timeout
+
+        img.onload = () => {
+          clearTimeout(timeout);
+          URL.revokeObjectURL(objectUrl);
+          
+          try {
+            // Validate image dimensions
+            if (img.width === 0 || img.height === 0) {
+              reject(new Error('Invalid image dimensions'));
+              return;
+            }
+            
+            // Calculate new dimensions (max 1200px width/height)
+            let { width, height } = img;
+            const maxDimension = 1200;
+            
+            if (width > maxDimension || height > maxDimension) {
+              if (width > height) {
+                height = (height * maxDimension) / width;
+                width = maxDimension;
+              } else {
+                width = (width * maxDimension) / height;
+                height = maxDimension;
+              }
+            }
+
+            // Ensure dimensions are valid numbers
+            width = Math.floor(width);
+            height = Math.floor(height);
+            
+            if (width <= 0 || height <= 0) {
+              reject(new Error('Invalid calculated dimensions'));
+              return;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            // Draw and compress with error handling
+            try {
+              ctx.drawImage(img, 0, 0, width, height);
+            } catch (drawError) {
+              reject(new Error('Failed to draw image on canvas'));
+              return;
+            }
+            
+            // Try different quality levels until we get under 1MB
+            let quality = 0.8;
+            let attempts = 0;
+            const maxAttempts = 8;
+            
+            const tryCompress = () => {
+              attempts++;
+              
+              if (attempts > maxAttempts) {
+                reject(new Error('Unable to compress image to required size'));
+                return;
+              }
+              
+              canvas.toBlob((blob) => {
+                if (!blob) {
+                  reject(new Error('Failed to create compressed image blob'));
+                  return;
+                }
+                
+                if (blob.size <= 1024 * 1024 || quality <= 0.1) {
+                  try {
+                    // Create new File object with original name
+                    const compressedFile = new File([blob], file.name, {
+                      type: 'image/jpeg',
+                      lastModified: Date.now()
+                    });
+                    resolve(compressedFile);
+                  } catch (fileError) {
+                    reject(new Error('Failed to create compressed file'));
+                  }
+                } else {
+                  quality -= 0.1;
+                  setTimeout(tryCompress, 10); // Small delay to prevent blocking
+                }
+              }, 'image/jpeg', quality);
+            };
+            
+            tryCompress();
+          } catch (processingError) {
+            reject(new Error('Image processing failed: ' + processingError.message));
+          }
+        };
+
+        img.onerror = () => {
+          clearTimeout(timeout);
+          URL.revokeObjectURL(objectUrl);
+          reject(new Error('Failed to load image. File may be corrupted or invalid.'));
+        };
+
+        img.src = objectUrl;
+      });
     },
 
     getImageUrl(imagePath) {
